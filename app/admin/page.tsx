@@ -1,5 +1,17 @@
-// ETAP 2+: panel właściciela (chroniony przez proxy.ts + ?secret=)
+import { notFound } from "next/navigation";
 
-export default function AdminPage() {
+import { verifyAdminSecret } from "@/lib/auth";
+
+type AdminPageProps = {
+  searchParams: Promise<{ secret?: string }>;
+};
+
+export default async function AdminPage({ searchParams }: AdminPageProps) {
+  const { secret } = await searchParams;
+
+  if (!verifyAdminSecret(secret)) {
+    notFound();
+  }
+
   return null;
 }
