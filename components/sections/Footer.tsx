@@ -1,0 +1,38 @@
+import Link from "next/link";
+
+import { Container } from "@/components/ui/Container";
+import { FOOTER } from "@/lib/content";
+
+export function Footer() {
+  return (
+    <footer className="border-t border-ink/5 bg-cream py-12">
+      <Container>
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="font-serif text-xl text-ink">{FOOTER.brand}</p>
+            <p className="mt-2 text-sm text-ink/60">{FOOTER.location}</p>
+          </div>
+
+          <div className="flex flex-col gap-2 text-sm text-ink/60">
+            <Link
+              href={`mailto:${FOOTER.email}`}
+              className="transition hover:text-ink"
+            >
+              {FOOTER.email}
+            </Link>
+            <Link
+              href={`tel:${FOOTER.phone.replace(/\s/g, "")}`}
+              className="transition hover:text-ink"
+            >
+              {FOOTER.phone}
+            </Link>
+          </div>
+        </div>
+
+        <p className="mt-8 border-t border-ink/5 pt-8 text-xs text-ink/40">
+          {FOOTER.copyright}
+        </p>
+      </Container>
+    </footer>
+  );
+}
