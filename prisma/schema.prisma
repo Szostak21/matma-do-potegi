@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["matma"]
+}
+
+enum LeadStatus {
+  UNVERIFIED
+  PENDING_DEPOSIT
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+
+  @@schema("matma")
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  EXPIRED
+  CANCELLED
+
+  @@schema("matma")
+}
+
+enum PaymentType {
+  DEPOSIT
+  FIRST_MONTH_TOPUP
+  SUBSCRIPTION
+  INDIVIDUAL_LESSON
+
+  @@schema("matma")
+}
+
+enum PackageType {
+  MATURA_ROZSZERZONA
+  MATURA_PODSTAWOWA
+  OSMOKLASISTA
+  INDYWIDUALNE
+
+  @@schema("matma")
+}
+
+enum UserRole {
+  OWNER
+  TEACHER
+  STUDENT
+
+  @@schema("matma")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  role      UserRole @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  leads     Lead[]
+
+  @@schema("matma")
+}
+
+model Teacher {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  groups    Group[]
+
+  @@schema("matma")
+}
+
+model Group {
+  id            String      @id @default(cuid())
+  name          String
+  packageType   PackageType
+  scheduleSlot  String
+  maxCapacity   Int         @default(4)
+  currentCount  Int         @default(0)
+  priceMonthly  Int
+  depositAmount Int         @default(5000)
+  teacherId     String?
+  teacher       Teacher?    @relation(fields: [teacherId], references: [id])
+  leads         Lead[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@schema("matma")
+}
+
+model Lead {
+  id              String     @id @default(cuid())
+  parentName      String
+  phoneNumber     String
+  email           String
+  studentName     String?
+  status          LeadStatus @default(UNVERIFIED)
+  groupId         String?
+  group           Group?     @relation(fields: [groupId], references: [id])
+  balanceCredit   Int        @default(0)
+  firstMonthPaid  Boolean    @default(false)
+  activePaymentId String?
+  userId          String?
+  user            User?      @relation(fields: [userId], references: [id])
+  payments        Payment[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@schema("matma")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  token         String        @unique @default(cuid())
+  leadId        String
+  lead          Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type          PaymentType
+  status        PaymentStatus @default(PENDING)
+  amount        Int
+  billingPeriod DateTime?     @db.Date
+  expiresAt     DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([leadId, billingPeriod, type])
+  @@schema("matma")
+}
