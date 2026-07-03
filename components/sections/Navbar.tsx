@@ -50,6 +50,35 @@ export function Navbar() {
     [mobileOpen],
   );
 
+  const handleLogoClick = useCallback(
+    (event: MouseEvent<HTMLAnchorElement>) => {
+      const isHome = window.location.pathname === "/";
+
+      const scrollToTop = () => {
+        if (!isHome) {
+          window.location.href = "/";
+          return;
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.history.pushState(null, "", "/");
+      };
+
+      if (mobileOpen) {
+        event.preventDefault();
+        setMobileOpen(false);
+        window.setTimeout(scrollToTop, MOBILE_MENU_CLOSE_MS);
+        return;
+      }
+
+      if (isHome) {
+        event.preventDefault();
+        scrollToTop();
+      }
+    },
+    [mobileOpen],
+  );
+
   return (
     <header className="sticky top-0 z-50 border-b border-ink/5 bg-cream/80 backdrop-blur-md">
       <Container>
@@ -57,6 +86,7 @@ export function Navbar() {
           <Link
             href="/"
             className="font-serif text-xl tracking-tight text-ink"
+            onClick={handleLogoClick}
           >
             Matma do potęgi
           </Link>
