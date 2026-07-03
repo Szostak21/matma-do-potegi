@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -10,7 +10,8 @@ type ButtonProps = {
   variant?: ButtonVariant;
   href?: string;
   className?: string;
-} & ButtonHTMLAttributes<HTMLButtonElement>;
+  onClick?: MouseEventHandler<HTMLElement>;
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick">;
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
@@ -26,20 +27,21 @@ export function Button({
   href,
   className,
   type = "button",
+  onClick,
   ...props
 }: ButtonProps) {
   const classes = cn(variantClasses[variant], className);
 
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <Link href={href} className={classes} onClick={onClick}>
         {children}
       </Link>
     );
   }
 
   return (
-    <button type={type} className={classes} {...props}>
+    <button type={type} className={classes} onClick={onClick} {...props}>
       {children}
     </button>
   );

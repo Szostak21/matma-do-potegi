@@ -102,19 +102,6 @@ export function ContactForm() {
                   </div>
 
                   <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="studentName">Imię ucznia (opcjonalnie)</Label>
-                    <Input
-                      id="studentName"
-                      name="studentName"
-                      type="text"
-                      placeholder="Kasia"
-                      defaultValue={state.values?.studentName}
-                      aria-invalid={Boolean(state.errors?.studentName)}
-                    />
-                    <FieldError message={state.errors?.studentName?.[0]} />
-                  </div>
-
-                  <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="package">Wybierz grupę *</Label>
                     <Select
                       key={packageFieldKey}
@@ -130,6 +117,19 @@ export function ContactForm() {
                       ))}
                     </Select>
                     <FieldError message={state.errors?.package?.[0]} />
+                  </div>
+
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="studentName">Imię ucznia</Label>
+                    <Input
+                      id="studentName"
+                      name="studentName"
+                      type="text"
+                      placeholder="Kasia"
+                      defaultValue={state.values?.studentName}
+                      aria-invalid={Boolean(state.errors?.studentName)}
+                    />
+                    <FieldError message={state.errors?.studentName?.[0]} />
                   </div>
 
                   <div className="space-y-2">

@@ -2,6 +2,7 @@ import { About } from "@/components/sections/About";
 import { ContactForm } from "@/components/sections/ContactForm";
 import { Faq } from "@/components/sections/Faq";
 import { Footer } from "@/components/sections/Footer";
+import { HashScrollOnLoad } from "@/components/HashScrollOnLoad";
 import { Hero } from "@/components/sections/Hero";
 import { Navbar } from "@/components/sections/Navbar";
 import { Pricing } from "@/components/sections/Pricing";
@@ -11,6 +12,7 @@ import { Teacher } from "@/components/sections/Teacher";
 export default function Home() {
   return (
     <>
+      <HashScrollOnLoad />
       <Navbar />
       <main className="flex-1">
         <Hero />
