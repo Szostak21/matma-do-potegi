@@ -18,5 +18,13 @@ export function verifyAdminSecret(secret: string | null | undefined): boolean {
     return false;
   }
 
-  return constantTimeEqual(secret, adminSecret);
+  const candidates = [secret, secret.replace(/ /g, "+")];
+
+  for (const candidate of candidates) {
+    if (constantTimeEqual(candidate, adminSecret)) {
+      return true;
+    }
+  }
+
+  return false;
 }
