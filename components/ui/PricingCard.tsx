@@ -17,7 +17,7 @@ export function PricingCard({
   period,
   features,
   highlighted = false,
-  ctaHref = "/#zapis",
+  ctaHref = "/#zapisy",
 }: PricingCardProps) {
   return (
     <Card

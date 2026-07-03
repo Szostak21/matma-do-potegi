@@ -10,7 +10,7 @@ export const NAV_LINKS = [
   { href: "/#oferta", label: "Oferta" },
   { href: "/#opinie", label: "Opinie" },
   { href: "/#faq", label: "FAQ" },
-  { href: "/#zapis", label: "Zapis" },
+  { href: "/#zapisy", label: "Zapisy" },
 ] as const;
 
 export const HERO = {
@@ -18,7 +18,7 @@ export const HERO = {
   title: "Matura z matematyki bez stresu. Wynik, który otwiera drzwi na wymarzone studia.",
   subtitle:
     "Kameralne grupy premium (3–4 os.) na krakowskim Kurdwanowie. Autorskie materiały i pełne wsparcie tuż obok Twojego domu.",
-  primaryCta: { label: "Zapisz się", href: "/#zapis" },
+  primaryCta: { label: "Zapisz się", href: "/#zapisy" },
   secondaryCta: { label: "Zobacz ofertę", href: "/#oferta" },
 } as const;
 

@@ -76,9 +76,9 @@ export function Navbar() {
 
           <div className="hidden md:block">
             <Button
-              href="/#zapis"
+              href="/#zapisy"
               variant="primary"
-              onClick={(event) => handleSectionLinkClick(event, "/#zapis")}
+              onClick={(event) => handleSectionLinkClick(event, "/#zapisy")}
             >
               Zapisz się
             </Button>
@@ -117,10 +117,10 @@ export function Navbar() {
               </Link>
             ))}
             <Button
-              href="/#zapis"
+              href="/#zapisy"
               variant="primary"
               className="w-full"
-              onClick={(event) => handleSectionLinkClick(event, "/#zapis")}
+              onClick={(event) => handleSectionLinkClick(event, "/#zapisy")}
             >
               Zapisz się
             </Button>
