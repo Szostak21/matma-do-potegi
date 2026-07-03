@@ -39,3 +39,24 @@ body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+@keyframes hero-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-4 * (16rem + 1rem) + 1rem));
+  }
+}
+
+.hero-marquee-track {
+  animation: hero-marquee-scroll 32s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-marquee-track {
+    animation: none;
+  }
+}

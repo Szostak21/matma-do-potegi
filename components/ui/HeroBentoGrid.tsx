@@ -29,12 +29,20 @@ const HERO_TILES: HeroTile[] = [
   },
 ];
 
-function HeroTile({ tile }: { tile: HeroTile }) {
+const MOBILE_TILE_SIZE = "h-56";
+
+function HeroTile({
+  tile,
+  uniformMobileSize = false,
+}: {
+  tile: HeroTile;
+  uniformMobileSize?: boolean;
+}) {
   return (
     <div
       className={cn(
         "relative overflow-hidden rounded-3xl shadow-soft ring-1 ring-ink/5",
-        tile.className,
+        uniformMobileSize ? MOBILE_TILE_SIZE : tile.className,
       )}
       aria-label={tile.label}
     >
@@ -42,6 +50,25 @@ function HeroTile({ tile }: { tile: HeroTile }) {
         <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-medium text-ink/80 backdrop-blur-sm">
           {tile.label}
         </span>
+      </div>
+    </div>
+  );
+}
+
+function HeroMobileMarquee() {
+  return (
+    <div className="-mx-6 overflow-hidden lg:hidden">
+      <div className="hero-marquee-track flex w-max gap-4 pl-6">
+        {HERO_TILES.map((tile) => (
+          <div key={tile.id} className="w-64 shrink-0">
+            <HeroTile tile={tile} uniformMobileSize />
+          </div>
+        ))}
+        {HERO_TILES.map((tile) => (
+          <div key={`${tile.id}-dup`} className="w-64 shrink-0" aria-hidden>
+            <HeroTile tile={tile} uniformMobileSize />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -62,14 +89,7 @@ export function HeroBentoGrid() {
         </div>
       </div>
 
-      {/* Mobile: poziomy slider ze snap */}
-      <div className="hide-scrollbar -mx-6 flex gap-4 overflow-x-auto px-6 snap-x snap-mandatory lg:hidden">
-        {HERO_TILES.map((tile) => (
-          <div key={tile.id} className="w-64 shrink-0 snap-center">
-            <HeroTile tile={tile} />
-          </div>
-        ))}
-      </div>
+      <HeroMobileMarquee />
     </>
   );
 }
