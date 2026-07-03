@@ -169,7 +169,23 @@ export const FAQ_ITEMS = [
 export const CONTACT = {
   title: "Zapisz się na zajęcia",
   description:
-    "Wypełnij formularz — odezwiemy się z potwierdzeniem i dalszymi krokami. Pola oznaczone * są wymagane.",
+    "Wypełnij formularz, wybierz termin i opłać kaucję, aby zarezerwować miejsce. Pola oznaczone * są wymagane.",
+} as const;
+
+export const GROUP_SELECTION = {
+  title: "Wybierz termin zajęć",
+  description:
+    "Wybierz dogodny termin grupy dla wybranego pakietu. Po rezerwacji masz 15 minut na opłacenie kaucji 50 zł.",
+  reserveButton: "Rezerwuj miejsce",
+  reserving: "Rezerwowanie...",
+  loading: "Ładowanie dostępnych terminów...",
+  noGroupsTitle: "Brak wolnych terminów",
+  noGroupsDescription:
+    "Niestety nie mamy teraz wolnych miejsc dla tego pakietu. Twoje zgłoszenie zostało zapisane — skontaktuj się z nami, a pomożemy znaleźć rozwiązanie.",
+  contactPrompt: "Skontaktuj się z nami:",
+  spotsLabel: "wolnych miejsc",
+  errorReserve: "Nie udało się zarezerwować miejsca. Spróbuj ponownie.",
+  selectGroup: "Wybierz termin, aby kontynuować.",
 } as const;
 
 export const FOOTER = {
