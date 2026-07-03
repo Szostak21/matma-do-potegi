@@ -35,11 +35,11 @@ export function ContactForm() {
     state.status === "success" && state.leadId && state.requestedPackage;
 
   return (
-    <Section id="zapis" variant="deep">
+    <Section id="zapisy" variant="deep">
       <Container>
         <div className="mx-auto max-w-2xl">
           <SectionHeading
-            eyebrow="Zapis"
+            eyebrow="Zapisy"
             title={showSelection ? GROUP_SELECTION.title : CONTACT.title}
             description={
               showSelection ? GROUP_SELECTION.description : CONTACT.description
