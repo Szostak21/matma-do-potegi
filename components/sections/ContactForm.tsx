@@ -13,7 +13,8 @@ import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Select } from "@/components/ui/Select";
 import { SubmitButton } from "@/components/ui/SubmitButton";
-import { CONTACT, PACKAGE_OPTIONS } from "@/lib/content";
+import { TermsAcceptance } from "@/components/ui/TermsAcceptance";
+import { CONTACT, GROUP_SELECTION, PACKAGE_OPTIONS } from "@/lib/content";
 import type { LeadFormState } from "@/lib/validations/lead";
 
 const initialState: LeadFormState = { status: "idle" };
@@ -28,6 +29,7 @@ function FieldError({ message }: { message?: string }) {
 
 export function ContactForm() {
   const [state, formAction] = useActionState(submitLead, initialState);
+  const packageFieldKey = state.values?.package ?? "package-default";
 
   const showSelection =
     state.status === "success" && state.leadId && state.requestedPackage;
@@ -38,8 +40,10 @@ export function ContactForm() {
         <div className="mx-auto max-w-2xl">
           <SectionHeading
             eyebrow="Zapis"
-            title={CONTACT.title}
-            description={CONTACT.description}
+            title={showSelection ? GROUP_SELECTION.title : CONTACT.title}
+            description={
+              showSelection ? GROUP_SELECTION.description : CONTACT.description
+            }
             align="center"
             className="mx-auto"
           />
@@ -76,7 +80,7 @@ export function ContactForm() {
                       name="phone"
                       type="tel"
                       autoComplete="tel"
-                      placeholder="+48 600 000 000"
+                      placeholder="+48 000 000 000"
                       defaultValue={state.values?.phone}
                       aria-invalid={Boolean(state.errors?.phone)}
                     />
@@ -111,8 +115,9 @@ export function ContactForm() {
                   </div>
 
                   <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="package">Wybór pakietu *</Label>
+                    <Label htmlFor="package">Wybierz grupę *</Label>
                     <Select
+                      key={packageFieldKey}
                       id="package"
                       name="package"
                       defaultValue={state.values?.package ?? ""}
@@ -128,14 +133,12 @@ export function ContactForm() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="currentGrade">
-                      Obecna ocena / poziom *
-                    </Label>
+                    <Label htmlFor="currentGrade">Ocena z matematyki</Label>
                     <Input
                       id="currentGrade"
                       name="currentGrade"
                       type="text"
-                      placeholder="np. 4, średniozaawansowany"
+                      placeholder="np. 4"
                       defaultValue={state.values?.currentGrade}
                       aria-invalid={Boolean(state.errors?.currentGrade)}
                     />
@@ -143,7 +146,7 @@ export function ContactForm() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="expectedResult">Oczekiwany wynik *</Label>
+                    <Label htmlFor="expectedResult">Oczekiwany wynik</Label>
                     <Input
                       id="expectedResult"
                       name="expectedResult"
@@ -155,6 +158,11 @@ export function ContactForm() {
                     <FieldError message={state.errors?.expectedResult?.[0]} />
                   </div>
                 </div>
+
+                <TermsAcceptance
+                  defaultChecked={state.values?.acceptTerms === "on"}
+                  error={state.errors?.acceptTerms?.[0]}
+                />
 
                 {state.message ? (
                   <p

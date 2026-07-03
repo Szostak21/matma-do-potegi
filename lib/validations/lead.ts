@@ -1,6 +1,8 @@
 import { PackageType } from "@prisma/client";
 import { z } from "zod";
 
+import { TERMS } from "@/lib/content";
+
 const polishPhoneRegex = /^(\+48\s?)?(\d{3}[\s-]?){2}\d{3}$/;
 
 const packageValues = Object.values(PackageType) as [
@@ -25,16 +27,21 @@ export const leadFormSchema = z.object({
     .transform((value) => (value === "" ? undefined : value)),
   package: z
     .string()
-    .min(1, "Wybierz pakiet")
-    .pipe(z.enum(packageValues, { message: "Wybierz pakiet" })),
+    .min(1, "Wybierz grupę")
+    .pipe(z.enum(packageValues, { message: "Wybierz grupę" })),
   currentGrade: z
     .string()
     .trim()
-    .min(1, "Podaj obecną ocenę lub poziom"),
+    .optional()
+    .transform((value) => (value === "" ? undefined : value)),
   expectedResult: z
     .string()
     .trim()
-    .min(1, "Podaj oczekiwany wynik"),
+    .optional()
+    .transform((value) => (value === "" ? undefined : value)),
+  acceptTerms: z.literal("on", {
+    message: TERMS.validationError,
+  }),
 });
 
 export type LeadFormValues = z.infer<typeof leadFormSchema>;
@@ -71,5 +78,7 @@ export function formDataToObject(formData: FormData): Record<string, string> {
     package: String(formData.get("package") ?? ""),
     currentGrade: String(formData.get("currentGrade") ?? ""),
     expectedResult: String(formData.get("expectedResult") ?? ""),
+    acceptTerms:
+      formData.get("acceptTerms") === "on" ? "on" : "",
   };
 }

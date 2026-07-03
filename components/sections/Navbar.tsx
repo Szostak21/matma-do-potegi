@@ -36,7 +36,7 @@ export function Navbar() {
           </nav>
 
           <div className="hidden md:block">
-            <Button href="#zapis" variant="primary">
+            <Button href="/#zapis" variant="primary">
               Zapisz się
             </Button>
           </div>
@@ -68,7 +68,7 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Button href="#zapis" variant="primary" className="w-full">
+            <Button href="/#zapis" variant="primary" className="w-full">
               Zapisz się
             </Button>
           </nav>

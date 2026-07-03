@@ -1,17 +1,26 @@
 "use client";
 
 import type { PackageType } from "@prisma/client";
-import { Calendar, Loader2, MapPin, Users } from "lucide-react";
+import { Calendar, Loader2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
 import { reserveGroup } from "@/actions/groups";
 import { Button } from "@/components/ui/Button";
+import { AlternateTermPhoneGate } from "@/components/ui/AlternateTermPhoneGate";
 import { Card } from "@/components/ui/Card";
-import { FOOTER, GROUP_SELECTION } from "@/lib/content";
+import {
+  CONTACT_PHONE,
+  CONTACT_PHONE_TEL,
+  FOOTER,
+  formatRemainingSpots,
+  getDisplayedAvailableSpots,
+  GROUP_MAX_CAPACITY,
+  GROUP_SELECTION,
+} from "@/lib/content";
 import type { AvailableGroup } from "@/lib/types/groups";
-import { formatPln } from "@/lib/money";
 import { cn } from "@/lib/cn";
+import { formatPln } from "@/lib/money";
 
 type GroupSelectionProps = {
   leadId: string;
@@ -115,10 +124,10 @@ export function GroupSelection({ leadId, packageType }: GroupSelectionProps) {
           </p>
           <p className="mt-1">
             <a
-              href={`tel:${FOOTER.phone.replace(/\s/g, "")}`}
+              href={`tel:${CONTACT_PHONE_TEL}`}
               className="underline-offset-2 hover:underline"
             >
-              {FOOTER.phone}
+              {CONTACT_PHONE}
             </a>
           </p>
         </div>
@@ -128,16 +137,16 @@ export function GroupSelection({ leadId, packageType }: GroupSelectionProps) {
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h3 className="font-serif text-2xl text-ink">{GROUP_SELECTION.title}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-ink/70">
-          {GROUP_SELECTION.description}
-        </p>
-      </div>
-
       <div className="grid gap-4">
         {groups.map((group) => {
           const isSelected = selectedGroupId === group.id;
+          const displayedAvailable = getDisplayedAvailableSpots(
+            group.availableSpots,
+          );
+          const spotsText = formatRemainingSpots(
+            displayedAvailable,
+            GROUP_MAX_CAPACITY,
+          );
 
           return (
             <button
@@ -160,14 +169,13 @@ export function GroupSelection({ leadId, packageType }: GroupSelectionProps) {
                       {group.scheduleSlot}
                     </p>
                   </div>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-ink/70">
-                    <span className="flex items-center gap-1.5">
+                  <div className="flex flex-col items-start gap-2 sm:items-end">
+                    <span className="flex items-center gap-1.5 text-sm font-medium text-olive-800">
                       <Users className="size-4 shrink-0" aria-hidden />
-                      {group.availableSpots} {GROUP_SELECTION.spotsLabel}
+                      {spotsText}
                     </span>
-                    <span className="flex items-center gap-1.5 font-medium text-ink">
-                      <MapPin className="size-4 shrink-0" aria-hidden />
-                      {formatPln(group.priceMonthly)}/mies.
+                    <span className="text-sm text-ink/70">
+                      Abonament: {formatPln(group.priceMonthly)}/mies.
                     </span>
                   </div>
                 </div>
@@ -199,6 +207,8 @@ export function GroupSelection({ leadId, packageType }: GroupSelectionProps) {
           GROUP_SELECTION.reserveButton
         )}
       </Button>
+
+      <AlternateTermPhoneGate />
     </div>
   );
 }

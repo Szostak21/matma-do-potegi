@@ -1,13 +1,16 @@
 import { PACKAGES } from "@/lib/constants";
 import { formatPln } from "@/lib/money";
 
+export const CONTACT_PHONE = "+48 794 315 519";
+export const CONTACT_PHONE_TEL = CONTACT_PHONE.replace(/\s/g, "");
+
 export const NAV_LINKS = [
-  { href: "#o-nas", label: "O nas" },
-  { href: "#nauczyciel", label: "Nauczyciel" },
-  { href: "#oferta", label: "Oferta" },
-  { href: "#opinie", label: "Opinie" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#zapis", label: "Zapis" },
+  { href: "/#o-nas", label: "O nas" },
+  { href: "/#nauczyciel", label: "Nauczyciel" },
+  { href: "/#oferta", label: "Oferta" },
+  { href: "/#opinie", label: "Opinie" },
+  { href: "/#faq", label: "FAQ" },
+  { href: "/#zapis", label: "Zapis" },
 ] as const;
 
 export const HERO = {
@@ -15,8 +18,8 @@ export const HERO = {
   title: "Matura z matematyki bez stresu. Wynik, który otwiera drzwi na wymarzone studia.",
   subtitle:
     "Kameralne grupy premium (3–4 os.) na krakowskim Kurdwanowie. Autorskie materiały i pełne wsparcie tuż obok Twojego domu.",
-  primaryCta: { label: "Zapisz się", href: "#zapis" },
-  secondaryCta: { label: "Zobacz ofertę", href: "#oferta" },
+  primaryCta: { label: "Zapisz się", href: "/#zapis" },
+  secondaryCta: { label: "Zobacz ofertę", href: "/#oferta" },
 } as const;
 
 export const FEATURES = [
@@ -152,7 +155,7 @@ export const FAQ_ITEMS = [
   {
     question: "Jak wygląda proces zapisu?",
     answer:
-      "Wypełniasz formularz kontaktowy, wybierasz termin grupy i wpłacasz kaucję 50 zł. Po potwierdzeniu wpłaty miejsce jest zarezerwowane. Możesz też zadzwonić i umówić się na rozmowę przed decyzją.",
+      `Wypełniasz formularz kontaktowy, wybierasz termin grupy i wpłacasz kaucję 50 zł. Po potwierdzeniu wpłaty miejsce jest zarezerwowane. Możesz też zadzwonić pod numer ${CONTACT_PHONE} i umówić się na rozmowę przed decyzją.`,
   },
   {
     question: "Gdzie odbywają się zajęcia?",
@@ -169,35 +172,77 @@ export const FAQ_ITEMS = [
 export const CONTACT = {
   title: "Zapisz się na zajęcia",
   description:
-    "Wypełnij formularz, wybierz termin i opłać kaucję, aby zarezerwować miejsce. Pola oznaczone * są wymagane.",
+    "Wypełnij formularz, wybierz termin i zabezpiecz miejsce w grupie. Pola oznaczone * są wymagane.",
+} as const;
+
+export const TERMS = {
+  acceptancePrefix: "Przeczytałem/am i akceptuję",
+  linkLabel: "regulamin",
+  href: "/regulamin",
+  validationError: "Zaakceptuj regulamin, aby kontynuować",
+  pageTitle: "Regulamin",
+  placeholder:
+    "Treść regulaminu zostanie opublikowana wkrótce. W razie pytań skontaktuj się z nami przed zapisem na zajęcia.",
 } as const;
 
 export const GROUP_SELECTION = {
   title: "Wybierz termin zajęć",
-  description:
-    "Wybierz dogodny termin grupy dla wybranego pakietu. Po rezerwacji masz 15 minut na opłacenie kaucji 50 zł.",
-  reserveButton: "Rezerwuj miejsce",
-  reserving: "Rezerwowanie...",
+  description: "Wybierz dogodny termin dla wybranej grupy",
+  reserveButton: "Zarezerwuj miejsce",
+  reserving: "Rezerwowanie miejsca...",
   loading: "Ładowanie dostępnych terminów...",
   noGroupsTitle: "Brak wolnych terminów",
   noGroupsDescription:
     "Niestety nie mamy teraz wolnych miejsc dla tego pakietu. Twoje zgłoszenie zostało zapisane — skontaktuj się z nami, a pomożemy znaleźć rozwiązanie.",
   contactPrompt: "Skontaktuj się z nami:",
-  spotsLabel: "wolnych miejsc",
   errorReserve: "Nie udało się zarezerwować miejsca. Spróbuj ponownie.",
   selectGroup: "Wybierz termin, aby kontynuować.",
 } as const;
+
+export const DEPOSIT_PAYMENT = {
+  depositNote:
+    "Kaucja rezerwacyjna jest w pełni odliczana od pierwszego miesiąca zajęć.",
+  phoneGateTitle: "Masz wątpliwości? Zadzwoń do nas przed wpłatą!",
+  pageTitle: "Wpłata zaliczki",
+  summaryType: "Wpłata zaliczki",
+  paidMessage:
+    "Zaliczka została opłacona. Wkrótce skontaktujemy się w sprawie dalszych kroków zapisu.",
+  confirmHint: "Potwierdź płatność zaliczki, aby zarezerwować miejsce w grupie.",
+} as const;
+
+export const ALTERNATE_TERM_CONTACT = {
+  title: "Szukasz innego terminu? Zadzwoń do nas!",
+  phone: CONTACT_PHONE,
+} as const;
+
+/** Domyślna pojemność grupy (zgodna ze schematem Prisma). Używane w UI bez zmiany API. */
+export const GROUP_MAX_CAPACITY = 4;
+
+export function formatRemainingSpots(
+  displayedAvailable: number,
+  maxCapacity: number,
+): string {
+  if (displayedAvailable === 1) {
+    return `Zostało ${displayedAvailable} z ${maxCapacity} miejsc`;
+  }
+
+  return `Zostały ${displayedAvailable} z ${maxCapacity} miejsc`;
+}
+
+export function getDisplayedAvailableSpots(actualAvailable: number): number {
+  return actualAvailable >= 3 ? 2 : actualAvailable;
+}
 
 export const FOOTER = {
   brand: "Matma do potęgi",
   location: "Kraków, Kurdwanów · ul. Wysłouchów",
   email: "kontakt@matmadopotegi.pl",
-  phone: "+48 000 000 000",
+  phone: CONTACT_PHONE,
   copyright: `© ${new Date().getFullYear()} Matma do potęgi. Wszelkie prawa zastrzeżone.`,
 } as const;
 
 export const PACKAGE_OPTIONS = [
-  { value: "", label: "Wybierz pakiet" },
+  { value: "", label: "Wybierz grupę" },
   { value: "MATURA_ROZSZERZONA", label: PACKAGES.MATURA_ROZSZERZONA.name },
   { value: "MATURA_PODSTAWOWA", label: PACKAGES.MATURA_PODSTAWOWA.name },
   { value: "OSMOKLASISTA", label: PACKAGES.OSMOKLASISTA.name },

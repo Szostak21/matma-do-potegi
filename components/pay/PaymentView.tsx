@@ -1,10 +1,15 @@
 "use client";
 
 import { AlertCircle, CheckCircle } from "lucide-react";
-import type { PackageType } from "@prisma/client";
+import type { PackageType, PaymentType } from "@prisma/client";
 
+import {
+  DepositNote,
+} from "@/components/pay/DepositPaymentExtras";
 import { PayButton } from "@/components/pay/PayButton";
+import { AlternateTermPhoneGate } from "@/components/ui/AlternateTermPhoneGate";
 import { Card } from "@/components/ui/Card";
+import { DEPOSIT_PAYMENT } from "@/lib/content";
 import { packageLabel } from "@/lib/labels";
 import { formatPln } from "@/lib/money";
 import type { PaymentDisplayState } from "@/lib/payments";
@@ -12,6 +17,7 @@ import type { PaymentDisplayState } from "@/lib/payments";
 type PaymentViewProps = {
   token: string;
   displayState: PaymentDisplayState;
+  paymentType: PaymentType;
   studentName: string;
   amount: number;
   requestedPackage: PackageType | null;
@@ -39,8 +45,17 @@ function PaymentSummary({
     <div className="mt-6 rounded-2xl bg-oatmeal/80 p-5 ring-1 ring-ink/5">
       <SummaryRow label="Uczeń" value={studentName} />
       <SummaryRow label="Pakiet" value={packageLabel(requestedPackage)} />
-      <SummaryRow label="Rodzaj" value="Wpłata kaucji" />
+      <SummaryRow label="Rodzaj" value={DEPOSIT_PAYMENT.summaryType} />
       <SummaryRow label="Kwota" value={formatPln(amount)} />
+    </div>
+  );
+}
+
+function DepositExtras() {
+  return (
+    <div className="mt-6 space-y-4">
+      <DepositNote />
+      <AlternateTermPhoneGate variant="payment-doubt" />
     </div>
   );
 }
@@ -48,10 +63,13 @@ function PaymentSummary({
 export function PaymentView({
   token,
   displayState,
+  paymentType,
   studentName,
   amount,
   requestedPackage,
 }: PaymentViewProps) {
+  const isDeposit = paymentType === "DEPOSIT";
+
   if (displayState === "paid") {
     return (
       <Card className="text-center">
@@ -63,8 +81,7 @@ export function PaymentView({
           Płatność zakończona
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-ink/70">
-          Kaucja została opłacona. Wkrótce skontaktujemy się w sprawie dalszych
-          kroków zapisu.
+          {DEPOSIT_PAYMENT.paidMessage}
         </p>
         <PaymentSummary
           studentName={studentName}
@@ -87,6 +104,7 @@ export function PaymentView({
           Ten link płatności nie jest już aktywny. Skontaktuj się z nami, aby
           otrzymać nowy.
         </p>
+        {isDeposit ? <DepositExtras /> : null}
       </Card>
     );
   }
@@ -105,6 +123,7 @@ export function PaymentView({
           Ta płatność została anulowana lub wygasła. Skontaktuj się z nami po
           pomoc.
         </p>
+        {isDeposit ? <DepositExtras /> : null}
       </Card>
     );
   }
@@ -114,10 +133,10 @@ export function PaymentView({
       <p className="text-xs font-medium uppercase tracking-widest text-olive-700">
         Matma do potęgi
       </p>
-      <h1 className="mt-2 font-serif text-3xl text-ink">Wpłata kaucji</h1>
-      <p className="mt-2 text-sm text-ink/60">
-        Potwierdź płatność, aby zarezerwować miejsce w grupie.
-      </p>
+      <h1 className="mt-2 font-serif text-3xl text-ink">
+        {DEPOSIT_PAYMENT.pageTitle}
+      </h1>
+      <p className="mt-2 text-sm text-ink/60">{DEPOSIT_PAYMENT.confirmHint}</p>
 
       <PaymentSummary
         studentName={studentName}
@@ -125,9 +144,21 @@ export function PaymentView({
         amount={amount}
       />
 
-      <div className="mt-8">
+      {isDeposit ? (
+        <div className="mt-6">
+          <DepositNote />
+        </div>
+      ) : null}
+
+      <div className="mt-6">
         <PayButton token={token} />
       </div>
+
+      {isDeposit ? (
+        <div className="mt-6">
+          <AlternateTermPhoneGate variant="payment-doubt" />
+        </div>
+      ) : null}
     </Card>
   );
 }

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { PaymentType } from "@prisma/client";
 
 import { LeadsTable } from "@/components/admin/LeadsTable";
+import { ResetDatabaseButton } from "@/components/admin/ResetDatabaseButton";
 import { Container } from "@/components/ui/Container";
 import { prisma } from "@/lib/prisma";
 import { verifyAdminSecret } from "@/lib/auth";
@@ -55,6 +56,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           <p className="mt-2 text-sm text-ink/60">
             Weryfikacja leadów i generowanie linków płatności kaucji.
           </p>
+        </div>
+
+        <div className="mb-8">
+          <ResetDatabaseButton secret={secret ?? ""} />
         </div>
 
         <LeadsTable leads={rows} secret={secret ?? ""} />

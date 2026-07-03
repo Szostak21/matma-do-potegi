@@ -11,7 +11,7 @@ type PayPageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Płatność kaucji | Matma do potęgi",
+  title: "Wpłata zaliczki | Matma do potęgi",
 };
 
 export default async function PayPage({ params }: PayPageProps) {
@@ -36,6 +36,7 @@ export default async function PayPage({ params }: PayPageProps) {
         <PaymentView
           token={token}
           displayState={displayState}
+          paymentType={payment.type}
           studentName={studentName}
           amount={payment.amount}
           requestedPackage={payment.lead.requestedPackage}

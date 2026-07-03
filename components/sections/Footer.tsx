@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Container } from "@/components/ui/Container";
-import { FOOTER } from "@/lib/content";
+import { CONTACT_PHONE, CONTACT_PHONE_TEL, FOOTER } from "@/lib/content";
 
 export function Footer() {
   return (
@@ -21,10 +21,10 @@ export function Footer() {
               {FOOTER.email}
             </Link>
             <Link
-              href={`tel:${FOOTER.phone.replace(/\s/g, "")}`}
+              href={`tel:${CONTACT_PHONE_TEL}`}
               className="transition hover:text-ink"
             >
-              {FOOTER.phone}
+              {CONTACT_PHONE}
             </Link>
           </div>
         </div>
