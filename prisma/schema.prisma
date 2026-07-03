@@ -98,8 +98,11 @@ model Lead {
   parentName      String
   phoneNumber     String
   email           String
-  studentName     String?
-  status          LeadStatus @default(UNVERIFIED)
+  studentName        String?
+  requestedPackage   PackageType?
+  currentGrade       String?
+  expectedResult     String?
+  status             LeadStatus @default(UNVERIFIED)
   groupId         String?
   group           Group?     @relation(fields: [groupId], references: [id])
   balanceCredit   Int        @default(0)
