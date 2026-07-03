@@ -1,4 +1,9 @@
-import { Button } from "@/components/ui/Button";
+"use client";
+
+import { CheckCircle } from "lucide-react";
+import { useActionState } from "react";
+
+import { submitLead } from "@/actions/leads";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { Input } from "@/components/ui/Input";
@@ -6,9 +11,23 @@ import { Label } from "@/components/ui/Label";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Select } from "@/components/ui/Select";
+import { SubmitButton } from "@/components/ui/SubmitButton";
 import { CONTACT, PACKAGE_OPTIONS } from "@/lib/content";
+import type { LeadFormState } from "@/lib/validations/lead";
+
+const initialState: LeadFormState = { status: "idle" };
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) {
+    return null;
+  }
+
+  return <p className="text-sm text-red-600">{message}</p>;
+}
 
 export function ContactForm() {
+  const [state, formAction] = useActionState(submitLead, initialState);
+
   return (
     <Section id="zapis" variant="deep">
       <Container>
@@ -22,101 +41,138 @@ export function ContactForm() {
           />
 
           <Card className="mt-10">
-            <form className="space-y-6">
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="parentName">
-                    Imię i nazwisko osoby zgłaszającej *
-                  </Label>
-                  <Input
-                    id="parentName"
-                    name="parentName"
-                    type="text"
-                    required
-                    autoComplete="name"
-                    placeholder="Jan Kowalski"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Numer telefonu *</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    autoComplete="tel"
-                    placeholder="+48 600 000 000"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Adres e-mail *</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    placeholder="jan@example.com"
-                  />
-                </div>
-
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="studentName">Imię ucznia (opcjonalnie)</Label>
-                  <Input
-                    id="studentName"
-                    name="studentName"
-                    type="text"
-                    placeholder="Kasia"
-                  />
-                </div>
-
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="package">Wybór pakietu *</Label>
-                  <Select id="package" name="package" required defaultValue="">
-                    {PACKAGE_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="currentGrade">
-                    Obecna ocena / poziom *
-                  </Label>
-                  <Input
-                    id="currentGrade"
-                    name="currentGrade"
-                    type="text"
-                    required
-                    placeholder="np. 4, średniozaawansowany"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="expectedResult">Oczekiwany wynik *</Label>
-                  <Input
-                    id="expectedResult"
-                    name="expectedResult"
-                    type="text"
-                    required
-                    placeholder="np. 70% na maturze"
-                  />
-                </div>
+            {state.status === "success" ? (
+              <div className="flex flex-col items-center gap-4 py-8 text-center">
+                <CheckCircle
+                  className="size-12 text-olive-600"
+                  aria-hidden="true"
+                />
+                <h3 className="font-serif text-2xl text-ink">
+                  Dziękujemy za zgłoszenie!
+                </h3>
+                <p className="max-w-md text-sm leading-relaxed text-ink/70">
+                  Otrzymaliśmy Twoje dane. Skontaktujemy się wkrótce z
+                  potwierdzeniem i dalszymi krokami zapisu.
+                </p>
               </div>
+            ) : (
+              <form action={formAction} className="space-y-6">
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="parentName">
+                      Imię i nazwisko osoby zgłaszającej *
+                    </Label>
+                    <Input
+                      id="parentName"
+                      name="parentName"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Jan Kowalski"
+                      defaultValue={state.values?.parentName}
+                      aria-invalid={Boolean(state.errors?.parentName)}
+                    />
+                    <FieldError message={state.errors?.parentName?.[0]} />
+                  </div>
 
-              <Button type="submit" variant="primary" className="w-full">
-                Wyślij zgłoszenie
-              </Button>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Numer telefonu *</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      autoComplete="tel"
+                      placeholder="+48 600 000 000"
+                      defaultValue={state.values?.phone}
+                      aria-invalid={Boolean(state.errors?.phone)}
+                    />
+                    <FieldError message={state.errors?.phone?.[0]} />
+                  </div>
 
-              <p className="text-center text-xs text-ink/50">
-                Formularz jest statyczny — podłączenie do systemu zapisów nastąpi
-                w kolejnym etapie.
-              </p>
-            </form>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Adres e-mail *</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="jan@example.com"
+                      defaultValue={state.values?.email}
+                      aria-invalid={Boolean(state.errors?.email)}
+                    />
+                    <FieldError message={state.errors?.email?.[0]} />
+                  </div>
+
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="studentName">Imię ucznia (opcjonalnie)</Label>
+                    <Input
+                      id="studentName"
+                      name="studentName"
+                      type="text"
+                      placeholder="Kasia"
+                      defaultValue={state.values?.studentName}
+                      aria-invalid={Boolean(state.errors?.studentName)}
+                    />
+                    <FieldError message={state.errors?.studentName?.[0]} />
+                  </div>
+
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="package">Wybór pakietu *</Label>
+                    <Select
+                      id="package"
+                      name="package"
+                      defaultValue={state.values?.package ?? ""}
+                      aria-invalid={Boolean(state.errors?.package)}
+                    >
+                      {PACKAGE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </Select>
+                    <FieldError message={state.errors?.package?.[0]} />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="currentGrade">
+                      Obecna ocena / poziom *
+                    </Label>
+                    <Input
+                      id="currentGrade"
+                      name="currentGrade"
+                      type="text"
+                      placeholder="np. 4, średniozaawansowany"
+                      defaultValue={state.values?.currentGrade}
+                      aria-invalid={Boolean(state.errors?.currentGrade)}
+                    />
+                    <FieldError message={state.errors?.currentGrade?.[0]} />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="expectedResult">Oczekiwany wynik *</Label>
+                    <Input
+                      id="expectedResult"
+                      name="expectedResult"
+                      type="text"
+                      placeholder="np. 70% na maturze"
+                      defaultValue={state.values?.expectedResult}
+                      aria-invalid={Boolean(state.errors?.expectedResult)}
+                    />
+                    <FieldError message={state.errors?.expectedResult?.[0]} />
+                  </div>
+                </div>
+
+                {state.message ? (
+                  <p
+                    className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                    role="alert"
+                  >
+                    {state.message}
+                  </p>
+                ) : null}
+
+                <SubmitButton />
+              </form>
+            )}
           </Card>
         </div>
       </Container>
