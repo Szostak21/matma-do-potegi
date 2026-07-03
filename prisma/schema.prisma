@@ -12,6 +12,7 @@ datasource db {
 enum LeadStatus {
   UNVERIFIED
   PENDING_DEPOSIT
+  PAID_DEPOSIT
   ACTIVE
   SUSPENDED
   CANCELLED

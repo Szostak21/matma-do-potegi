@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "matma"."LeadStatus" ADD VALUE 'PAID_DEPOSIT' AFTER 'PENDING_DEPOSIT';
