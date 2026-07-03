@@ -65,8 +65,7 @@ body {
 }
 
 .hero-marquee-viewport {
-  overflow-x: clip;
-  overflow-y: visible;
+  overflow: hidden;
   padding-block: 2rem;
 }
 

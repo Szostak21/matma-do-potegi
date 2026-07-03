@@ -78,8 +78,8 @@ function HeroMobileMarqueeGroup({
 
 function HeroMobileMarquee() {
   return (
-    <div className="-mx-6 lg:hidden">
-      <div className="hero-marquee-viewport px-6">
+    <div className="min-w-0 overflow-hidden lg:hidden">
+      <div className="-mx-6 hero-marquee-viewport px-6">
         <div className="hero-marquee-track">
           <HeroMobileMarqueeGroup tiles={HERO_TILES} />
           <HeroMobileMarqueeGroup tiles={HERO_TILES} ariaHidden />
