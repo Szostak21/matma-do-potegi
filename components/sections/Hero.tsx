@@ -6,7 +6,7 @@ import { HERO } from "@/lib/content";
 
 export function Hero() {
   return (
-    <section className="overflow-hidden py-16 sm:py-20 lg:py-28">
+    <section className="overflow-x-clip py-16 sm:py-20 lg:overflow-hidden lg:py-28">
       <Container>
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="max-w-xl">

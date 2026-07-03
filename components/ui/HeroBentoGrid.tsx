@@ -55,20 +55,35 @@ function HeroTile({
   );
 }
 
+function HeroMobileMarqueeGroup({
+  tiles,
+  ariaHidden = false,
+}: {
+  tiles: HeroTile[];
+  ariaHidden?: boolean;
+}) {
+  return (
+    <div className="hero-marquee-group" aria-hidden={ariaHidden || undefined}>
+      {tiles.map((tile) => (
+        <div
+          key={ariaHidden ? `${tile.id}-dup` : tile.id}
+          className="w-64 shrink-0"
+        >
+          <HeroTile tile={tile} uniformMobileSize />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function HeroMobileMarquee() {
   return (
-    <div className="-mx-6 overflow-hidden lg:hidden">
-      <div className="hero-marquee-track flex w-max gap-4 pl-6">
-        {HERO_TILES.map((tile) => (
-          <div key={tile.id} className="w-64 shrink-0">
-            <HeroTile tile={tile} uniformMobileSize />
-          </div>
-        ))}
-        {HERO_TILES.map((tile) => (
-          <div key={`${tile.id}-dup`} className="w-64 shrink-0" aria-hidden>
-            <HeroTile tile={tile} uniformMobileSize />
-          </div>
-        ))}
+    <div className="-mx-6 lg:hidden">
+      <div className="hero-marquee-viewport px-6">
+        <div className="hero-marquee-track">
+          <HeroMobileMarqueeGroup tiles={HERO_TILES} />
+          <HeroMobileMarqueeGroup tiles={HERO_TILES} ariaHidden />
+        </div>
       </div>
     </div>
   );
