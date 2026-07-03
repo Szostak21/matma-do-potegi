@@ -26,7 +26,7 @@ export async function submitLead(
   const data = parsed.data;
 
   try {
-    await prisma.lead.create({
+    const lead = await prisma.lead.create({
       data: {
         parentName: data.parentName,
         phoneNumber: normalizePhone(data.phone),
@@ -38,7 +38,11 @@ export async function submitLead(
       },
     });
 
-    return { status: "success" };
+    return {
+      status: "success",
+      leadId: lead.id,
+      requestedPackage: data.package,
+    };
   } catch {
     return {
       status: "error",

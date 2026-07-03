@@ -1,9 +1,10 @@
 "use client";
 
-import { CheckCircle } from "lucide-react";
+import type { PackageType } from "@prisma/client";
 import { useActionState } from "react";
 
 import { submitLead } from "@/actions/leads";
+import { GroupSelection } from "@/components/sections/GroupSelection";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { Input } from "@/components/ui/Input";
@@ -28,6 +29,9 @@ function FieldError({ message }: { message?: string }) {
 export function ContactForm() {
   const [state, formAction] = useActionState(submitLead, initialState);
 
+  const showSelection =
+    state.status === "success" && state.leadId && state.requestedPackage;
+
   return (
     <Section id="zapis" variant="deep">
       <Container>
@@ -41,20 +45,11 @@ export function ContactForm() {
           />
 
           <Card className="mt-10">
-            {state.status === "success" ? (
-              <div className="flex flex-col items-center gap-4 py-8 text-center">
-                <CheckCircle
-                  className="size-12 text-olive-600"
-                  aria-hidden="true"
-                />
-                <h3 className="font-serif text-2xl text-ink">
-                  Dziękujemy za zgłoszenie!
-                </h3>
-                <p className="max-w-md text-sm leading-relaxed text-ink/70">
-                  Otrzymaliśmy Twoje dane. Skontaktujemy się wkrótce z
-                  potwierdzeniem i dalszymi krokami zapisu.
-                </p>
-              </div>
+            {showSelection ? (
+              <GroupSelection
+                leadId={state.leadId!}
+                packageType={state.requestedPackage as PackageType}
+              />
             ) : (
               <form action={formAction} className="space-y-6">
                 <div className="grid gap-6 sm:grid-cols-2">

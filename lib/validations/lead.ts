@@ -44,6 +44,8 @@ export type LeadFormState = {
   message?: string;
   errors?: Record<string, string[]>;
   values?: Record<string, string>;
+  leadId?: string;
+  requestedPackage?: string;
 };
 
 export function normalizePhone(phone: string): string {

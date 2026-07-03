@@ -9,6 +9,12 @@ import { buildPayUrl, isPaymentExpired } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
 import { generatePaymentToken } from "@/lib/tokens";
 
+export type DepositPaymentResult = {
+  status: "success" | "error";
+  payUrl?: string;
+  message?: string;
+};
+
 export type GeneratePaymentState = {
   status: "idle" | "success" | "error";
   payUrl?: string;
@@ -27,23 +33,10 @@ export type SimulatePaymentState = {
   message?: string;
 };
 
-export async function generateDepositPayment(
-  _prevState: GeneratePaymentState,
-  formData: FormData,
-): Promise<GeneratePaymentState> {
-  const leadId = formData.get("leadId");
-  const secret = formData.get("secret")?.toString();
-
-  if (!leadId || typeof leadId !== "string") {
-    return { status: "error", message: "Brak identyfikatora leada." };
-  }
-
-  try {
-    assertAdminSecret(secret);
-  } catch {
-    return { status: "error", message: "Brak uprawnień." };
-  }
-
+export async function createDepositPaymentForLead(
+  leadId: string,
+  expiresAt: Date,
+): Promise<DepositPaymentResult> {
   try {
     const lead = await prisma.lead.findUnique({
       where: { id: leadId },
@@ -81,7 +74,6 @@ export async function generateDepositPayment(
     }
 
     const token = generatePaymentToken();
-    const expiresAt = addHours(new Date(), PHONE_PAYMENT_EXPIRY_HOURS);
 
     await prisma.$transaction(async (tx) => {
       const payment = await tx.payment.create({
@@ -110,6 +102,28 @@ export async function generateDepositPayment(
       message: "Wystąpił błąd. Spróbuj ponownie.",
     };
   }
+}
+
+export async function generateDepositPayment(
+  _prevState: GeneratePaymentState,
+  formData: FormData,
+): Promise<GeneratePaymentState> {
+  const leadId = formData.get("leadId");
+  const secret = formData.get("secret")?.toString();
+
+  if (!leadId || typeof leadId !== "string") {
+    return { status: "error", message: "Brak identyfikatora leada." };
+  }
+
+  try {
+    assertAdminSecret(secret);
+  } catch {
+    return { status: "error", message: "Brak uprawnień." };
+  }
+
+  const expiresAt = addHours(new Date(), PHONE_PAYMENT_EXPIRY_HOURS);
+
+  return createDepositPaymentForLead(leadId, expiresAt);
 }
 
 export async function simulatePayment(
