@@ -15,7 +15,7 @@ export const NAV_LINKS = [
 
 export const HERO = {
   badge: "Zapisy otwarte",
-  title: "Matura z matematyki bez stresu. Wynik, który otwiera drzwi na wymarzone studia.",
+  title: "Matura z matematyki bez stresu. Otwieramy drzwi na wymarzone studia.",
   subtitle:
     "Kameralne grupy premium (3–4 os.) na krakowskim Kurdwanowie. Autorskie materiały i pełne wsparcie tuż obok Twojego domu.",
   primaryCta: { label: "Zapisz się", href: "/#zapisy" },
