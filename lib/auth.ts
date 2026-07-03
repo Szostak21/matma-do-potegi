@@ -28,3 +28,9 @@ export function verifyAdminSecret(secret: string | null | undefined): boolean {
 
   return false;
 }
+
+export function assertAdminSecret(secret: string | null | undefined): void {
+  if (!verifyAdminSecret(secret)) {
+    throw new Error("Unauthorized");
+  }
+}
