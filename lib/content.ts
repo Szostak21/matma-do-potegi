@@ -205,6 +205,8 @@ export const DEPOSIT_PAYMENT = {
   phoneGateTitle: "Masz wątpliwości? Zadzwoń do nas przed wpłatą!",
   pageTitle: "Wpłata zaliczki",
   summaryType: "Wpłata zaliczki",
+  summaryReserver: "Rezerwujący",
+  summaryGroup: "Grupa",
   paidMessage:
     "Zaliczka została opłacona. Wkrótce skontaktujemy się w sprawie dalszych kroków zapisu.",
   confirmHint: "Potwierdź płatność zaliczki, aby zarezerwować miejsce w grupie.",

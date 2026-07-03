@@ -43,8 +43,8 @@ function PaymentSummary({
 }) {
   return (
     <div className="mt-6 rounded-2xl bg-oatmeal/80 p-5 ring-1 ring-ink/5">
-      <SummaryRow label="Uczeń" value={studentName} />
-      <SummaryRow label="Pakiet" value={packageLabel(requestedPackage)} />
+      <SummaryRow label={DEPOSIT_PAYMENT.summaryReserver} value={studentName} />
+      <SummaryRow label={DEPOSIT_PAYMENT.summaryGroup} value={packageLabel(requestedPackage)} />
       <SummaryRow label="Rodzaj" value={DEPOSIT_PAYMENT.summaryType} />
       <SummaryRow label="Kwota" value={formatPln(amount)} />
     </div>
