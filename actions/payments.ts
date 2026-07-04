@@ -3,14 +3,16 @@
 import { PaymentStatus, PaymentType } from "@prisma/client";
 
 import { assertAdminSecret } from "@/lib/auth";
+import { createDepositCheckoutSession } from "@/lib/checkout";
 import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
 import { addHours, PHONE_PAYMENT_EXPIRY_HOURS } from "@/lib/dates";
-import { buildPayUrl, isPaymentExpired } from "@/lib/payments";
+import { isPaymentExpired } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
 import { generatePaymentToken } from "@/lib/tokens";
 
 export type DepositPaymentResult = {
   status: "success" | "error";
+  paymentId?: string;
   payUrl?: string;
   message?: string;
 };
@@ -18,18 +20,6 @@ export type DepositPaymentResult = {
 export type GeneratePaymentState = {
   status: "idle" | "success" | "error";
   payUrl?: string;
-  message?: string;
-};
-
-export type SimulatePaymentState = {
-  status:
-    | "idle"
-    | "success"
-    | "already_paid"
-    | "expired"
-    | "invalid"
-    | "not_found"
-    | "error";
   message?: string;
 };
 
@@ -60,9 +50,15 @@ export async function createDepositPaymentForLead(
     );
 
     if (activePending) {
+      const checkout = await createDepositCheckoutSession(activePending.id);
+      if (checkout.status === "error") {
+        return { status: "error", message: checkout.message };
+      }
+
       return {
         status: "success",
-        payUrl: buildPayUrl(activePending.token),
+        paymentId: activePending.id,
+        payUrl: checkout.url,
       };
     }
 
@@ -75,8 +71,8 @@ export async function createDepositPaymentForLead(
 
     const token = generatePaymentToken();
 
-    await prisma.$transaction(async (tx) => {
-      const payment = await tx.payment.create({
+    const payment = await prisma.$transaction(async (tx) => {
+      const created = await tx.payment.create({
         data: {
           token,
           leadId,
@@ -90,12 +86,23 @@ export async function createDepositPaymentForLead(
         where: { id: leadId },
         data: {
           status: "PENDING_DEPOSIT",
-          activePaymentId: payment.id,
+          activePaymentId: created.id,
         },
       });
+
+      return created;
     });
 
-    return { status: "success", payUrl: buildPayUrl(token) };
+    const checkout = await createDepositCheckoutSession(payment.id);
+    if (checkout.status === "error") {
+      return { status: "error", message: checkout.message };
+    }
+
+    return {
+      status: "success",
+      paymentId: payment.id,
+      payUrl: checkout.url,
+    };
   } catch {
     return {
       status: "error",
@@ -122,62 +129,14 @@ export async function generateDepositPayment(
   }
 
   const expiresAt = addHours(new Date(), PHONE_PAYMENT_EXPIRY_HOURS);
+  const result = await createDepositPaymentForLead(leadId, expiresAt);
 
-  return createDepositPaymentForLead(leadId, expiresAt);
-}
-
-export async function simulatePayment(
-  _prevState: SimulatePaymentState,
-  formData: FormData,
-): Promise<SimulatePaymentState> {
-  const token = formData.get("token")?.toString();
-
-  if (!token) {
-    return { status: "error", message: "Brak tokenu płatności." };
+  if (result.status === "error") {
+    return { status: "error", message: result.message };
   }
 
-  try {
-    const payment = await prisma.payment.findUnique({
-      where: { token },
-      include: { lead: true },
-    });
-
-    if (!payment) {
-      return { status: "not_found", message: "Nie znaleziono płatności." };
-    }
-
-    if (payment.status === PaymentStatus.PAID) {
-      return { status: "already_paid" };
-    }
-
-    if (payment.status !== PaymentStatus.PENDING) {
-      return { status: "invalid", message: "Płatność jest nieważna." };
-    }
-
-    if (isPaymentExpired(payment)) {
-      return { status: "expired", message: "Link wygasł." };
-    }
-
-    await prisma.$transaction(async (tx) => {
-      await tx.payment.update({
-        where: { id: payment.id },
-        data: {
-          status: PaymentStatus.PAID,
-          paidAt: new Date(),
-        },
-      });
-
-      await tx.lead.update({
-        where: { id: payment.leadId },
-        data: { status: "PAID_DEPOSIT" },
-      });
-    });
-
-    return { status: "success" };
-  } catch {
-    return {
-      status: "error",
-      message: "Wystąpił błąd. Spróbuj ponownie.",
-    };
-  }
+  return {
+    status: "success",
+    payUrl: result.payUrl,
+  };
 }

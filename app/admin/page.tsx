@@ -42,6 +42,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       token: payment.token,
       status: payment.status,
       expiresAt: payment.expiresAt?.toISOString() ?? null,
+      stripeSessionUrl: payment.stripeSessionUrl,
     })),
   }));
 

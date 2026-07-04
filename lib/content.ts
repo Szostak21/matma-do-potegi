@@ -200,16 +200,19 @@ export const GROUP_SELECTION = {
 } as const;
 
 export const DEPOSIT_PAYMENT = {
-  depositNote:
-    "Kaucja rezerwacyjna jest w pełni odliczana od pierwszego miesiąca zajęć.",
-  phoneGateTitle: "Masz wątpliwości? Zadzwoń do nas przed wpłatą!",
-  pageTitle: "Wpłata zaliczki",
-  summaryType: "Wpłata zaliczki",
+  successTitle: "Płatność zakończona",
+  successProcessingTitle: "Przetwarzamy wpłatę",
+  successMessage:
+    "Zaliczka została opłacona. Wkrótce skontaktujemy się w sprawie dalszych kroków zapisu.",
+  successProcessingMessage:
+    "Otrzymaliśmy informację o płatności. Za chwilę potwierdzimy wpłatę w systemie.",
+  cancelTitle: "Płatność przerwana",
+  cancelMessage:
+    "Nie dokończono płatności. Możesz spróbować ponownie z linku od nas lub skontaktować się telefonicznie.",
   summaryReserver: "Rezerwujący",
   summaryGroup: "Grupa",
-  paidMessage:
-    "Zaliczka została opłacona. Wkrótce skontaktujemy się w sprawie dalszych kroków zapisu.",
-  confirmHint: "Potwierdź płatność zaliczki, aby zarezerwować miejsce w grupie.",
+  summaryType: "Wpłata zaliczki",
+  backHome: "Wróć na stronę główną",
 } as const;
 
 export const ALTERNATE_TERM_CONTACT = {

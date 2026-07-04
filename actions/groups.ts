@@ -3,8 +3,9 @@
 import { LeadStatus, PaymentStatus, PaymentType } from "@prisma/client";
 
 import { createDepositPaymentForLead } from "@/actions/payments";
+import { createDepositCheckoutSession } from "@/lib/checkout";
 import { addMinutes, ONLINE_PAYMENT_EXPIRY_MINUTES } from "@/lib/dates";
-import { buildPayUrl, isPaymentExpired } from "@/lib/payments";
+import { isPaymentExpired } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
 
 export type ReserveGroupResult = {
@@ -44,10 +45,12 @@ export async function reserveGroup(
     );
 
     if (activePending) {
-      return {
-        status: "success",
-        payUrl: buildPayUrl(activePending.token),
-      };
+      const checkout = await createDepositCheckoutSession(activePending.id);
+      if (checkout.status === "error") {
+        return { status: "error", message: checkout.message };
+      }
+
+      return { status: "success", payUrl: checkout.url };
     }
 
     if (lead.status !== LeadStatus.UNVERIFIED) {
@@ -115,7 +118,10 @@ export async function reserveGroup(
       return paymentResult;
     }
 
-    return paymentResult;
+    return {
+      status: "success",
+      payUrl: paymentResult.payUrl,
+    };
   } catch (error) {
     if (error instanceof Error && error.message === "FULL") {
       return { status: "error", message: "Brak wolnych miejsc w tej grupie." };

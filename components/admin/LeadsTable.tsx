@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { GeneratePaymentButton } from "@/components/admin/GeneratePaymentButton";
 import { LEAD_STATUS_LABELS, packageLabel } from "@/lib/labels";
-import { buildPayUrl, findActiveDepositPayment } from "@/lib/payments";
+import {
+  findActiveDepositPayment,
+  getActiveDepositCheckoutUrl,
+} from "@/lib/payments";
 
 export type AdminLeadRow = {
   id: string;
@@ -23,6 +26,7 @@ export type AdminLeadRow = {
     token: string;
     status: "PENDING" | "PAID" | "EXPIRED" | "CANCELLED";
     expiresAt: string | null;
+    stripeSessionUrl: string | null;
   }>;
 };
 
@@ -72,27 +76,26 @@ function LeadAction({
       expiresAt: payment.expiresAt ? new Date(payment.expiresAt) : null,
     })),
   );
+  const checkoutUrl = getActiveDepositCheckoutUrl(activePayment);
 
   if (lead.status === "UNVERIFIED") {
     return <GeneratePaymentButton leadId={lead.id} secret={secret} />;
   }
 
-  if (lead.status === "PENDING_DEPOSIT" && activePayment) {
-    const payUrl = buildPayUrl(activePayment.token);
-
+  if (lead.status === "PENDING_DEPOSIT" && checkoutUrl) {
     return (
       <div className="space-y-2">
         <p className="text-xs text-ink/70">
           <a
-            href={payUrl}
+            href={checkoutUrl}
             className="break-all font-medium text-ink underline-offset-2 hover:underline"
             target="_blank"
             rel="noreferrer"
           >
-            {payUrl}
+            {checkoutUrl}
           </a>
         </p>
-        <CopyLinkButton url={payUrl} />
+        <CopyLinkButton url={checkoutUrl} />
       </div>
     );
   }
