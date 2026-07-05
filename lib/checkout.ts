@@ -127,7 +127,7 @@ export async function createDepositCheckoutSession(
         },
       },
       success_url: buildSuccessUrl(payment.token),
-      cancel_url: buildCancelUrl(payment.token),
+      cancel_url: buildCancelUrl(),
     });
 
     if (!session.url) {

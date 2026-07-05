@@ -52,8 +52,8 @@ export function buildSuccessUrl(token: string): string {
   return `${getAppBaseUrl()}/pay/success?token=${encodeURIComponent(token)}`;
 }
 
-export function buildCancelUrl(token: string): string {
-  return `${getAppBaseUrl()}/pay/cancel?token=${encodeURIComponent(token)}`;
+export function buildCancelUrl(): string {
+  return getAppBaseUrl();
 }
 
 export function findActiveDepositPayment<
