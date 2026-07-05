@@ -22,7 +22,7 @@ type PaymentWithLead = Payment & {
 
 function buildLineItemName(lead: Lead): string {
   const packageName = packageLabel(lead.requestedPackage);
-  return `Kaucja rezerwacyjna - ${packageName}`;
+  return `Zaliczka - ${packageName}`;
 }
 
 function buildLineItemDescription(lead: Lead & { group: Group | null }): string {

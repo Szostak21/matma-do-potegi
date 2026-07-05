@@ -74,7 +74,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           <h1 className="mt-2 font-serif text-3xl text-ink">Zgłoszenia</h1>
           <p className="mt-2 text-sm text-ink/60">
             Przypisanie grupy, generowanie linków płatności i wysyłka maili z
-            linkiem do kaucji.
+            linkiem do zaliczki.
           </p>
         </div>
 

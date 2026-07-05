@@ -93,7 +93,7 @@ function LeadAction({
   if (lead.status === "PAID_DEPOSIT") {
     return (
       <span className="text-xs font-medium text-olive-700">
-        Kaucja opłacona
+        {LEAD_STATUS_LABELS.PAID_DEPOSIT}
       </span>
     );
   }

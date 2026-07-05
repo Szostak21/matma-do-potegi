@@ -155,7 +155,7 @@ export const FAQ_ITEMS = [
   {
     question: "Jak wygląda proces zapisu?",
     answer:
-      `Wypełniasz formularz kontaktowy, wybierasz termin grupy i wpłacasz kaucję 50 zł. Po potwierdzeniu wpłaty miejsce jest zarezerwowane. Możesz też zadzwonić pod numer ${CONTACT_PHONE} i umówić się na rozmowę przed decyzją.`,
+      `Wypełniasz formularz kontaktowy, wybierasz termin grupy i wpłacasz zaliczkę 50 zł. Po potwierdzeniu wpłaty miejsce jest zarezerwowane. Możesz też zadzwonić pod numer ${CONTACT_PHONE} i umówić się na rozmowę przed decyzją.`,
   },
   {
     question: "Gdzie odbywają się zajęcia?",
@@ -264,25 +264,26 @@ export const FOOTER = {
 
 export const EMAILS = {
   paymentLink: {
-    subject: "Link do opłacenia kaucji rezerwacyjnej — Matma do potęgi",
-    preview: "Opłać kaucję 50 zł, aby zarezerwować miejsce w grupie.",
+    subject: "Link do wpłaty zaliczki — Matma do potęgi",
+    preview: "Opłać zaliczkę 50 zł, aby zarezerwować miejsce w grupie.",
+    title: "Zaliczka",
     greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
     intro:
-      "Przygotowaliśmy dla Ciebie link do opłacenia kaucji rezerwacyjnej. Po wpłacie miejsce w grupie zostanie oficjalnie zarezerwowane.",
+      "Przygotowaliśmy dla Ciebie link do opłacenia zaliczki. Po wpłacie miejsce w grupie zostanie oficjalnie zarezerwowane.",
     groupLabel: "Grupa",
     scheduleLabel: "Termin zajęć",
-    amountLabel: "Kwota kaucji",
+    amountLabel: "Kwota zaliczki",
     expiryLabel: "Czas na opłacenie",
     expiryValue: "24 godziny od wysłania tego maila",
-    cta: "Opłać kaucję",
+    cta: "Opłać zaliczkę",
     linkFallback: "Jeśli przycisk nie działa, skopiuj i wklej ten link w przeglądarce:",
   },
   depositConfirmation: {
-    subject: "Potwierdzenie wpłaty kaucji — Matma do potęgi",
-    preview: "Dziękujemy za wpłatę kaucji rezerwacyjnej.",
+    subject: "Potwierdzenie wpłaty zaliczki — Matma do potęgi",
+    preview: "Dziękujemy za wpłatę zaliczki.",
     greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
     thanks:
-      "Dziękujemy za opłacenie kaucji rezerwacyjnej. Twoja wpłata została zaksięgowana.",
+      "Dziękujemy za opłacenie zaliczki. Twoja wpłata została zaksięgowana.",
     confirmedWithGroup:
       "Potwierdzamy rezerwację miejsca w wybranej grupie. Cieszymy się, że dołączasz do nas!",
     confirmedWithoutGroup:

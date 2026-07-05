@@ -2,7 +2,7 @@ import { Button, Heading, Link, Section, Text } from "@react-email/components";
 
 import { BaseLayout } from "@/emails/components/BaseLayout";
 import { emailTheme, primaryButtonStyle } from "@/emails/components/theme";
-import { EMAILS } from "@/lib/content";
+import { EMAILS, DEPOSIT_PAYMENT } from "@/lib/content";
 
 export type PaymentLinkEmailProps = {
   parentName: string;
@@ -33,7 +33,7 @@ export function PaymentLinkEmail({
           margin: "0 0 16px",
         }}
       >
-        Kaucja rezerwacyjna
+        {copy.title}
       </Heading>
 
       <Text
@@ -81,6 +81,27 @@ export function PaymentLinkEmail({
         </Text>
         <Text style={{ ...summaryRowStyle, marginBottom: 0 }}>
           <strong>{copy.expiryLabel}:</strong> {copy.expiryValue}
+        </Text>
+      </Section>
+
+      <Section
+        style={{
+          backgroundColor: emailTheme.colors.creamDeep,
+          border: `1px solid ${emailTheme.colors.border}`,
+          borderRadius: "12px",
+          marginBottom: "24px",
+          padding: "16px",
+        }}
+      >
+        <Text
+          style={{
+            color: emailTheme.colors.inkMuted,
+            fontSize: "14px",
+            lineHeight: "22px",
+            margin: 0,
+          }}
+        >
+          {DEPOSIT_PAYMENT.depositNote}
         </Text>
       </Section>
 
