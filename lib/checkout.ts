@@ -92,7 +92,10 @@ export async function createDepositCheckoutSession(
     }
 
     const stripe = getStripe();
-    const expiresAtUnix = Math.floor(payment.expiresAt.getTime() / 1000);
+    const nowUnix = Math.floor(Date.now() / 1000);
+    const stripeMinExpiryUnix = nowUnix + 30 * 60;
+    const paymentExpiryUnix = Math.floor(payment.expiresAt.getTime() / 1000);
+    const expiresAtUnix = Math.max(paymentExpiryUnix, stripeMinExpiryUnix);
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -139,11 +142,15 @@ export async function createDepositCheckoutSession(
       data: {
         stripeSessionId: session.id,
         stripeSessionUrl: session.url,
+        ...(expiresAtUnix > paymentExpiryUnix
+          ? { expiresAt: new Date(expiresAtUnix * 1000) }
+          : {}),
       },
     });
 
     return { status: "success", url: session.url };
-  } catch {
+  } catch (error) {
+    console.error("createDepositCheckoutSession failed:", error);
     return {
       status: "error",
       message: "Wystąpił błąd podczas tworzenia sesji płatności.",

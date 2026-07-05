@@ -11,6 +11,10 @@ export const dynamic = "force-dynamic";
 async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session,
 ): Promise<void> {
+  if (session.payment_status !== "paid") {
+    return;
+  }
+
   const paymentId = session.metadata?.paymentId;
   const stripeSessionId = session.id;
 
@@ -21,6 +25,10 @@ async function handleCheckoutSessionCompleted(
       });
 
   if (!payment) {
+    console.warn("Stripe webhook: payment not found", {
+      paymentId,
+      stripeSessionId,
+    });
     return;
   }
 
@@ -50,7 +58,8 @@ export async function POST(request: Request) {
   try {
     const stripe = getStripe();
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-  } catch {
+  } catch (error) {
+    console.error("Stripe webhook signature verification failed:", error);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -59,7 +68,8 @@ export async function POST(request: Request) {
       const session = event.data.object as Stripe.Checkout.Session;
       await handleCheckoutSessionCompleted(session);
     }
-  } catch {
+  } catch (error) {
+    console.error("Stripe webhook handler failed:", error);
     return NextResponse.json(
       { error: "Webhook handler failed" },
       { status: 500 },
