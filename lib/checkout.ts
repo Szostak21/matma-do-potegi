@@ -157,3 +157,41 @@ export async function createDepositCheckoutSession(
     };
   }
 }
+
+export async function confirmDepositPaymentByToken(
+  token: string,
+): Promise<void> {
+  try {
+    const payment = await prisma.payment.findUnique({
+      where: { token },
+    });
+
+    if (!payment) {
+      return;
+    }
+
+    if (payment.status === "PAID") {
+      return;
+    }
+
+    if (isPaymentsSimulateEnabled()) {
+      await markDepositPaymentPaid(payment.id);
+      return;
+    }
+
+    if (!payment.stripeSessionId) {
+      return;
+    }
+
+    const stripe = getStripe();
+    const session = await stripe.checkout.sessions.retrieve(
+      payment.stripeSessionId,
+    );
+
+    if (session.payment_status === "paid") {
+      await markDepositPaymentPaid(payment.id);
+    }
+  } catch (error) {
+    console.error("confirmDepositPaymentByToken failed:", error);
+  }
+}

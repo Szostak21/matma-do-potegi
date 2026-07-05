@@ -6,6 +6,7 @@ import { PaymentSummary } from "@/components/pay/PaymentSummary";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
+import { confirmDepositPaymentByToken } from "@/lib/checkout";
 import { DEPOSIT_PAYMENT } from "@/lib/content";
 import { getPaymentDisplayState } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
@@ -18,12 +19,16 @@ export const metadata: Metadata = {
   title: "Płatność zakończona | Matma do potęgi",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function PaySuccessPage({ searchParams }: PaySuccessPageProps) {
   const { token } = await searchParams;
 
   if (!token) {
     notFound();
   }
+
+  await confirmDepositPaymentByToken(token);
 
   const payment = await prisma.payment.findUnique({
     where: { token },
