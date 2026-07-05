@@ -200,12 +200,28 @@ export const GROUP_SELECTION = {
 } as const;
 
 export const DEPOSIT_PAYMENT = {
+  depositNote:
+    "Kaucja rezerwacyjna wynosi 50 zł i jest w pełni odliczana od pierwszego miesiąca zajęć.",
+  phoneGateTitle: "Masz wątpliwości? Zadzwoń do nas przed wpłatą!",
+  reservationTitle: "Dziękujemy za rezerwację!",
+  reservationHint:
+    "Masz 30 minut na opłacenie kaucji i zabezpieczenie miejsca w wybranej grupie.",
+  payButtonLabel: "Przejdź do bezpiecznej płatności",
+  summarySchedule: "Termin zajęć",
   successTitle: "Płatność zakończona",
   successProcessingTitle: "Przetwarzamy wpłatę",
   successMessage:
     "Zaliczka została opłacona. Wkrótce skontaktujemy się w sprawie dalszych kroków zapisu.",
   successProcessingMessage:
     "Otrzymaliśmy informację o płatności. Za chwilę potwierdzimy wpłatę w systemie.",
+  paidMessage:
+    "Zaliczka została opłacona. Wkrótce skontaktujemy się w sprawie dalszych kroków zapisu.",
+  expiredTitle: "Link wygasł",
+  expiredMessage:
+    "Ten link płatności nie jest już aktywny. Skontaktuj się z nami, aby otrzymać nowy.",
+  invalidTitle: "Płatność nieważna",
+  invalidMessage:
+    "Ta płatność została anulowana lub wygasła. Skontaktuj się z nami po pomoc.",
   cancelTitle: "Płatność przerwana",
   cancelMessage:
     "Nie dokończono płatności. Możesz spróbować ponownie z linku od nas lub skontaktować się telefonicznie.",

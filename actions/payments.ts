@@ -18,6 +18,12 @@ export type DepositPaymentResult = {
   message?: string;
 };
 
+export type StartDepositCheckoutState = {
+  status: "idle" | "success" | "error";
+  url?: string;
+  message?: string;
+};
+
 export type GeneratePaymentState = {
   status: "idle" | "success" | "error";
   payUrl?: string;
@@ -27,6 +33,7 @@ export type GeneratePaymentState = {
 export async function createDepositPaymentForLead(
   leadId: string,
   expiresAt: Date,
+  options?: { skipCheckout?: boolean },
 ): Promise<DepositPaymentResult> {
   try {
     const lead = await prisma.lead.findUnique({
@@ -51,6 +58,13 @@ export async function createDepositPaymentForLead(
     );
 
     if (activePending) {
+      if (options?.skipCheckout) {
+        return {
+          status: "success",
+          paymentId: activePending.id,
+        };
+      }
+
       const checkout = await createDepositCheckoutSession(activePending.id);
       if (checkout.status === "error") {
         return { status: "error", message: checkout.message };
@@ -93,6 +107,13 @@ export async function createDepositPaymentForLead(
 
       return created;
     });
+
+    if (options?.skipCheckout) {
+      return {
+        status: "success",
+        paymentId: payment.id,
+      };
+    }
 
     const checkout = await createDepositCheckoutSession(payment.id);
     if (checkout.status === "error") {
@@ -158,4 +179,48 @@ export async function generateDepositPayment(
     status: "success",
     payUrl: result.payUrl,
   };
+}
+
+export async function startDepositCheckout(
+  _prevState: StartDepositCheckoutState,
+  formData: FormData,
+): Promise<StartDepositCheckoutState> {
+  const token = formData.get("token")?.toString();
+
+  if (!token) {
+    return { status: "error", message: "Brak tokenu płatności." };
+  }
+
+  try {
+    const payment = await prisma.payment.findUnique({
+      where: { token },
+    });
+
+    if (!payment) {
+      return { status: "error", message: "Nie znaleziono płatności." };
+    }
+
+    if (payment.status !== "PENDING" || isPaymentExpired(payment)) {
+      return {
+        status: "error",
+        message: "Link płatności wygasł. Skontaktuj się z nami po nowy.",
+      };
+    }
+
+    const checkout = await createDepositCheckoutSession(payment.id);
+
+    if (checkout.status === "error" || !checkout.url) {
+      return {
+        status: "error",
+        message: checkout.message ?? "Nie udało się rozpocząć płatności.",
+      };
+    }
+
+    return { status: "success", url: checkout.url };
+  } catch {
+    return {
+      status: "error",
+      message: "Wystąpił błąd. Spróbuj ponownie.",
+    };
+  }
 }

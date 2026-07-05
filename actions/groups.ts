@@ -4,14 +4,13 @@ import { LeadStatus, PaymentStatus, PaymentType } from "@prisma/client";
 
 import { createDepositPaymentForLead } from "@/actions/payments";
 import { assertAdminSecret } from "@/lib/auth";
-import { createDepositCheckoutSession } from "@/lib/checkout";
 import { addMinutes, ONLINE_PAYMENT_EXPIRY_MINUTES } from "@/lib/dates";
 import { isPaymentExpired } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
 
 export type ReserveGroupResult = {
   status: "success" | "error";
-  payUrl?: string;
+  leadId?: string;
   message?: string;
 };
 
@@ -166,12 +165,7 @@ export async function reserveGroup(
     );
 
     if (activePending) {
-      const checkout = await createDepositCheckoutSession(activePending.id);
-      if (checkout.status === "error") {
-        return { status: "error", message: checkout.message };
-      }
-
-      return { status: "success", payUrl: checkout.url };
+      return { status: "success", leadId };
     }
 
     if (lead.status !== LeadStatus.UNVERIFIED) {
@@ -221,7 +215,9 @@ export async function reserveGroup(
     });
 
     const expiresAt = addMinutes(new Date(), ONLINE_PAYMENT_EXPIRY_MINUTES);
-    const paymentResult = await createDepositPaymentForLead(leadId, expiresAt);
+    const paymentResult = await createDepositPaymentForLead(leadId, expiresAt, {
+      skipCheckout: true,
+    });
 
     if (paymentResult.status === "error") {
       await prisma.$transaction(async (tx) => {
@@ -241,7 +237,7 @@ export async function reserveGroup(
 
     return {
       status: "success",
-      payUrl: paymentResult.payUrl,
+      leadId,
     };
   } catch (error) {
     if (error instanceof Error && error.message === "FULL") {

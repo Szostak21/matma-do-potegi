@@ -2,6 +2,7 @@
 
 import type { PackageType } from "@prisma/client";
 import { Calendar, Loader2, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
 import { reserveGroup } from "@/actions/groups";
@@ -27,6 +28,7 @@ type GroupSelectionProps = {
 };
 
 export function GroupSelection({ leadId, packageType }: GroupSelectionProps) {
+  const router = useRouter();
   const [groups, setGroups] = useState<AvailableGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
@@ -83,8 +85,8 @@ export function GroupSelection({ leadId, packageType }: GroupSelectionProps) {
     startTransition(async () => {
       const result = await reserveGroup(leadId, selectedGroupId);
 
-      if (result.status === "success" && result.payUrl) {
-        window.location.href = result.payUrl;
+      if (result.status === "success" && result.leadId) {
+        router.push(`/rezerwacja/${result.leadId}/podsumowanie`);
         return;
       }
 

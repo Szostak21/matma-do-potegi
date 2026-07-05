@@ -1,19 +1,32 @@
 import { Phone } from "lucide-react";
 
-import { ALTERNATE_TERM_CONTACT, CONTACT_PHONE_TEL } from "@/lib/content";
+import {
+  ALTERNATE_TERM_CONTACT,
+  CONTACT_PHONE_TEL,
+  DEPOSIT_PAYMENT,
+} from "@/lib/content";
+
+type PhoneGateVariant = "alternate-term" | "payment-doubt";
 
 type AlternateTermPhoneGateProps = {
+  variant?: PhoneGateVariant;
   title?: string;
 };
 
 export function AlternateTermPhoneGate({
-  title = ALTERNATE_TERM_CONTACT.title,
+  variant = "alternate-term",
+  title,
 }: AlternateTermPhoneGateProps) {
+  const resolvedTitle =
+    title ??
+    (variant === "payment-doubt"
+      ? DEPOSIT_PAYMENT.phoneGateTitle
+      : ALTERNATE_TERM_CONTACT.title);
   const phone = ALTERNATE_TERM_CONTACT.phone;
 
   return (
     <div className="rounded-2xl border-2 border-dashed border-ink/15 bg-white/50 p-6 text-center">
-      <p className="font-medium text-ink">{title}</p>
+      <p className="font-medium text-ink">{resolvedTitle}</p>
       <a
         href={`tel:${CONTACT_PHONE_TEL}`}
         className="mt-3 inline-flex items-center gap-2 font-serif text-xl text-olive-800 underline-offset-4 hover:underline"
