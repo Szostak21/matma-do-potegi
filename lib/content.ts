@@ -201,12 +201,12 @@ export const GROUP_SELECTION = {
 
 export const DEPOSIT_PAYMENT = {
   depositNote:
-    "Kaucja rezerwacyjna wynosi 50 zł i jest w pełni odliczana od pierwszego miesiąca zajęć.",
+    "Kwota zaliczki jest w pełni odliczana od pierwszej płatności za zajęcia.",
   phoneGateTitle: "Masz wątpliwości? Zadzwoń do nas przed wpłatą!",
   reservationTitle: "Dziękujemy za rezerwację!",
   reservationHint:
-    "Masz 30 minut na opłacenie kaucji i zabezpieczenie miejsca w wybranej grupie.",
-  payButtonLabel: "Przejdź do bezpiecznej płatności",
+    "Cieszymy się na wspólne zajęcia! Aby ostatecznie potwierdzić chęć udziału, prosimy o wpłatę zaliczki. Zarezerwowaliśmy to miejsce specjalnie dla Ciebie na najbliższe 30 minut.",
+  payButtonLabel: "Przejdź do płatności",
   summarySchedule: "Termin zajęć",
   successTitle: "Płatność zakończona",
   successProcessingTitle: "Przetwarzamy wpłatę",
