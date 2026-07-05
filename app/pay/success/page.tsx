@@ -40,7 +40,6 @@ export default async function PaySuccessPage({ searchParams }: PaySuccessPagePro
   }
 
   const displayState = getPaymentDisplayState(payment);
-  const studentName = payment.lead.studentName ?? payment.lead.parentName;
   const isPaid = displayState === "paid";
 
   return (
@@ -69,7 +68,7 @@ export default async function PaySuccessPage({ searchParams }: PaySuccessPagePro
               : DEPOSIT_PAYMENT.successProcessingMessage}
           </p>
           <PaymentSummary
-            studentName={studentName}
+            reserverName={payment.lead.parentName}
             requestedPackage={payment.lead.requestedPackage}
             amount={payment.amount}
           />

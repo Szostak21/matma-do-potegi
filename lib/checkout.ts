@@ -27,10 +27,10 @@ function buildLineItemName(lead: Lead): string {
 
 function buildLineItemDescription(lead: Lead & { group: Group | null }): string {
   if (lead.group) {
-    return `${lead.group.name} · ${lead.group.scheduleSlot}`;
+    return `Rezerwujący: ${lead.parentName} · ${lead.group.name} · ${lead.group.scheduleSlot}`;
   }
 
-  return "Rezerwacja miejsca w grupie Matma do potęgi";
+  return `Rezerwujący: ${lead.parentName} · Rezerwacja miejsca w grupie Matma do potęgi`;
 }
 
 async function loadPaymentWithLead(

@@ -6,7 +6,7 @@ import { packageLabel } from "@/lib/labels";
 import { formatPln } from "@/lib/money";
 
 type PaymentSummaryProps = {
-  studentName: string;
+  reserverName: string;
   requestedPackage: PackageType | null;
   amount: number;
 };
@@ -21,7 +21,7 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
 }
 
 export function PaymentSummary({
-  studentName,
+  reserverName,
   requestedPackage,
   amount,
 }: PaymentSummaryProps) {
@@ -29,7 +29,7 @@ export function PaymentSummary({
     <Card className="mt-6 text-left">
       <SummaryRow
         label={DEPOSIT_PAYMENT.summaryReserver}
-        value={studentName}
+        value={reserverName}
       />
       <SummaryRow
         label={DEPOSIT_PAYMENT.summaryGroup}
