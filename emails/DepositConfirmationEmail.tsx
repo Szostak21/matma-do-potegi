@@ -6,7 +6,6 @@ import { EMAILS } from "@/lib/content";
 
 export type DepositConfirmationEmailProps = {
   parentName: string;
-  packageName: string;
   amountFormatted: string;
   groupName?: string | null;
   scheduleSlot?: string | null;
@@ -14,7 +13,6 @@ export type DepositConfirmationEmailProps = {
 
 export function DepositConfirmationEmail({
   parentName,
-  packageName,
   amountFormatted,
   groupName,
   scheduleSlot,
@@ -78,9 +76,6 @@ export function DepositConfirmationEmail({
           padding: "20px",
         }}
       >
-        <Text style={summaryRowStyle}>
-          <strong>{copy.packageLabel}:</strong> {packageName}
-        </Text>
         {hasGroup ? (
           <>
             <Text style={summaryRowStyle}>

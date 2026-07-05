@@ -146,7 +146,6 @@ export async function generateDepositPayment(
       await sendPaymentLinkEmail({
         to: lead.email,
         parentName: lead.parentName,
-        requestedPackage: lead.requestedPackage,
         groupName: lead.group?.name ?? null,
         scheduleSlot: lead.group?.scheduleSlot ?? null,
         amountGrosze: DEPOSIT_AMOUNT_GROSZE,

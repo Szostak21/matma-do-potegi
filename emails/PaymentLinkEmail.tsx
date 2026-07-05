@@ -6,7 +6,6 @@ import { EMAILS } from "@/lib/content";
 
 export type PaymentLinkEmailProps = {
   parentName: string;
-  packageName: string;
   groupName?: string | null;
   scheduleSlot?: string | null;
   amountFormatted: string;
@@ -15,7 +14,6 @@ export type PaymentLinkEmailProps = {
 
 export function PaymentLinkEmail({
   parentName,
-  packageName,
   groupName,
   scheduleSlot,
   amountFormatted,
@@ -68,9 +66,6 @@ export function PaymentLinkEmail({
           padding: "20px",
         }}
       >
-        <Text style={summaryRowStyle}>
-          <strong>{copy.packageLabel}:</strong> {packageName}
-        </Text>
         {groupName ? (
           <Text style={summaryRowStyle}>
             <strong>{copy.groupLabel}:</strong> {groupName}

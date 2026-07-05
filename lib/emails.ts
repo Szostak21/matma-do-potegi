@@ -5,7 +5,6 @@ import { Resend } from "resend";
 import { DepositConfirmationEmail } from "@/emails/DepositConfirmationEmail";
 import { PaymentLinkEmail } from "@/emails/PaymentLinkEmail";
 import { EMAILS, FOOTER } from "@/lib/content";
-import { packageLabel } from "@/lib/labels";
 import { formatPln } from "@/lib/money";
 
 let resendClient: Resend | null = null;
@@ -75,7 +74,6 @@ export async function sendEmail({
 export type PaymentLinkEmailParams = {
   to: string;
   parentName: string;
-  requestedPackage: Parameters<typeof packageLabel>[0];
   groupName?: string | null;
   scheduleSlot?: string | null;
   amountGrosze: number;
@@ -90,7 +88,6 @@ export async function sendPaymentLinkEmail(
     subject: EMAILS.paymentLink.subject,
     react: createElement(PaymentLinkEmail, {
       parentName: params.parentName,
-      packageName: packageLabel(params.requestedPackage),
       groupName: params.groupName,
       scheduleSlot: params.scheduleSlot,
       amountFormatted: formatPln(params.amountGrosze),
@@ -102,7 +99,6 @@ export async function sendPaymentLinkEmail(
 export type DepositConfirmationEmailParams = {
   to: string;
   parentName: string;
-  requestedPackage: Parameters<typeof packageLabel>[0];
   amountGrosze: number;
   groupName?: string | null;
   scheduleSlot?: string | null;
@@ -116,7 +112,6 @@ export async function sendDepositConfirmationEmail(
     subject: EMAILS.depositConfirmation.subject,
     react: createElement(DepositConfirmationEmail, {
       parentName: params.parentName,
-      packageName: packageLabel(params.requestedPackage),
       amountFormatted: formatPln(params.amountGrosze),
       groupName: params.groupName,
       scheduleSlot: params.scheduleSlot,

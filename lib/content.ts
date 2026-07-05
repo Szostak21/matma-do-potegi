@@ -253,7 +253,6 @@ export const EMAILS = {
     greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
     intro:
       "Przygotowaliśmy dla Ciebie link do opłacenia kaucji rezerwacyjnej. Po wpłacie miejsce w grupie zostanie oficjalnie zarezerwowane.",
-    packageLabel: "Pakiet",
     groupLabel: "Grupa",
     scheduleLabel: "Termin zajęć",
     amountLabel: "Kwota kaucji",
@@ -274,7 +273,6 @@ export const EMAILS = {
       "Skontaktujemy się wkrótce w sprawie przydziału do konkretnej grupy i dalszych kroków zapisu.",
     groupLabel: "Grupa",
     scheduleLabel: "Termin zajęć",
-    packageLabel: "Pakiet",
     amountLabel: "Wpłacona kwota",
     closing: "Do zobaczenia na zajęciach!",
   },

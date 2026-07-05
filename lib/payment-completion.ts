@@ -51,7 +51,6 @@ export async function markDepositPaymentPaid(
     await sendDepositConfirmationEmail({
       to: lead.email,
       parentName: lead.parentName,
-      requestedPackage: lead.requestedPackage,
       amountGrosze: result.payment.amount,
       groupName: lead.group?.name ?? null,
       scheduleSlot: lead.group?.scheduleSlot ?? null,
