@@ -4,8 +4,8 @@ import { PaymentType } from "@prisma/client";
 import { LeadsTable } from "@/components/admin/LeadsTable";
 import { ResetDatabaseButton } from "@/components/admin/ResetDatabaseButton";
 import { Container } from "@/components/ui/Container";
-import { prisma } from "@/lib/prisma";
 import { verifyAdminSecret } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 type AdminPageProps = {
   searchParams: Promise<{ secret?: string }>;
@@ -18,16 +18,22 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     notFound();
   }
 
-  const leads = await prisma.lead.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      payments: {
-        where: { type: PaymentType.DEPOSIT },
-        orderBy: { createdAt: "desc" },
-        take: 3,
+  const [leads, groups] = await Promise.all([
+    prisma.lead.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        group: true,
+        payments: {
+          where: { type: PaymentType.DEPOSIT },
+          orderBy: { createdAt: "desc" },
+          take: 3,
+        },
       },
-    },
-  });
+    }),
+    prisma.group.findMany({
+      orderBy: { scheduleSlot: "asc" },
+    }),
+  ]);
 
   const rows = leads.map((lead) => ({
     id: lead.id,
@@ -37,6 +43,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     phoneNumber: lead.phoneNumber,
     requestedPackage: lead.requestedPackage,
     status: lead.status,
+    groupId: lead.groupId,
+    groupName: lead.group?.name ?? null,
+    groupScheduleSlot: lead.group?.scheduleSlot ?? null,
     createdAt: lead.createdAt.toISOString(),
     payments: lead.payments.map((payment) => ({
       token: payment.token,
@@ -44,6 +53,15 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       expiresAt: payment.expiresAt?.toISOString() ?? null,
       stripeSessionUrl: payment.stripeSessionUrl,
     })),
+  }));
+
+  const groupOptions = groups.map((group) => ({
+    id: group.id,
+    name: group.name,
+    scheduleSlot: group.scheduleSlot,
+    packageType: group.packageType,
+    availableSpots: group.maxCapacity - group.currentCount,
+    maxCapacity: group.maxCapacity,
   }));
 
   return (
@@ -55,7 +73,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </p>
           <h1 className="mt-2 font-serif text-3xl text-ink">Zgłoszenia</h1>
           <p className="mt-2 text-sm text-ink/60">
-            Weryfikacja leadów i generowanie linków płatności kaucji.
+            Przypisanie grupy, generowanie linków płatności i wysyłka maili z
+            linkiem do kaucji.
           </p>
         </div>
 
@@ -63,7 +82,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           <ResetDatabaseButton secret={secret ?? ""} />
         </div>
 
-        <LeadsTable leads={rows} secret={secret ?? ""} />
+        <LeadsTable
+          leads={rows}
+          groups={groupOptions}
+          secret={secret ?? ""}
+        />
       </Container>
     </main>
   );

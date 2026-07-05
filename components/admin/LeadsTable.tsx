@@ -3,10 +3,14 @@
 import type { LeadStatus, PackageType } from "@prisma/client";
 import { useState } from "react";
 
+import {
+  AssignGroupControl,
+  type AdminGroupOption,
+} from "@/components/admin/AssignGroupControl";
+import { GeneratePaymentButton } from "@/components/admin/GeneratePaymentButton";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { GeneratePaymentButton } from "@/components/admin/GeneratePaymentButton";
 import { LEAD_STATUS_LABELS, packageLabel } from "@/lib/labels";
 import {
   findActiveDepositPayment,
@@ -21,6 +25,9 @@ export type AdminLeadRow = {
   phoneNumber: string;
   requestedPackage: PackageType | null;
   status: LeadStatus;
+  groupId: string | null;
+  groupName: string | null;
+  groupScheduleSlot: string | null;
   createdAt: string;
   payments: Array<{
     token: string;
@@ -32,6 +39,7 @@ export type AdminLeadRow = {
 
 type LeadsTableProps = {
   leads: AdminLeadRow[];
+  groups: AdminGroupOption[];
   secret: string;
 };
 
@@ -65,9 +73,11 @@ function CopyLinkButton({ url }: { url: string }) {
 
 function LeadAction({
   lead,
+  groups,
   secret,
 }: {
   lead: AdminLeadRow;
+  groups: AdminGroupOption[];
   secret: string;
 }) {
   const activePayment = findActiveDepositPayment(
@@ -77,34 +87,8 @@ function LeadAction({
     })),
   );
   const checkoutUrl = getActiveDepositCheckoutUrl(activePayment);
-
-  if (lead.status === "UNVERIFIED") {
-    return <GeneratePaymentButton leadId={lead.id} secret={secret} />;
-  }
-
-  if (lead.status === "PENDING_DEPOSIT" && checkoutUrl) {
-    return (
-      <div className="space-y-2">
-        <p className="text-xs text-ink/70">
-          <a
-            href={checkoutUrl}
-            className="break-all font-medium text-ink underline-offset-2 hover:underline"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {checkoutUrl}
-          </a>
-        </p>
-        <CopyLinkButton url={checkoutUrl} />
-      </div>
-    );
-  }
-
-  if (lead.status === "PENDING_DEPOSIT") {
-    return (
-      <GeneratePaymentButton leadId={lead.id} secret={secret} />
-    );
-  }
+  const canAssign =
+    lead.status === "UNVERIFIED" || lead.status === "PENDING_DEPOSIT";
 
   if (lead.status === "PAID_DEPOSIT") {
     return (
@@ -114,10 +98,49 @@ function LeadAction({
     );
   }
 
-  return <span className="text-xs text-ink/40">—</span>;
+  if (!canAssign) {
+    return <span className="text-xs text-ink/40">—</span>;
+  }
+
+  return (
+    <div className="space-y-3">
+      <AssignGroupControl
+        leadId={lead.id}
+        secret={secret}
+        currentGroupId={lead.groupId}
+        requestedPackage={lead.requestedPackage}
+        groups={groups}
+      />
+
+      {!lead.groupId ? (
+        <p className="text-xs text-ink/50">
+          Warto najpierw przypisać grupę — mail z potwierdzeniem będzie
+          zawierał termin zajęć.
+        </p>
+      ) : null}
+
+      {lead.status === "PENDING_DEPOSIT" && checkoutUrl ? (
+        <div className="space-y-2">
+          <p className="text-xs text-ink/70">
+            <a
+              href={checkoutUrl}
+              className="break-all font-medium text-ink underline-offset-2 hover:underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {checkoutUrl}
+            </a>
+          </p>
+          <CopyLinkButton url={checkoutUrl} />
+        </div>
+      ) : (
+        <GeneratePaymentButton leadId={lead.id} secret={secret} />
+      )}
+    </div>
+  );
 }
 
-export function LeadsTable({ leads, secret }: LeadsTableProps) {
+export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
   if (leads.length === 0) {
     return (
       <Card>
@@ -130,13 +153,14 @@ export function LeadsTable({ leads, secret }: LeadsTableProps) {
 
   return (
     <Card className="overflow-x-auto p-0">
-      <table className="w-full min-w-[960px] text-left text-sm">
+      <table className="w-full min-w-[1100px] text-left text-sm">
         <thead>
           <tr className="border-b border-ink/10 text-xs uppercase tracking-wide text-ink/50">
             <th className="px-6 py-4 font-medium">Rodzic</th>
             <th className="px-6 py-4 font-medium">Uczeń</th>
             <th className="px-6 py-4 font-medium">Kontakt</th>
             <th className="px-6 py-4 font-medium">Pakiet</th>
+            <th className="px-6 py-4 font-medium">Grupa</th>
             <th className="px-6 py-4 font-medium">Status</th>
             <th className="px-6 py-4 font-medium">Data</th>
             <th className="px-6 py-4 font-medium">Akcja</th>
@@ -161,6 +185,20 @@ export function LeadsTable({ leads, secret }: LeadsTableProps) {
               <td className="px-6 py-4 text-ink/80">
                 {packageLabel(lead.requestedPackage)}
               </td>
+              <td className="px-6 py-4 text-ink/80">
+                {lead.groupName ? (
+                  <div>
+                    <div className="font-medium text-ink">{lead.groupName}</div>
+                    {lead.groupScheduleSlot ? (
+                      <div className="text-xs text-ink/50">
+                        {lead.groupScheduleSlot}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <span className="text-ink/40">—</span>
+                )}
+              </td>
               <td className="px-6 py-4">
                 <Badge>{LEAD_STATUS_LABELS[lead.status]}</Badge>
               </td>
@@ -168,7 +206,7 @@ export function LeadsTable({ leads, secret }: LeadsTableProps) {
                 {formatDate(lead.createdAt)}
               </td>
               <td className="px-6 py-4">
-                <LeadAction lead={lead} secret={secret} />
+                <LeadAction lead={lead} groups={groups} secret={secret} />
               </td>
             </tr>
           ))}

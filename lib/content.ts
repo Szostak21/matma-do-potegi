@@ -246,6 +246,40 @@ export const FOOTER = {
   copyright: `© ${new Date().getFullYear()} Matma do potęgi. Wszelkie prawa zastrzeżone.`,
 } as const;
 
+export const EMAILS = {
+  paymentLink: {
+    subject: "Link do opłacenia kaucji rezerwacyjnej — Matma do potęgi",
+    preview: "Opłać kaucję 50 zł, aby zarezerwować miejsce w grupie.",
+    greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
+    intro:
+      "Przygotowaliśmy dla Ciebie link do opłacenia kaucji rezerwacyjnej. Po wpłacie miejsce w grupie zostanie oficjalnie zarezerwowane.",
+    packageLabel: "Pakiet",
+    groupLabel: "Grupa",
+    scheduleLabel: "Termin zajęć",
+    amountLabel: "Kwota kaucji",
+    expiryLabel: "Czas na opłacenie",
+    expiryValue: "24 godziny od wysłania tego maila",
+    cta: "Opłać kaucję",
+    linkFallback: "Jeśli przycisk nie działa, skopiuj i wklej ten link w przeglądarce:",
+  },
+  depositConfirmation: {
+    subject: "Potwierdzenie wpłaty kaucji — Matma do potęgi",
+    preview: "Dziękujemy za wpłatę kaucji rezerwacyjnej.",
+    greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
+    thanks:
+      "Dziękujemy za opłacenie kaucji rezerwacyjnej. Twoja wpłata została zaksięgowana.",
+    confirmedWithGroup:
+      "Potwierdzamy rezerwację miejsca w wybranej grupie. Cieszymy się, że dołączasz do nas!",
+    confirmedWithoutGroup:
+      "Skontaktujemy się wkrótce w sprawie przydziału do konkretnej grupy i dalszych kroków zapisu.",
+    groupLabel: "Grupa",
+    scheduleLabel: "Termin zajęć",
+    packageLabel: "Pakiet",
+    amountLabel: "Wpłacona kwota",
+    closing: "Do zobaczenia na zajęciach!",
+  },
+} as const;
+
 export const PACKAGE_OPTIONS = [
   { value: "", label: "Wybierz grupę" },
   { value: "MATURA_ROZSZERZONA", label: PACKAGES.MATURA_ROZSZERZONA.name },

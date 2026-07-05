@@ -6,6 +6,7 @@ import { assertAdminSecret } from "@/lib/auth";
 import { createDepositCheckoutSession } from "@/lib/checkout";
 import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
 import { addHours, PHONE_PAYMENT_EXPIRY_HOURS } from "@/lib/dates";
+import { sendPaymentLinkEmail } from "@/lib/emails";
 import { isPaymentExpired } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
 import { generatePaymentToken } from "@/lib/tokens";
@@ -133,6 +134,25 @@ export async function generateDepositPayment(
 
   if (result.status === "error") {
     return { status: "error", message: result.message };
+  }
+
+  if (result.payUrl) {
+    const lead = await prisma.lead.findUnique({
+      where: { id: leadId },
+      include: { group: true },
+    });
+
+    if (lead) {
+      await sendPaymentLinkEmail({
+        to: lead.email,
+        parentName: lead.parentName,
+        requestedPackage: lead.requestedPackage,
+        groupName: lead.group?.name ?? null,
+        scheduleSlot: lead.group?.scheduleSlot ?? null,
+        amountGrosze: DEPOSIT_AMOUNT_GROSZE,
+        payUrl: result.payUrl,
+      });
+    }
   }
 
   return {
