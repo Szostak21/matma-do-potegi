@@ -48,6 +48,7 @@ async function loadPaymentWithLead(
 
 export async function createDepositCheckoutSession(
   paymentId: string,
+  options?: { forceNew?: boolean },
 ): Promise<CheckoutSessionResult> {
   try {
     const payment = await loadPaymentWithLead(paymentId);
@@ -72,6 +73,7 @@ export async function createDepositCheckoutSession(
     }
 
     if (
+      !options?.forceNew &&
       payment.stripeSessionUrl &&
       payment.stripeSessionId &&
       !isPaymentExpired(payment)

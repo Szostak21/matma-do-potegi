@@ -10,6 +10,7 @@ export type PaymentLinkEmailProps = {
   scheduleSlot?: string | null;
   amountFormatted: string;
   payUrl: string;
+  renewal?: boolean;
 };
 
 export function PaymentLinkEmail({
@@ -18,11 +19,12 @@ export function PaymentLinkEmail({
   scheduleSlot,
   amountFormatted,
   payUrl,
+  renewal = false,
 }: PaymentLinkEmailProps) {
   const copy = EMAILS.paymentLink;
 
   return (
-    <BaseLayout preview={copy.preview}>
+    <BaseLayout preview={renewal ? copy.renewalPreview : copy.preview}>
       <Heading
         as="h2"
         style={{
@@ -55,7 +57,7 @@ export function PaymentLinkEmail({
           margin: "0 0 24px",
         }}
       >
-        {copy.intro}
+        {renewal ? copy.renewalIntro : copy.intro}
       </Text>
 
       <Section

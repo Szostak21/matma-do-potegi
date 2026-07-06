@@ -78,20 +78,25 @@ export type PaymentLinkEmailParams = {
   scheduleSlot?: string | null;
   amountGrosze: number;
   payUrl: string;
+  renewal?: boolean;
 };
 
 export async function sendPaymentLinkEmail(
   params: PaymentLinkEmailParams,
 ): Promise<{ ok: boolean }> {
+  const copy = EMAILS.paymentLink;
+  const renewal = params.renewal ?? false;
+
   return sendEmail({
     to: params.to,
-    subject: EMAILS.paymentLink.subject,
+    subject: renewal ? copy.renewalSubject : copy.subject,
     react: createElement(PaymentLinkEmail, {
       parentName: params.parentName,
       groupName: params.groupName,
       scheduleSlot: params.scheduleSlot,
       amountFormatted: formatPln(params.amountGrosze),
       payUrl: params.payUrl,
+      renewal,
     }),
   });
 }

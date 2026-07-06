@@ -276,6 +276,10 @@ export const EMAILS = {
     expiryLabel: "Czas na opłacenie",
     expiryValue: "24 godziny od wysłania tego maila",
     cta: "Opłać zaliczkę",
+    renewalSubject: "Nowy link do wpłaty zaliczki — Matma do potęgi",
+    renewalPreview: "Poprzedni link wygasł — oto nowy, ważny 24 godziny.",
+    renewalIntro:
+      "Poprzedni link do płatności wygasł. Przesyłamy nowy link do opłacenia zaliczki — jest ważny przez 24 godziny od wysłania tej wiadomości.",
     linkFallback: "Jeśli przycisk nie działa, skopiuj i wklej ten link w przeglądarce:",
   },
   depositConfirmation: {

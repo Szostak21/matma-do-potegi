@@ -8,6 +8,7 @@ import {
   type AdminGroupOption,
 } from "@/components/admin/AssignGroupControl";
 import { GeneratePaymentButton } from "@/components/admin/GeneratePaymentButton";
+import { ResendPaymentLink24hButton } from "@/components/admin/ResendPaymentLink24hButton";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -98,6 +99,36 @@ function LeadAction({
     );
   }
 
+  if (lead.status === "CANCELLED") {
+    const groupOption = lead.groupId
+      ? groups.find((group) => group.id === lead.groupId)
+      : null;
+
+    return (
+      <div className="space-y-2">
+        {lead.groupName ? (
+          <p className="text-xs text-ink/70">
+            Grupa:{" "}
+            <span className="font-medium text-ink">{lead.groupName}</span>
+            {lead.groupScheduleSlot ? ` · ${lead.groupScheduleSlot}` : ""}
+          </p>
+        ) : (
+          <p className="text-xs text-ink/50">Brak przypisanej grupy.</p>
+        )}
+        {groupOption ? (
+          <p className="text-xs text-ink/50">
+            Wolne miejsca: {groupOption.availableSpots} / {groupOption.maxCapacity}
+          </p>
+        ) : null}
+        <p className="text-xs text-amber-700">
+          Rezerwacja wygasła — możesz wysłać nowy link 24h i przywrócić miejsce,
+          jeśli jest dostępne.
+        </p>
+        <ResendPaymentLink24hButton leadId={lead.id} secret={secret} />
+      </div>
+    );
+  }
+
   if (!canAssign) {
     return <span className="text-xs text-ink/40">—</span>;
   }
@@ -119,19 +150,28 @@ function LeadAction({
         </p>
       ) : null}
 
-      {lead.status === "PENDING_DEPOSIT" && checkoutUrl ? (
+      {lead.status === "PENDING_DEPOSIT" ? (
         <div className="space-y-2">
-          <p className="text-xs text-ink/70">
-            <a
-              href={checkoutUrl}
-              className="break-all font-medium text-ink underline-offset-2 hover:underline"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {checkoutUrl}
-            </a>
-          </p>
-          <CopyLinkButton url={checkoutUrl} />
+          {checkoutUrl ? (
+            <>
+              <p className="text-xs text-ink/70">
+                <a
+                  href={checkoutUrl}
+                  className="break-all font-medium text-ink underline-offset-2 hover:underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {checkoutUrl}
+                </a>
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <CopyLinkButton url={checkoutUrl} />
+                <ResendPaymentLink24hButton leadId={lead.id} secret={secret} />
+              </div>
+            </>
+          ) : (
+            <ResendPaymentLink24hButton leadId={lead.id} secret={secret} />
+          )}
         </div>
       ) : (
         <GeneratePaymentButton leadId={lead.id} secret={secret} />

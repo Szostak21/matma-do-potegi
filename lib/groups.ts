@@ -20,19 +20,37 @@ export async function runLazyValidation(): Promise<void> {
       status: PaymentStatus.PENDING,
       expiresAt: { lt: now },
     },
-    include: { lead: true },
+    select: { id: true },
   });
 
-  for (const payment of expiredPayments) {
+  for (const paymentSnapshot of expiredPayments) {
     await prisma.$transaction(async (tx) => {
+      const payment = await tx.payment.findUnique({
+        where: { id: paymentSnapshot.id },
+      });
+
+      if (!payment) {
+        return;
+      }
+
+      if (payment.status !== PaymentStatus.PENDING) {
+        return;
+      }
+
+      if (!payment.expiresAt || payment.expiresAt >= now) {
+        return;
+      }
+
       await tx.payment.update({
         where: { id: payment.id },
         data: { status: PaymentStatus.EXPIRED },
       });
 
-      const lead = payment.lead;
+      const lead = await tx.lead.findUnique({
+        where: { id: payment.leadId },
+      });
 
-      if (lead.status !== LeadStatus.PENDING_DEPOSIT) {
+      if (!lead || lead.status !== LeadStatus.PENDING_DEPOSIT) {
         return;
       }
 
@@ -53,7 +71,6 @@ export async function runLazyValidation(): Promise<void> {
         where: { id: lead.id },
         data: {
           status: LeadStatus.CANCELLED,
-          groupId: null,
           activePaymentId: null,
         },
       });
