@@ -7,7 +7,6 @@ import { useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { LogoLink } from "@/components/ui/Logo";
 import { NAV_LINKS } from "@/lib/content";
 import { getSectionIdFromHref, scrollToSectionId } from "@/lib/scroll";
 import { cn } from "@/lib/cn";
@@ -84,7 +83,13 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-ink/5 bg-cream/80 backdrop-blur-md">
       <Container>
         <div className="flex h-16 items-center justify-between">
-          <LogoLink onClick={handleLogoClick} priority />
+          <Link
+            href="/"
+            className="font-serif text-xl tracking-tight text-ink"
+            onClick={handleLogoClick}
+          >
+            Matma do potęgi
+          </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
             {NAV_LINKS.map((link) => (

@@ -2,9 +2,9 @@ import {
   Body,
   Container,
   Head,
+  Heading,
   Hr,
   Html,
-  Img,
   Link,
   Preview,
   Section,
@@ -12,7 +12,6 @@ import {
 } from "@react-email/components";
 import type { ReactNode } from "react";
 
-import { BRAND_ASSETS, getPublicAssetUrl } from "@/lib/assets";
 import { FOOTER } from "@/lib/content";
 
 import { emailTheme } from "./theme";
@@ -47,17 +46,19 @@ export function BaseLayout({ preview, children }: BaseLayoutProps) {
           }}
         >
           <Section style={{ marginBottom: emailTheme.spacing.section }}>
-            <Img
-              src={getPublicAssetUrl(BRAND_ASSETS.logo)}
-              alt={FOOTER.brand}
-              height={40}
+            <Heading
+              as="h1"
               style={{
-                display: "block",
-                height: "40px",
-                marginBottom: "8px",
-                width: "auto",
+                color: emailTheme.colors.ink,
+                fontFamily: emailTheme.fonts.serif,
+                fontSize: "24px",
+                fontWeight: "400",
+                letterSpacing: "-0.02em",
+                margin: "0 0 4px",
               }}
-            />
+            >
+              {FOOTER.brand}
+            </Heading>
             <Text
               style={{
                 color: emailTheme.colors.olive700,
