@@ -10,7 +10,7 @@ import { formatPln } from "@/lib/money";
 let resendClient: Resend | null = null;
 
 export const DEFAULT_FROM =
-  process.env.EMAIL_FROM ?? "Matma do potęgi <noreply@matmadopotegi.pl>";
+  process.env.EMAIL_FROM ?? "MatmaDoPotęgi <noreply@matmadopotegi.pl>";
 
 const DEFAULT_REPLY_TO = FOOTER.email;
 
