@@ -13,19 +13,36 @@ export function Footer() {
             <p className="mt-2 text-sm text-ink/60">{FOOTER.location}</p>
           </div>
 
-          <div className="flex flex-col gap-2 text-sm text-ink/60">
-            <Link
-              href={`mailto:${FOOTER.email}`}
-              className="transition hover:text-ink"
-            >
-              {FOOTER.email}
-            </Link>
-            <Link
-              href={`tel:${CONTACT_PHONE_TEL}`}
-              className="transition hover:text-ink"
-            >
-              {CONTACT_PHONE}
-            </Link>
+          <div className="flex flex-col gap-4 sm:flex-row sm:gap-12">
+            <div className="flex flex-col gap-2">
+              <p className="text-xs font-medium uppercase tracking-wide text-ink/50">
+                Dokumenty
+              </p>
+              {FOOTER.legalLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm text-ink/60 transition hover:text-ink"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-2 text-sm text-ink/60">
+              <Link
+                href={`mailto:${FOOTER.email}`}
+                className="transition hover:text-ink"
+              >
+                {FOOTER.email}
+              </Link>
+              <Link
+                href={`tel:${CONTACT_PHONE_TEL}`}
+                className="transition hover:text-ink"
+              >
+                {CONTACT_PHONE}
+              </Link>
+            </div>
           </div>
         </div>
 

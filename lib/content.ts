@@ -179,10 +179,11 @@ export const TERMS = {
   acceptancePrefix: "Przeczytałem/am i akceptuję",
   linkLabel: "regulamin",
   href: "/regulamin",
-  validationError: "Zaakceptuj regulamin, aby kontynuować",
+  privacyLinkLabel: "politykę prywatności",
+  privacyHref: "/polityka-prywatnosci",
+  validationError:
+    "Zaakceptuj regulamin i politykę prywatności, aby kontynuować",
   pageTitle: "Regulamin",
-  placeholder:
-    "Treść regulaminu zostanie opublikowana wkrótce. W razie pytań skontaktuj się z nami przed zapisem na zajęcia.",
 } as const;
 
 export const GROUP_SELECTION = {
@@ -256,10 +257,14 @@ export function getDisplayedAvailableSpots(actualAvailable: number): number {
 
 export const FOOTER = {
   brand: "Matma do potęgi",
-  location: "Kraków, Kurdwanów · ul. Wysłouchów",
+  location: "Kraków, Kurdwanów · ul. Marii i Bolesława Wysłouchów",
   email: "kontakt@matmadopotegi.pl",
   phone: CONTACT_PHONE,
   copyright: `© ${new Date().getFullYear()} Matma do potęgi. Wszelkie prawa zastrzeżone.`,
+  legalLinks: [
+    { href: "/regulamin", label: "Regulamin" },
+    { href: "/polityka-prywatnosci", label: "Polityka prywatności" },
+  ],
 } as const;
 
 export const EMAILS = {

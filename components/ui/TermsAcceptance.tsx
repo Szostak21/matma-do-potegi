@@ -39,6 +39,15 @@ export function TermsAcceptance({ error, defaultChecked }: TermsAcceptanceProps)
               rel="noopener noreferrer"
             >
               {TERMS.linkLabel}
+            </Link>{" "}
+            oraz{" "}
+            <Link
+              href={TERMS.privacyHref}
+              className="font-medium text-olive-800 underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {TERMS.privacyLinkLabel}
             </Link>
             {" *"}
           </span>
