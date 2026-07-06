@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Container } from "@/components/ui/Container";
+import { LogoImage } from "@/components/ui/Logo";
 import { CONTACT_PHONE, CONTACT_PHONE_TEL, FOOTER } from "@/lib/content";
 
 export function Footer() {
@@ -9,8 +10,8 @@ export function Footer() {
       <Container>
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="font-serif text-xl text-ink">{FOOTER.brand}</p>
-            <p className="mt-2 text-sm text-ink/60">{FOOTER.location}</p>
+            <LogoImage className="h-10" />
+            <p className="mt-3 text-sm text-ink/60">{FOOTER.location}</p>
           </div>
 
           <div className="flex flex-col gap-2 text-sm text-ink/60">

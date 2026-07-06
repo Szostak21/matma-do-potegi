@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 
+import { BRAND_ASSETS } from "@/lib/assets";
+
 const instrumentSerif = Instrument_Serif({
   weight: "400",
   subsets: ["latin"],
@@ -17,6 +19,10 @@ export const metadata: Metadata = {
   title: "Matma do potęgi | Korepetycje z matematyki Kraków Kurdwanów",
   description:
     "Kameralne grupy premium (3–4 os.) z matematyki na krakowskim Kurdwanowie. Przygotowanie do matury podstawowej, rozszerzonej i egzaminu ósmoklasisty.",
+  icons: {
+    icon: BRAND_ASSETS.logo,
+    apple: BRAND_ASSETS.logo,
+  },
 };
 
 export default function RootLayout({

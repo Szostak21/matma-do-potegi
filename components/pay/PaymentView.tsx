@@ -7,6 +7,7 @@ import { DepositNote } from "@/components/pay/DepositPaymentExtras";
 import { PayButton } from "@/components/pay/PayButton";
 import { AlternateTermPhoneGate } from "@/components/ui/AlternateTermPhoneGate";
 import { Card } from "@/components/ui/Card";
+import { LogoImage } from "@/components/ui/Logo";
 import { DEPOSIT_PAYMENT } from "@/lib/content";
 import { formatPln } from "@/lib/money";
 import type { PaymentDisplayState } from "@/lib/payments";
@@ -139,9 +140,9 @@ export function PaymentView({
 
   return (
     <Card>
-      <p className="text-xs font-medium uppercase tracking-widest text-olive-700">
-        Matma do potęgi
-      </p>
+      <div className="flex justify-center">
+        <LogoImage className="h-12" />
+      </div>
       <h1 className="mt-2 font-serif text-3xl text-ink">
         {DEPOSIT_PAYMENT.reservationTitle}
       </h1>

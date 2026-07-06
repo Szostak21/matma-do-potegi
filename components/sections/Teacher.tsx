@@ -9,6 +9,7 @@ export function Teacher() {
       <Container>
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-olive-200 shadow-soft ring-1 ring-ink/5">
+            {/* Zdjęcie: dodaj plik do public/images/teacher/ i wpisz ścieżkę w lib/assets.ts */}
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-ink/70 backdrop-blur-sm">
                 Zdjęcie nauczyciela
