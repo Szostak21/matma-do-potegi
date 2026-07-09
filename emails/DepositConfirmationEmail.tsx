@@ -2,7 +2,7 @@ import { Heading, Section, Text } from "@react-email/components";
 
 import { BaseLayout } from "@/emails/components/BaseLayout";
 import { emailTheme } from "@/emails/components/theme";
-import { EMAILS, PACKAGE_AVAILABILITY } from "@/lib/content";
+import { EMAILS } from "@/lib/content";
 
 export type DepositConfirmationEmailProps = {
   parentName: string;
@@ -59,10 +59,32 @@ export function DepositConfirmationEmail({
           color: emailTheme.colors.inkMuted,
           fontSize: "15px",
           lineHeight: "24px",
-          margin: "0 0 24px",
+          margin: "0 0 16px",
         }}
       >
         {copy.confirmed}
+      </Text>
+
+      <Text
+        style={{
+          color: emailTheme.colors.inkMuted,
+          fontSize: "15px",
+          lineHeight: "24px",
+          margin: "0 0 16px",
+        }}
+      >
+        {copy.confirmedNextSteps}
+      </Text>
+
+      <Text
+        style={{
+          color: emailTheme.colors.inkMuted,
+          fontSize: "15px",
+          lineHeight: "24px",
+          margin: "0 0 24px",
+        }}
+      >
+        {copy.confirmedClosing}
       </Text>
 
       <Section
@@ -78,10 +100,6 @@ export function DepositConfirmationEmail({
             <strong>{copy.packageLabel}:</strong> {packageName}
           </Text>
         ) : null}
-        <Text style={summaryRowStyle}>
-          <strong>{copy.startNoteLabel}:</strong>{" "}
-          {PACKAGE_AVAILABILITY.octoberNote}
-        </Text>
         <Text style={{ ...summaryRowStyle, marginBottom: 0 }}>
           <strong>{copy.amountLabel}:</strong> {amountFormatted}
         </Text>

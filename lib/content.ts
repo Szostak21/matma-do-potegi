@@ -292,9 +292,11 @@ export const EMAILS = {
     thanks:
       "Dziękujemy za opłacenie zaliczki. Twoja wpłata została zaksięgowana.",
     confirmed:
-      "Potwierdzamy rezerwację miejsca na wybranym poziomie. Cieszymy się, że dołączasz do nas!",
+      "Potwierdzamy rezerwację miejsca na wybranym poziomie.",
+    confirmedNextSteps:
+      "We wrześniu skontaktujemy się z Tobą i zaprosimy na krótki, bezpłatny test poziomujący. Start zajęć planujemy na początek października — dokładny dzień i godzinę ustalimy wspólnie po zebraniu grupy.",
+    confirmedClosing: "Cieszymy się, że dołączasz do nas!",
     packageLabel: "Poziom zajęć",
-    startNoteLabel: "Start zajęć",
     amountLabel: "Wpłacona kwota",
     closing: "Do zobaczenia na zajęciach!",
   },
