@@ -74,8 +74,7 @@ export async function sendEmail({
 export type PaymentLinkEmailParams = {
   to: string;
   parentName: string;
-  groupName?: string | null;
-  scheduleSlot?: string | null;
+  packageName?: string | null;
   amountGrosze: number;
   payUrl: string;
   renewal?: boolean;
@@ -92,8 +91,7 @@ export async function sendPaymentLinkEmail(
     subject: renewal ? copy.renewalSubject : copy.subject,
     react: createElement(PaymentLinkEmail, {
       parentName: params.parentName,
-      groupName: params.groupName,
-      scheduleSlot: params.scheduleSlot,
+      packageName: params.packageName,
       amountFormatted: formatPln(params.amountGrosze),
       payUrl: params.payUrl,
       renewal,
@@ -105,8 +103,7 @@ export type DepositConfirmationEmailParams = {
   to: string;
   parentName: string;
   amountGrosze: number;
-  groupName?: string | null;
-  scheduleSlot?: string | null;
+  packageName?: string | null;
 };
 
 export async function sendDepositConfirmationEmail(
@@ -118,8 +115,7 @@ export async function sendDepositConfirmationEmail(
     react: createElement(DepositConfirmationEmail, {
       parentName: params.parentName,
       amountFormatted: formatPln(params.amountGrosze),
-      groupName: params.groupName,
-      scheduleSlot: params.scheduleSlot,
+      packageName: params.packageName,
     }),
   });
 }

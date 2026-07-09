@@ -103,6 +103,9 @@ model Lead {
   requestedPackage   PackageType?
   currentGrade       String?
   expectedResult     String?
+  notes              String?
+  placementTestNotes String?
+  isDeleted          Boolean    @default(false)
   status             LeadStatus @default(UNVERIFIED)
   groupId         String?
   group           Group?     @relation(fields: [groupId], references: [id])

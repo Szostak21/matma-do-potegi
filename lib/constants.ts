@@ -1,4 +1,14 @@
+import type { PackageType } from "@prisma/client";
+
 export const DEPOSIT_AMOUNT_GROSZE = 5000;
+
+/** Globalna pula miejsc per pakiet (niezależna od limitu 4 osób w grupie). */
+export const PACKAGE_CAPACITY: Record<PackageType, number> = {
+  MATURA_ROZSZERZONA: 12,
+  MATURA_PODSTAWOWA: 12,
+  OSMOKLASISTA: 8,
+  INDYWIDUALNE: 999,
+};
 
 export const PACKAGES = {
   MATURA_ROZSZERZONA: {

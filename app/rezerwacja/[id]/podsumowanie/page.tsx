@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { PaymentView } from "@/components/pay/PaymentView";
 import { Container } from "@/components/ui/Container";
+import { packageLabel } from "@/lib/labels";
 import {
   findActiveDepositPayment,
   getPaymentDisplayState,
@@ -25,9 +26,8 @@ export default async function ReservationSummaryPage({
   const { id } = await params;
 
   const lead = await prisma.lead.findUnique({
-    where: { id },
+    where: { id, isDeleted: false },
     include: {
-      group: true,
       payments: {
         where: { type: "DEPOSIT" },
         orderBy: { createdAt: "desc" },
@@ -35,10 +35,11 @@ export default async function ReservationSummaryPage({
     },
   });
 
-  if (!lead || !lead.group) {
+  if (!lead || !lead.requestedPackage) {
     notFound();
   }
 
+  const packageName = packageLabel(lead.requestedPackage);
   const activePayment = findActiveDepositPayment(lead.payments);
   const latestDeposit = lead.payments[0];
 
@@ -57,8 +58,7 @@ export default async function ReservationSummaryPage({
             displayState={displayState}
             paymentType={activePayment.type}
             reserverName={lead.parentName}
-            groupName={lead.group.name}
-            scheduleSlot={lead.group.scheduleSlot}
+            packageName={packageName}
             amount={activePayment.amount}
           />
         </Container>
@@ -81,8 +81,7 @@ export default async function ReservationSummaryPage({
             displayState={displayState}
             paymentType={latestDeposit.type}
             reserverName={lead.parentName}
-            groupName={lead.group.name}
-            scheduleSlot={lead.group.scheduleSlot}
+            packageName={packageName}
             amount={latestDeposit.amount}
           />
         </Container>

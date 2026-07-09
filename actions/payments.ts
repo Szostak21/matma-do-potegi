@@ -9,6 +9,11 @@ import { createDepositCheckoutSession } from "@/lib/checkout";
 import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
 import { addHours, PHONE_PAYMENT_EXPIRY_HOURS } from "@/lib/dates";
 import { sendPaymentLinkEmail } from "@/lib/emails";
+import { packageLabel } from "@/lib/labels";
+import {
+  assertPackageHasCapacity,
+  PackagePoolFullError,
+} from "@/lib/packages";
 import { isPaymentExpired } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
 import { generatePaymentToken } from "@/lib/tokens";
@@ -44,7 +49,8 @@ class RenewPaymentError extends Error {
       | "GROUP_FULL"
       | "NO_GROUP"
       | "INVALID_STATUS"
-      | "NOT_FOUND",
+      | "NOT_FOUND"
+      | "PACKAGE_POOL_FULL",
   ) {
     super(code);
     this.name = "RenewPaymentError";
@@ -61,6 +67,8 @@ function mapRenewPaymentError(code: RenewPaymentError["code"]): string {
       return "Nie można odnowić linku w tym statusie rezerwacji.";
     case "NOT_FOUND":
       return "Nie znaleziono zgłoszenia.";
+    case "PACKAGE_POOL_FULL":
+      return "Brak wolnych miejsc na wybranym poziomie. Nie można przywrócić rezerwacji.";
     default:
       return "Wystąpił błąd podczas odnowienia linku płatności.";
   }
@@ -109,7 +117,7 @@ async function upsertRenewalPayment(
 async function compensateRestoredReservation(
   leadId: string,
   paymentId: string,
-  groupId: string,
+  groupId: string | null,
 ): Promise<void> {
   await prisma.$transaction(async (tx) => {
     await tx.payment.update({
@@ -117,21 +125,24 @@ async function compensateRestoredReservation(
       data: { status: PaymentStatus.EXPIRED },
     });
 
-    const group = await tx.group.findUnique({
-      where: { id: groupId },
-    });
-
-    if (group && group.currentCount > 0) {
-      await tx.group.update({
+    if (groupId) {
+      const group = await tx.group.findUnique({
         where: { id: groupId },
-        data: { currentCount: { decrement: 1 } },
       });
+
+      if (group && group.currentCount > 0) {
+        await tx.group.update({
+          where: { id: groupId },
+          data: { currentCount: { decrement: 1 } },
+        });
+      }
     }
 
     await tx.lead.update({
       where: { id: leadId },
       data: {
         status: LeadStatus.CANCELLED,
+        groupId: null,
         activePaymentId: null,
       },
     });
@@ -284,28 +295,18 @@ async function renewDepositPaymentLinkForLead(
       }
 
       if (lead.status === LeadStatus.CANCELLED) {
-        if (!lead.groupId) {
-          throw new RenewPaymentError("NO_GROUP");
+        if (!lead.requestedPackage) {
+          throw new RenewPaymentError("NOT_FOUND");
         }
 
-        const group = await tx.group.findUnique({
-          where: { id: lead.groupId },
-        });
+        try {
+          await assertPackageHasCapacity(lead.requestedPackage, tx);
+        } catch (error) {
+          if (error instanceof PackagePoolFullError) {
+            throw new RenewPaymentError("PACKAGE_POOL_FULL");
+          }
 
-        if (!group) {
-          throw new RenewPaymentError("NO_GROUP");
-        }
-
-        const claimed = await tx.group.updateMany({
-          where: {
-            id: lead.groupId,
-            currentCount: { lt: group.maxCapacity },
-          },
-          data: { currentCount: { increment: 1 } },
-        });
-
-        if (claimed.count === 0) {
-          throw new RenewPaymentError("GROUP_FULL");
+          throw error;
         }
 
         const paymentId = await upsertRenewalPayment(
@@ -339,7 +340,7 @@ async function renewDepositPaymentLinkForLead(
     });
 
     if (checkout.status === "error" || !checkout.url) {
-      if (txResult.outcome === "restored" && txResult.groupId) {
+      if (txResult.outcome === "restored") {
         await compensateRestoredReservation(
           leadId,
           txResult.paymentId,
@@ -413,15 +414,13 @@ export async function renewDepositPaymentLink24h(
 
     const lead = await prisma.lead.findUnique({
       where: { id: leadId },
-      include: { group: true },
     });
 
     if (lead) {
       const emailResult = await sendPaymentLinkEmail({
         to: lead.email,
         parentName: lead.parentName,
-        groupName: lead.group?.name ?? null,
-        scheduleSlot: lead.group?.scheduleSlot ?? null,
+        packageName: packageLabel(lead.requestedPackage),
         amountGrosze: DEPOSIT_AMOUNT_GROSZE,
         payUrl: result.payUrl,
         renewal: true,
@@ -482,15 +481,13 @@ export async function generateDepositPayment(
   if (result.payUrl) {
     const lead = await prisma.lead.findUnique({
       where: { id: leadId },
-      include: { group: true },
     });
 
     if (lead) {
       await sendPaymentLinkEmail({
         to: lead.email,
         parentName: lead.parentName,
-        groupName: lead.group?.name ?? null,
-        scheduleSlot: lead.group?.scheduleSlot ?? null,
+        packageName: packageLabel(lead.requestedPackage),
         amountGrosze: DEPOSIT_AMOUNT_GROSZE,
         payUrl: result.payUrl,
       });

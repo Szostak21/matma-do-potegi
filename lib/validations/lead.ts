@@ -27,14 +27,19 @@ export const leadFormSchema = z.object({
     .transform((value) => (value === "" ? undefined : value)),
   package: z
     .string()
-    .min(1, "Wybierz grupę")
-    .pipe(z.enum(packageValues, { message: "Wybierz grupę" })),
+    .min(1, "Wybierz poziom zajęć")
+    .pipe(z.enum(packageValues, { message: "Wybierz poziom zajęć" })),
   currentGrade: z
     .string()
     .trim()
     .optional()
     .transform((value) => (value === "" ? undefined : value)),
   expectedResult: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => (value === "" ? undefined : value)),
+  notes: z
     .string()
     .trim()
     .optional()
@@ -78,6 +83,7 @@ export function formDataToObject(formData: FormData): Record<string, string> {
     package: String(formData.get("package") ?? ""),
     currentGrade: String(formData.get("currentGrade") ?? ""),
     expectedResult: String(formData.get("expectedResult") ?? ""),
+    notes: String(formData.get("notes") ?? ""),
     acceptTerms:
       formData.get("acceptTerms") === "on" ? "on" : "",
   };

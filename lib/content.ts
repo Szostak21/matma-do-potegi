@@ -155,7 +155,7 @@ export const FAQ_ITEMS = [
   {
     question: "Jak wygląda proces zapisu?",
     answer:
-      `Wypełniasz formularz kontaktowy, wybierasz termin grupy i wpłacasz zaliczkę 50 zł. Po potwierdzeniu wpłaty miejsce jest zarezerwowane. Możesz też zadzwonić pod numer ${CONTACT_PHONE} i umówić się na rozmowę przed decyzją.`,
+      `Wypełniasz formularz, wybierasz poziom zajęć i wpłacasz zaliczkę 50 zł. Po potwierdzeniu wpłaty miejsce na danym poziomie jest zarezerwowane. Dokładny termin ustalimy we wrześniu/październiku po teście poziomującym. Możesz też zadzwonić pod numer ${CONTACT_PHONE}.`,
   },
   {
     question: "Gdzie odbywają się zajęcia?",
@@ -172,7 +172,21 @@ export const FAQ_ITEMS = [
 export const CONTACT = {
   title: "Zapisz się na zajęcia",
   description:
-    "Wypełnij formularz, wybierz termin i zabezpiecz miejsce w grupie. Pola oznaczone * są wymagane.",
+    "Wybierz poziom zajęć i zabezpiecz miejsce zaliczką. Pola oznaczone * są wymagane.",
+} as const;
+
+export const PACKAGE_POOL_FULL_MESSAGE =
+  "Brak wolnych miejsc na wybranym poziomie. Skontaktuj się z nami — pomożemy znaleźć rozwiązanie.";
+
+export const PACKAGE_AVAILABILITY = {
+  loading: "Sprawdzanie dostępności miejsc...",
+  spotsRemaining: (count: number) =>
+    count === 1
+      ? "Zostało 1 wolne miejsce na tym poziomie"
+      : `Zostały ${count} wolne miejsca na tym poziomie`,
+  noSpots: "Brak wolnych miejsc na tym poziomie",
+  octoberNote:
+    "Start zajęć na początku października. Dokładny dzień i godzinę ustalimy wspólnie po zebraniu grupy oraz krótkim, darmowym teście poziomującym.",
 } as const;
 
 export const TERMS = {
@@ -186,20 +200,6 @@ export const TERMS = {
   pageTitle: "Regulamin",
 } as const;
 
-export const GROUP_SELECTION = {
-  title: "Wybierz termin zajęć",
-  description: "Wybierz dogodny termin dla wybranej grupy",
-  reserveButton: "Zarezerwuj miejsce",
-  reserving: "Rezerwowanie miejsca...",
-  loading: "Ładowanie dostępnych terminów...",
-  noGroupsTitle: "Brak wolnych terminów",
-  noGroupsDescription:
-    "Niestety nie mamy teraz wolnych miejsc dla tego pakietu. Twoje zgłoszenie zostało zapisane — skontaktuj się z nami, a pomożemy znaleźć rozwiązanie.",
-  contactPrompt: "Skontaktuj się z nami:",
-  errorReserve: "Nie udało się zarezerwować miejsca. Spróbuj ponownie.",
-  selectGroup: "Wybierz termin, aby kontynuować.",
-} as const;
-
 export const DEPOSIT_PAYMENT = {
   depositNote:
     "Kwota zaliczki jest w pełni odliczana od pierwszej płatności za zajęcia.",
@@ -208,7 +208,8 @@ export const DEPOSIT_PAYMENT = {
   reservationHint:
     "Cieszymy się na wspólne zajęcia! Aby ostatecznie potwierdzić chęć udziału, prosimy o wpłatę zaliczki. Zarezerwowaliśmy to miejsce specjalnie dla Ciebie na najbliższe 30 minut.",
   payButtonLabel: "Przejdź do płatności",
-  summarySchedule: "Termin zajęć",
+  summaryPackage: "Poziom zajęć",
+  summaryStartNote: "Start zajęć",
   successTitle: "Płatność zakończona",
   successProcessingTitle: "Przetwarzamy wpłatę",
   successMessage:
@@ -227,7 +228,6 @@ export const DEPOSIT_PAYMENT = {
   cancelMessage:
     "Nie dokończono płatności. Możesz spróbować ponownie z linku od nas lub skontaktować się telefonicznie.",
   summaryReserver: "Rezerwujący",
-  summaryGroup: "Grupa",
   summaryType: "Wpłata zaliczki",
   backHome: "Wróć na stronę główną",
 } as const;
@@ -270,13 +270,13 @@ export const FOOTER = {
 export const EMAILS = {
   paymentLink: {
     subject: "Link do wpłaty zaliczki — Matma do potęgi",
-    preview: "Opłać zaliczkę 50 zł, aby zarezerwować miejsce w grupie.",
+    preview: "Opłać zaliczkę 50 zł, aby zarezerwować miejsce.",
     title: "Zaliczka",
     greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
     intro:
-      "Przygotowaliśmy dla Ciebie link do opłacenia zaliczki. Po wpłacie miejsce w grupie zostanie oficjalnie zarezerwowane.",
-    groupLabel: "Grupa",
-    scheduleLabel: "Termin zajęć",
+      "Przygotowaliśmy dla Ciebie link do opłacenia zaliczki. Po wpłacie miejsce na wybranym poziomie zostanie oficjalnie zarezerwowane.",
+    packageLabel: "Poziom zajęć",
+    startNoteLabel: "Start zajęć",
     amountLabel: "Kwota zaliczki",
     expiryLabel: "Czas na opłacenie",
     expiryValue: "24 godziny od wysłania tego maila",
@@ -293,19 +293,17 @@ export const EMAILS = {
     greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
     thanks:
       "Dziękujemy za opłacenie zaliczki. Twoja wpłata została zaksięgowana.",
-    confirmedWithGroup:
-      "Potwierdzamy rezerwację miejsca w wybranej grupie. Cieszymy się, że dołączasz do nas!",
-    confirmedWithoutGroup:
-      "Skontaktujemy się wkrótce w sprawie przydziału do konkretnej grupy i dalszych kroków zapisu.",
-    groupLabel: "Grupa",
-    scheduleLabel: "Termin zajęć",
+    confirmed:
+      "Potwierdzamy rezerwację miejsca na wybranym poziomie. Cieszymy się, że dołączasz do nas!",
+    packageLabel: "Poziom zajęć",
+    startNoteLabel: "Start zajęć",
     amountLabel: "Wpłacona kwota",
     closing: "Do zobaczenia na zajęciach!",
   },
 } as const;
 
 export const PACKAGE_OPTIONS = [
-  { value: "", label: "Wybierz grupę" },
+  { value: "", label: "Wybierz poziom zajęć" },
   { value: "MATURA_ROZSZERZONA", label: PACKAGES.MATURA_ROZSZERZONA.name },
   { value: "MATURA_PODSTAWOWA", label: PACKAGES.MATURA_PODSTAWOWA.name },
   { value: "OSMOKLASISTA", label: PACKAGES.OSMOKLASISTA.name },

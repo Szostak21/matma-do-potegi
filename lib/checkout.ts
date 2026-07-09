@@ -26,11 +26,13 @@ function buildLineItemName(lead: Lead): string {
 }
 
 function buildLineItemDescription(lead: Lead & { group: Group | null }): string {
+  const packageName = packageLabel(lead.requestedPackage);
+
   if (lead.group) {
-    return `Rezerwujący: ${lead.parentName} · ${lead.group.name} · ${lead.group.scheduleSlot}`;
+    return `Rezerwujący: ${lead.parentName} · ${packageName} · ${lead.group.name}`;
   }
 
-  return `Rezerwujący: ${lead.parentName} · Rezerwacja miejsca w grupie Matma do potęgi`;
+  return `Rezerwujący: ${lead.parentName} · ${packageName}`;
 }
 
 async function loadPaymentWithLead(

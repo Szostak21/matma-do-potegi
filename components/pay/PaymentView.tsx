@@ -7,7 +7,7 @@ import { DepositNote } from "@/components/pay/DepositPaymentExtras";
 import { PayButton } from "@/components/pay/PayButton";
 import { AlternateTermPhoneGate } from "@/components/ui/AlternateTermPhoneGate";
 import { Card } from "@/components/ui/Card";
-import { DEPOSIT_PAYMENT } from "@/lib/content";
+import { DEPOSIT_PAYMENT, PACKAGE_AVAILABILITY } from "@/lib/content";
 import { formatPln } from "@/lib/money";
 import type { PaymentDisplayState } from "@/lib/payments";
 
@@ -16,8 +16,7 @@ type PaymentViewProps = {
   displayState: PaymentDisplayState;
   paymentType: PaymentType;
   reserverName: string;
-  groupName: string;
-  scheduleSlot: string;
+  packageName: string;
   amount: number;
 };
 
@@ -32,13 +31,11 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
 
 function ReservationSummary({
   reserverName,
-  groupName,
-  scheduleSlot,
+  packageName,
   amount,
 }: {
   reserverName: string;
-  groupName: string;
-  scheduleSlot: string;
+  packageName: string;
   amount: number;
 }) {
   return (
@@ -47,10 +44,13 @@ function ReservationSummary({
         label={DEPOSIT_PAYMENT.summaryReserver}
         value={reserverName}
       />
-      <SummaryRow label={DEPOSIT_PAYMENT.summaryGroup} value={groupName} />
       <SummaryRow
-        label={DEPOSIT_PAYMENT.summarySchedule}
-        value={scheduleSlot}
+        label={DEPOSIT_PAYMENT.summaryPackage}
+        value={packageName}
+      />
+      <SummaryRow
+        label={DEPOSIT_PAYMENT.summaryStartNote}
+        value={PACKAGE_AVAILABILITY.octoberNote}
       />
       <SummaryRow label="Rodzaj" value={DEPOSIT_PAYMENT.summaryType} />
       <SummaryRow label="Kwota" value={formatPln(amount)} />
@@ -72,8 +72,7 @@ export function PaymentView({
   displayState,
   paymentType,
   reserverName,
-  groupName,
-  scheduleSlot,
+  packageName,
   amount,
 }: PaymentViewProps) {
   const isDeposit = paymentType === "DEPOSIT";
@@ -93,8 +92,7 @@ export function PaymentView({
         </p>
         <ReservationSummary
           reserverName={reserverName}
-          groupName={groupName}
-          scheduleSlot={scheduleSlot}
+          packageName={packageName}
           amount={amount}
         />
       </Card>
@@ -151,8 +149,7 @@ export function PaymentView({
 
       <ReservationSummary
         reserverName={reserverName}
-        groupName={groupName}
-        scheduleSlot={scheduleSlot}
+        packageName={packageName}
         amount={amount}
       />
 

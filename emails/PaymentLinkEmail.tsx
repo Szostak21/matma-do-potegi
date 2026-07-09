@@ -2,12 +2,11 @@ import { Button, Heading, Link, Section, Text } from "@react-email/components";
 
 import { BaseLayout } from "@/emails/components/BaseLayout";
 import { emailTheme, primaryButtonStyle } from "@/emails/components/theme";
-import { EMAILS, DEPOSIT_PAYMENT } from "@/lib/content";
+import { EMAILS, DEPOSIT_PAYMENT, PACKAGE_AVAILABILITY } from "@/lib/content";
 
 export type PaymentLinkEmailProps = {
   parentName: string;
-  groupName?: string | null;
-  scheduleSlot?: string | null;
+  packageName?: string | null;
   amountFormatted: string;
   payUrl: string;
   renewal?: boolean;
@@ -15,8 +14,7 @@ export type PaymentLinkEmailProps = {
 
 export function PaymentLinkEmail({
   parentName,
-  groupName,
-  scheduleSlot,
+  packageName,
   amountFormatted,
   payUrl,
   renewal = false,
@@ -68,16 +66,15 @@ export function PaymentLinkEmail({
           padding: "20px",
         }}
       >
-        {groupName ? (
+        {packageName ? (
           <Text style={summaryRowStyle}>
-            <strong>{copy.groupLabel}:</strong> {groupName}
+            <strong>{copy.packageLabel}:</strong> {packageName}
           </Text>
         ) : null}
-        {scheduleSlot ? (
-          <Text style={summaryRowStyle}>
-            <strong>{copy.scheduleLabel}:</strong> {scheduleSlot}
-          </Text>
-        ) : null}
+        <Text style={summaryRowStyle}>
+          <strong>{copy.startNoteLabel}:</strong>{" "}
+          {PACKAGE_AVAILABILITY.octoberNote}
+        </Text>
         <Text style={summaryRowStyle}>
           <strong>{copy.amountLabel}:</strong> {amountFormatted}
         </Text>

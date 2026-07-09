@@ -2,24 +2,32 @@ import { notFound } from "next/navigation";
 import { PaymentType } from "@prisma/client";
 
 import { LeadsTable } from "@/components/admin/LeadsTable";
+import { PackagePoolSummary } from "@/components/admin/PackagePoolSummary";
 import { ResetDatabaseButton } from "@/components/admin/ResetDatabaseButton";
 import { Container } from "@/components/ui/Container";
 import { verifyAdminSecret } from "@/lib/auth";
+import { runLazyValidation } from "@/lib/groups";
+import { getAllPackagesAvailability } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
 
 type AdminPageProps = {
-  searchParams: Promise<{ secret?: string }>;
+  searchParams: Promise<{ secret?: string; showDeleted?: string }>;
 };
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
-  const { secret } = await searchParams;
+  const { secret, showDeleted } = await searchParams;
 
   if (!verifyAdminSecret(secret)) {
     notFound();
   }
 
-  const [leads, groups] = await Promise.all([
+  await runLazyValidation();
+
+  const includeDeleted = showDeleted === "1";
+
+  const [leads, groups, packageAvailability] = await Promise.all([
     prisma.lead.findMany({
+      where: includeDeleted ? undefined : { isDeleted: false },
       orderBy: { createdAt: "desc" },
       include: {
         group: true,
@@ -33,6 +41,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     prisma.group.findMany({
       orderBy: { scheduleSlot: "asc" },
     }),
+    getAllPackagesAvailability(),
   ]);
 
   const rows = leads.map((lead) => ({
@@ -46,6 +55,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     groupId: lead.groupId,
     groupName: lead.group?.name ?? null,
     groupScheduleSlot: lead.group?.scheduleSlot ?? null,
+    notes: lead.notes,
+    placementTestNotes: lead.placementTestNotes,
     createdAt: lead.createdAt.toISOString(),
     payments: lead.payments.map((payment) => ({
       token: payment.token,
@@ -73,13 +84,25 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </p>
           <h1 className="mt-2 font-serif text-3xl text-ink">Zgłoszenia</h1>
           <p className="mt-2 text-sm text-ink/60">
-            Przypisanie grupy, generowanie linków płatności i wysyłka maili z
-            linkiem do zaliczki.
+            Rezerwacja na poziomie, przypisanie do grupy, generowanie linków
+            płatności i zarządzanie zgłoszeniami.
           </p>
         </div>
 
-        <div className="mb-8">
+        <PackagePoolSummary availability={packageAvailability} />
+
+        <div className="mb-8 flex flex-wrap items-center gap-4">
           <ResetDatabaseButton secret={secret ?? ""} />
+          <a
+            href={
+              includeDeleted
+                ? `/admin?secret=${encodeURIComponent(secret ?? "")}`
+                : `/admin?secret=${encodeURIComponent(secret ?? "")}&showDeleted=1`
+            }
+            className="text-sm text-ink/60 underline-offset-2 hover:text-ink hover:underline"
+          >
+            {includeDeleted ? "Ukryj usunięte" : "Pokaż usunięte"}
+          </a>
         </div>
 
         <LeadsTable

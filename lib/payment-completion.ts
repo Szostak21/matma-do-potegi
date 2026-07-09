@@ -1,6 +1,7 @@
 import { LeadStatus, PaymentStatus } from "@prisma/client";
 
 import { sendDepositConfirmationEmail } from "@/lib/emails";
+import { packageLabel } from "@/lib/labels";
 import { prisma } from "@/lib/prisma";
 
 export type MarkDepositPaymentPaidResult = {
@@ -14,9 +15,7 @@ export async function markDepositPaymentPaid(
     const payment = await tx.payment.findUnique({
       where: { id: paymentId },
       include: {
-        lead: {
-          include: { group: true },
-        },
+        lead: true,
       },
     });
 
@@ -52,8 +51,7 @@ export async function markDepositPaymentPaid(
       to: lead.email,
       parentName: lead.parentName,
       amountGrosze: result.payment.amount,
-      groupName: lead.group?.name ?? null,
-      scheduleSlot: lead.group?.scheduleSlot ?? null,
+      packageName: packageLabel(lead.requestedPackage),
     });
   }
 

@@ -2,23 +2,20 @@ import { Heading, Section, Text } from "@react-email/components";
 
 import { BaseLayout } from "@/emails/components/BaseLayout";
 import { emailTheme } from "@/emails/components/theme";
-import { EMAILS } from "@/lib/content";
+import { EMAILS, PACKAGE_AVAILABILITY } from "@/lib/content";
 
 export type DepositConfirmationEmailProps = {
   parentName: string;
   amountFormatted: string;
-  groupName?: string | null;
-  scheduleSlot?: string | null;
+  packageName?: string | null;
 };
 
 export function DepositConfirmationEmail({
   parentName,
   amountFormatted,
-  groupName,
-  scheduleSlot,
+  packageName,
 }: DepositConfirmationEmailProps) {
   const copy = EMAILS.depositConfirmation;
-  const hasGroup = Boolean(groupName);
 
   return (
     <BaseLayout preview={copy.preview}>
@@ -65,7 +62,7 @@ export function DepositConfirmationEmail({
           margin: "0 0 24px",
         }}
       >
-        {hasGroup ? copy.confirmedWithGroup : copy.confirmedWithoutGroup}
+        {copy.confirmed}
       </Text>
 
       <Section
@@ -76,18 +73,15 @@ export function DepositConfirmationEmail({
           padding: "20px",
         }}
       >
-        {hasGroup ? (
-          <>
-            <Text style={summaryRowStyle}>
-              <strong>{copy.groupLabel}:</strong> {groupName}
-            </Text>
-            {scheduleSlot ? (
-              <Text style={summaryRowStyle}>
-                <strong>{copy.scheduleLabel}:</strong> {scheduleSlot}
-              </Text>
-            ) : null}
-          </>
+        {packageName ? (
+          <Text style={summaryRowStyle}>
+            <strong>{copy.packageLabel}:</strong> {packageName}
+          </Text>
         ) : null}
+        <Text style={summaryRowStyle}>
+          <strong>{copy.startNoteLabel}:</strong>{" "}
+          {PACKAGE_AVAILABILITY.octoberNote}
+        </Text>
         <Text style={{ ...summaryRowStyle, marginBottom: 0 }}>
           <strong>{copy.amountLabel}:</strong> {amountFormatted}
         </Text>

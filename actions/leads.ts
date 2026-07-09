@@ -1,5 +1,8 @@
 "use server";
 
+import { createDepositPaymentForLead } from "@/actions/payments";
+import { addMinutes, ONLINE_PAYMENT_EXPIRY_MINUTES } from "@/lib/dates";
+import { PackagePoolFullError, assertPackageHasCapacity } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
 import {
   formDataToObject,
@@ -7,6 +10,7 @@ import {
   normalizePhone,
   type LeadFormState,
 } from "@/lib/validations/lead";
+import { PACKAGE_POOL_FULL_MESSAGE } from "@/lib/content";
 
 export async function submitLead(
   _prevState: LeadFormState,
@@ -26,24 +30,52 @@ export async function submitLead(
   const data = parsed.data;
 
   try {
-    const lead = await prisma.lead.create({
-      data: {
-        parentName: data.parentName,
-        phoneNumber: normalizePhone(data.phone),
-        email: data.email,
-        studentName: data.studentName,
-        requestedPackage: data.package,
-        currentGrade: data.currentGrade,
-        expectedResult: data.expectedResult,
-      },
+    const lead = await prisma.$transaction(async (tx) => {
+      await assertPackageHasCapacity(data.package, tx);
+
+      return tx.lead.create({
+        data: {
+          parentName: data.parentName,
+          phoneNumber: normalizePhone(data.phone),
+          email: data.email,
+          studentName: data.studentName,
+          requestedPackage: data.package,
+          currentGrade: data.currentGrade,
+          expectedResult: data.expectedResult,
+          notes: data.notes,
+        },
+      });
     });
+
+    const expiresAt = addMinutes(new Date(), ONLINE_PAYMENT_EXPIRY_MINUTES);
+    const paymentResult = await createDepositPaymentForLead(lead.id, expiresAt, {
+      skipCheckout: true,
+    });
+
+    if (paymentResult.status === "error") {
+      await prisma.lead.delete({ where: { id: lead.id } });
+
+      return {
+        status: "error",
+        message: paymentResult.message ?? "Wystąpił błąd. Spróbuj ponownie.",
+        values,
+      };
+    }
 
     return {
       status: "success",
       leadId: lead.id,
       requestedPackage: data.package,
     };
-  } catch {
+  } catch (error) {
+    if (error instanceof PackagePoolFullError) {
+      return {
+        status: "error",
+        message: PACKAGE_POOL_FULL_MESSAGE,
+        values,
+      };
+    }
+
     return {
       status: "error",
       message: "Wystąpił błąd. Spróbuj ponownie.",

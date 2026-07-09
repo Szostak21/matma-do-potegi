@@ -19,6 +19,7 @@ export async function runLazyValidation(): Promise<void> {
       type: PaymentType.DEPOSIT,
       status: PaymentStatus.PENDING,
       expiresAt: { lt: now },
+      lead: { isDeleted: false },
     },
     select: { id: true },
   });
@@ -50,7 +51,11 @@ export async function runLazyValidation(): Promise<void> {
         where: { id: payment.leadId },
       });
 
-      if (!lead || lead.status !== LeadStatus.PENDING_DEPOSIT) {
+      if (
+        !lead ||
+        lead.isDeleted ||
+        lead.status !== LeadStatus.PENDING_DEPOSIT
+      ) {
         return;
       }
 
@@ -71,6 +76,7 @@ export async function runLazyValidation(): Promise<void> {
         where: { id: lead.id },
         data: {
           status: LeadStatus.CANCELLED,
+          groupId: null,
           activePaymentId: null,
         },
       });
