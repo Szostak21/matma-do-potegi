@@ -209,7 +209,6 @@ export const DEPOSIT_PAYMENT = {
     "Cieszymy się na wspólne zajęcia! Aby ostatecznie potwierdzić chęć udziału, prosimy o wpłatę zaliczki. Zarezerwowaliśmy to miejsce specjalnie dla Ciebie na najbliższe 30 minut.",
   payButtonLabel: "Przejdź do płatności",
   summaryPackage: "Poziom zajęć",
-  summaryStartNote: "Start zajęć",
   successTitle: "Płatność zakończona",
   successProcessingTitle: "Przetwarzamy wpłatę",
   successMessage:
@@ -276,7 +275,6 @@ export const EMAILS = {
     intro:
       "Przygotowaliśmy dla Ciebie link do opłacenia zaliczki. Po wpłacie miejsce na wybranym poziomie zostanie oficjalnie zarezerwowane.",
     packageLabel: "Poziom zajęć",
-    startNoteLabel: "Start zajęć",
     amountLabel: "Kwota zaliczki",
     expiryLabel: "Czas na opłacenie",
     expiryValue: "24 godziny od wysłania tego maila",

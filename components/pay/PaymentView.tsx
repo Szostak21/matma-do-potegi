@@ -7,7 +7,7 @@ import { DepositNote } from "@/components/pay/DepositPaymentExtras";
 import { PayButton } from "@/components/pay/PayButton";
 import { AlternateTermPhoneGate } from "@/components/ui/AlternateTermPhoneGate";
 import { Card } from "@/components/ui/Card";
-import { DEPOSIT_PAYMENT, PACKAGE_AVAILABILITY } from "@/lib/content";
+import { DEPOSIT_PAYMENT } from "@/lib/content";
 import { formatPln } from "@/lib/money";
 import type { PaymentDisplayState } from "@/lib/payments";
 
@@ -47,10 +47,6 @@ function ReservationSummary({
       <SummaryRow
         label={DEPOSIT_PAYMENT.summaryPackage}
         value={packageName}
-      />
-      <SummaryRow
-        label={DEPOSIT_PAYMENT.summaryStartNote}
-        value={PACKAGE_AVAILABILITY.octoberNote}
       />
       <SummaryRow label="Rodzaj" value={DEPOSIT_PAYMENT.summaryType} />
       <SummaryRow label="Kwota" value={formatPln(amount)} />

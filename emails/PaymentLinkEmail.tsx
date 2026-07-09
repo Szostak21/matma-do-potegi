@@ -2,7 +2,7 @@ import { Button, Heading, Link, Section, Text } from "@react-email/components";
 
 import { BaseLayout } from "@/emails/components/BaseLayout";
 import { emailTheme, primaryButtonStyle } from "@/emails/components/theme";
-import { EMAILS, DEPOSIT_PAYMENT, PACKAGE_AVAILABILITY } from "@/lib/content";
+import { EMAILS, DEPOSIT_PAYMENT } from "@/lib/content";
 
 export type PaymentLinkEmailProps = {
   parentName: string;
@@ -71,10 +71,6 @@ export function PaymentLinkEmail({
             <strong>{copy.packageLabel}:</strong> {packageName}
           </Text>
         ) : null}
-        <Text style={summaryRowStyle}>
-          <strong>{copy.startNoteLabel}:</strong>{" "}
-          {PACKAGE_AVAILABILITY.octoberNote}
-        </Text>
         <Text style={summaryRowStyle}>
           <strong>{copy.amountLabel}:</strong> {amountFormatted}
         </Text>

@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { LeadStatus } from "@prisma/client";
 
 import { assertAdminSecret } from "@/lib/auth";
@@ -63,6 +64,7 @@ export async function assignLeadToGroup(
     }
 
     if (lead.groupId === groupId) {
+      revalidatePath("/admin");
       return { status: "success", message: "Grupa już przypisana." };
     }
 
@@ -118,6 +120,8 @@ export async function assignLeadToGroup(
         data: { groupId },
       });
     });
+
+    revalidatePath("/admin");
 
     return { status: "success", message: "Grupa przypisana." };
   } catch (error) {

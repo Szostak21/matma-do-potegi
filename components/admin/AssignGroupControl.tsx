@@ -1,7 +1,8 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
@@ -51,7 +52,14 @@ export function AssignGroupControl({
   requestedPackage,
   groups,
 }: AssignGroupControlProps) {
+  const router = useRouter();
   const [state, formAction] = useActionState(assignLeadToGroup, initialState);
+
+  useEffect(() => {
+    if (state.status === "success") {
+      router.refresh();
+    }
+  }, [state.status, router]);
 
   const eligibleGroups = groups.filter(
     (group) =>
@@ -73,12 +81,17 @@ export function AssignGroupControl({
 
   return (
     <div className="space-y-2">
-      <form action={formAction} className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <form
+        key={`${leadId}-${currentGroupId ?? "none"}`}
+        action={formAction}
+        className="flex flex-col gap-2 sm:flex-row sm:items-center"
+      >
         <input type="hidden" name="leadId" value={leadId} />
         <input type="hidden" name="secret" value={secret} />
         <select
           name="groupId"
           defaultValue={currentGroupId ?? ""}
+          required
           className="min-w-0 flex-1 rounded-full border border-ink/15 bg-white px-4 py-2 text-xs text-ink"
         >
           <option value="" disabled>
@@ -99,11 +112,15 @@ export function AssignGroupControl({
       </form>
 
       {state.status === "success" && state.message ? (
-        <p className="text-xs text-olive-700">{state.message}</p>
+        <p className="text-xs text-olive-700" role="status">
+          {state.message}
+        </p>
       ) : null}
 
       {state.status === "error" && state.message ? (
-        <p className="text-xs text-red-600">{state.message}</p>
+        <p className="text-xs text-red-600" role="alert">
+          {state.message}
+        </p>
       ) : null}
     </div>
   );
