@@ -54,6 +54,9 @@ export const LEGAL = {
                 text: "Zaliczka jest odliczana od opłaty za pierwszy miesiąc zajęć.",
               },
               {
+                text: "Z uwagi na to, że dokładny harmonogram zajęć ustalany jest po rozpoczęciu roku akademickiego, Prowadzący w porozumieniu z Uczniami przedstawia propozycje terminów dla poszczególnych grup w pierwszych tygodniach października. Jeżeli żaden z zaproponowanych terminów nie będzie odpowiadał Uczniowi, wpłacona zaliczka podlega zwrotowi w pełnej wysokości (100%) w terminie 7 dni roboczych, a rezerwacja zostaje anulowana.",
+              },
+              {
                 text: "Zgodnie z art. 38 ust. 1 pkt 1 ustawy o prawach konsumenta, Użytkownik płacąc zaliczkę wyraża wyraźną zgodę na rozpoczęcie świadczenia usługi przed upływem 14-dniowego terminu na odstąpienie od umowy zawartej na odległość i przyjmuje do wiadomości, że w ten sposób traci prawo do odstąpienia od umowy.",
               },
               {
