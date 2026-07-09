@@ -205,7 +205,7 @@ export function ContactForm() {
                         >
                           {option.value && packageName
                             ? isFull
-                              ? `${packageName} — brak miejsc`
+                              ? `${packageName} - brak miejsc`
                               : packageName
                             : option.label}
                         </option>

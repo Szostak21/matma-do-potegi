@@ -77,7 +77,7 @@ export function AddLeadModal({ secret }: AddLeadModalProps) {
                   Dodaj ucznia
                 </h2>
                 <p className="mt-1 text-sm text-ink/60">
-                  Ręczne dodanie zgłoszenia — gotówka lub link online.
+                  Ręczne dodanie zgłoszenia - gotówka lub link online.
                 </p>
               </div>
               <Button

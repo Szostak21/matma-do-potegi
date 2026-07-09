@@ -17,47 +17,53 @@ export const HERO = {
   badge: "Zapisy otwarte",
   title: "Matura z matematyki bez stresu. Otwieramy drzwi na wymarzone studia.",
   subtitle:
-    "Kameralne grupy premium (3–4 os.) na krakowskim Kurdwanowie. Autorskie materiały i pełne wsparcie tuż obok Twojego domu.",
+    "Skuteczna nauka w małych grupach (3–4 os.) na Kurdwanowie. Kompleksowe materiały, przyjazna atmosfera i pełne wsparcie między zajęciami.",
   primaryCta: { label: "Zapisz się", href: "/#zapisy" },
   secondaryCta: { label: "Zobacz ofertę", href: "/#oferta" },
 } as const;
 
+export const ABOUT = {
+  title: "Metodologia, która daje wyniki bez stresu",
+  description:
+    "Wygodnie, systematycznie i w przyjaznej grupie. Otrzymujesz pełen pakiet: od wyselekcjonowanych zadań egzaminacyjnych po ciągłe wsparcie między zajęciami.",
+} as const;
+
 export const FEATURES = [
   {
-    title: "Kameralne grupy 3–4 osoby",
+    title: "Małe grupy 3–4 osobowe",
     description:
-      "Każdy uczeń ma przestrzeń na pytania. Nie giniesz w tłumie — uczysz się w atmosferze, która sprzyja koncentracji i rozwojowi.",
+      "Każdy uczeń ma przestrzeń na pytania. Nie giniesz w tłumie - uczysz się w atmosferze, która sprzyja koncentracji i rozwojowi.",
     icon: "Users" as const,
   },
   {
-    title: "Autorskie materiały",
+    title: "Wyselekcjonowane zadania",
     description:
-      "Fizyczna teczka z zadaniami dopasowanymi do poziomu grupy. Cyfrowe paczki po każdej lekcji — także gdy Cię nie było.",
+      "Pracujemy na zestawach zgodnych z wymogami CKE. Ćwiczymy kluczowe typy zadań, oraz rozwiązujemy próbne arkusze na czas.",
     icon: "BookOpen" as const,
   },
   {
     title: "Wsparcie między zajęciami",
     description:
-      "Mikrogrupa na Messengerze dla każdej grupy. Pytasz o zadania asynchronicznie — odpowiadamy, gdy potrzebujesz.",
+      "Mikrogrupa na Messengerze dla każdej grupy. Pytasz o zadania asynchronicznie - odpowiadamy, gdy potrzebujesz.",
     icon: "MessageCircle" as const,
   },
   {
     title: "Tuż obok domu",
     description:
-      "Zajęcia na krakowskim Kurdwanowie (ul. Wysłouchów). Bez dojazdów przez pół miasta — więcej czasu na naukę i odpoczynek.",
+      "Zajęcia na Kurdwanowie (ul. Wysłouchów). Bez dojazdów przez pół miasta - więcej czasu na naukę i odpoczynek.",
     icon: "MapPin" as const,
   },
 ] as const;
 
 export const TEACHER = {
   name: "Poznaj nauczyciela",
-  title: "Doświadczenie, które buduje pewność siebie",
+  title: "Paweł Szostak",
   description:
-    "Prowadzę zajęcia z matematyki od lat, łącząc rzetelną wiedzę z indywidualnym podejściem. Wierzę, że matura to nie loteria — to proces, który można zaplanować i przejść spokojnie. Moi uczniowie doceniają klarowne tłumaczenie trudnych zagadnień i autorskie materiały dopasowane do ich tempa.",
+    "Wierzę, że matura to nie loteria - to proces, który można zaplanować i przejść spokojnie. Doskonale wiem, jak to zrobić, ponieważ sam napisałem maturę z matematyki (podstawową i rozszerzoną) na równe 100%. Od lat z sukcesami tłumaczę ten przedmiot innym, zaczynając od przygotowywania znajomych i rodziny. Na moich zajęciach stawiam na cierpliwość. Zamiast podawać gotowe wzory i rozwiązania na tacy, wolę zadawać odpowiednie pytania i delikatnie naprowadzać. Dzięki temu uczniowie samodzielnie dochodzą do prawidłowych odpowiedzi, co najlepiej utrwala wiadomości i buduje pewność siebie przed egzaminem.",
   experience: [
-    "Przygotowanie do matury podstawowej i rozszerzonej",
-    "Praca z uczniami na różnych poziomach startowych",
-    "Autorskie zestawy zadań i arkusze treningowe",
+    "Wynik 100% z matury podstawowej i rozszerzonej",
+    "Wieloletnie doświadczenie i sprawdzone metody tłumaczenia",
+    "Praca wyłącznie na wyselekcjonowanych zadaniach i arkuszach CKE",
   ],
 } as const;
 
@@ -72,7 +78,7 @@ export const PRICING = [
     features: [
       "Grupy 3–4 osobowe",
       "120 minut intensywnej pracy",
-      "Autorskie materiały w cenie",
+      "Wyselekcjonowane zadania i próbne arkusze",
       "Wsparcie na Messengerze",
     ],
   },
@@ -86,7 +92,7 @@ export const PRICING = [
     features: [
       "Grupy 3–4 osobowe",
       "90 minut skupionej nauki",
-      "Autorskie materiały w cenie",
+      "Wyselekcjonowane zadania i próbne arkusze",
       "Wsparcie na Messengerze",
     ],
   },
@@ -101,7 +107,7 @@ export const PRICING = [
       "Grupy 3–4 osobowe",
       "90 minut zajęć",
       "Przygotowanie do egzaminu ósmoklasisty",
-      "Materiały i wsparcie w cenie",
+      "Zestawy zadań i próbne arkusze w cenie",
     ],
   },
   {
@@ -123,21 +129,21 @@ export const PRICING = [
 export const REVIEWS = [
   {
     quote:
-      "Syn przestał bać się matematyki. Kameralna grupa i spokojne tłumaczenie zrobiły różnicę — w końcu rozumie, a nie wkuwa na pamięć.",
+      "Syn przestał bać się matematyki. Mała grupa i spokojne tłumaczenie zrobiły różnicę - w końcu rozumie, a nie wkuwa na pamięć.",
     author: "Anna K.",
     role: "Rodzic maturzysty",
   },
   {
     quote:
-      "Materiały są świetne — konkretne, bez lania wody. Na maturze rozszerzonej zdałem na 82%, choć na początku roku miałem ledwo 4.",
+      "Najbardziej doceniam to, że Paweł nie rozwiązywał zadań za mnie, tylko naprowadzał, żebym sam wpadł na pomysł. Wynik 86% z rozszerzenia mówi sam za siebie.",
     author: "Michał W.",
     role: "Maturzysta 2025",
   },
   {
     quote:
-      "Córka chodzi z przyjemnością. Lokalizacja na Kurdwanowie to ogromny plus — nie tracimy godzin na dojazdy.",
-    author: "Piotr M.",
-    role: "Rodzic ósmoklasistki",
+      "Przyszłam na zajęcia z ogromnymi brakami. Zajęcia bardzo pomogły mi poukładać wiedzę, a na właściwym egzaminie nic mnie nie zaskoczyło. Zdałam bez problemu na 72%!",
+    author: "Kasia M.",
+    role: "Maturzystka 2025",
   },
 ] as const;
 
@@ -150,17 +156,17 @@ export const FAQ_ITEMS = [
   {
     question: "Co jeśli uczeń opuści zajęcia?",
     answer:
-      "Opłata to abonament za miejsce — brak zwrotów za nieobecności. Po każdej lekcji nieobecny uczeń otrzymuje cyfrową paczkę materiałów. Można też dokupić lekcję indywidualną 1:1.",
+      "Opłata to abonament za miejsce - brak zwrotów za nieobecności, ale nie zostawiamy naszych uczniów w potrzebie - po każdej lekcji nieobecny uczeń otrzymuje podsumowanie zajęć, listę zadań do nadrobienia oraz pomoc. Można też dokupić lekcję indywidualną 1:1.",
   },
   {
     question: "Jak wygląda proces zapisu?",
     answer:
-      `Wypełniasz formularz, wybierasz poziom zajęć i wpłacasz zaliczkę 50 zł. Po potwierdzeniu wpłaty miejsce na danym poziomie jest zarezerwowane. Dokładny termin ustalimy we wrześniu/październiku po teście poziomującym. Możesz też zadzwonić pod numer ${CONTACT_PHONE}.`,
+      `Wypełniasz formularz, wybierasz poziom zajęć i wpłacasz zaliczkę 50 zł. Po potwierdzeniu wpłaty miejsce na danym poziomie jest zarezerwowane. Dokładny termin ustalimy we wrześniu po teście poziomującym.`,
   },
   {
     question: "Gdzie odbywają się zajęcia?",
     answer:
-      "Na krakowskim Kurdwanowie, ul. Wysłouchów. Dokładny adres przekażemy po rezerwacji miejsca.",
+      "Na Kurdwanowie, ul. Wysłouchów. Dokładny adres przekażemy po rezerwacji miejsca.",
   },
   {
     question: "Czy mogę zapisać się na zajęcia indywidualne?",
@@ -176,7 +182,7 @@ export const CONTACT = {
 } as const;
 
 export const PACKAGE_POOL_FULL_MESSAGE =
-  "Brak wolnych miejsc na wybranym poziomie. Skontaktuj się z nami — pomożemy znaleźć rozwiązanie.";
+  "Brak wolnych miejsc na wybranym poziomie. Skontaktuj się z nami - pomożemy znaleźć rozwiązanie.";
 
 export const PACKAGE_AVAILABILITY = {
   loading: "Sprawdzanie dostępności miejsc...",
@@ -268,7 +274,7 @@ export const FOOTER = {
 
 export const EMAILS = {
   paymentLink: {
-    subject: "Link do wpłaty zaliczki — Matma do potęgi",
+    subject: "Link do wpłaty zaliczki - Matma do potęgi",
     preview: "Opłać zaliczkę 50 zł, aby zarezerwować miejsce.",
     title: "Zaliczka",
     greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
@@ -279,14 +285,14 @@ export const EMAILS = {
     expiryLabel: "Czas na opłacenie",
     expiryValue: "24 godziny od wysłania tego maila",
     cta: "Opłać zaliczkę",
-    renewalSubject: "Nowy link do wpłaty zaliczki — Matma do potęgi",
-    renewalPreview: "Poprzedni link wygasł — oto nowy, ważny 24 godziny.",
+    renewalSubject: "Nowy link do wpłaty zaliczki - Matma do potęgi",
+    renewalPreview: "Poprzedni link wygasł - oto nowy, ważny 24 godziny.",
     renewalIntro:
-      "Poprzedni link do płatności wygasł. Przesyłamy nowy link do opłacenia zaliczki — jest ważny przez 24 godziny od wysłania tej wiadomości.",
+      "Poprzedni link do płatności wygasł. Przesyłamy nowy link do opłacenia zaliczki - jest ważny przez 24 godziny od wysłania tej wiadomości.",
     linkFallback: "Jeśli przycisk nie działa, skopiuj i wklej ten link w przeglądarce:",
   },
   depositConfirmation: {
-    subject: "Potwierdzenie wpłaty zaliczki — Matma do potęgi",
+    subject: "Potwierdzenie wpłaty zaliczki - Matma do potęgi",
     preview: "Dziękujemy za wpłatę zaliczki.",
     greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
     thanks:
@@ -294,7 +300,7 @@ export const EMAILS = {
     confirmed:
       "Potwierdzamy rezerwację miejsca na wybranym poziomie.",
     confirmedNextSteps:
-      "We wrześniu skontaktujemy się z Tobą i zaprosimy na krótki, bezpłatny test poziomujący. Start zajęć planujemy na początek października — dokładny dzień i godzinę ustalimy wspólnie po zebraniu grupy.",
+      "We wrześniu skontaktujemy się z Tobą i zaprosimy na krótki, bezpłatny test poziomujący. Start zajęć planujemy na początek października - dokładny dzień i godzinę ustalimy wspólnie po zebraniu grupy.",
     confirmedClosing: "Cieszymy się, że dołączasz do nas!",
     packageLabel: "Poziom zajęć",
     amountLabel: "Wpłacona kwota",

@@ -4,10 +4,10 @@ export const IMAGE_ASSETS = {
     logo: "/images/brand/logo.png",
   },
   hero: {
-    /** Zdjęcia do sekcji hero — dodaj pliki do `public/images/hero/`. */
+    /** Zdjęcia do sekcji hero - dodaj pliki do `public/images/hero/`. */
   },
   teacher: {
-    /** Zdjęcie nauczyciela — dodaj plik do `public/images/teacher/`. */
+    /** Zdjęcie nauczyciela - dodaj plik do `public/images/teacher/`. */
   },
 } as const;
 

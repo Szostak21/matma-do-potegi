@@ -13,7 +13,7 @@ export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
 
 export function packageLabel(pkg: PackageType | null | undefined): string {
   if (!pkg) {
-    return "—";
+    return "-";
   }
 
   return PACKAGES[pkg]?.name ?? pkg;

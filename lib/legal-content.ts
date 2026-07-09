@@ -230,7 +230,7 @@ export const LEGAL = {
                 text: "**Dane ucznia i szczegóły edukacyjne:** wybrana grupa, imię ucznia, obecna ocena z matematyki, oczekiwany wynik (w celu odpowiedniego dostosowania poziomu zajęć i optymalizacji procesu nauczania).",
               },
               {
-                text: "**Dane techniczne i analityczne:** adres IP, informacje o przeglądarce i aktywności na stronie (w celach statystycznych, bezpieczeństwa oraz — za odrębną zgodą — marketingowych).",
+                text: "**Dane techniczne i analityczne:** adres IP, informacje o przeglądarce i aktywności na stronie (w celach statystycznych, bezpieczeństwa oraz - za odrębną zgodą - marketingowych).",
               },
             ],
           },

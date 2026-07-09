@@ -127,7 +127,7 @@ function LeadAction({
     return (
       <div className="space-y-2">
         <p className="text-xs text-amber-700">
-          Rezerwacja wygasła — możesz wysłać nowy link 24h, jeśli są wolne
+          Rezerwacja wygasła - możesz wysłać nowy link 24h, jeśli są wolne
           miejsca na poziomie.
         </p>
         <ResendPaymentLink24hButton leadId={lead.id} secret={secret} />
@@ -236,7 +236,7 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                     {lead.parentName}
                   </td>
                   <td className="px-6 py-4 text-ink/80">
-                    {lead.studentName ?? "—"}
+                    {lead.studentName ?? "-"}
                   </td>
                   <td className="px-6 py-4 text-ink/80">
                     <div>{lead.email}</div>
@@ -246,7 +246,7 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                     {packageLabel(lead.requestedPackage)}
                   </td>
                   <td className="max-w-[180px] px-6 py-4 text-xs text-ink/70">
-                    {lead.notes ?? "—"}
+                    {lead.notes ?? "-"}
                   </td>
                   <td className="min-w-[200px] px-6 py-4">
                     <PlacementNotesEditor
@@ -268,7 +268,7 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                         ) : null}
                       </div>
                     ) : (
-                      <span className="text-ink/40">—</span>
+                      <span className="text-ink/40">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4">

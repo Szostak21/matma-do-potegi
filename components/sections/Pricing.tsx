@@ -11,7 +11,7 @@ export function Pricing() {
         <SectionHeading
           eyebrow="Oferta"
           title="Cennik dopasowany do Twoich celów"
-          description="Przejrzyste pakiety bez ukrytych kosztów. Wszystkie ceny grupowe obejmują autorskie materiały i wsparcie między zajęciami."
+          description="Przejrzyste pakiety bez ukrytych kosztów. Wszystkie ceny grupowe obejmują starannie dobrane zestawy zadań oraz próbne egzaminy i wsparcie między zajęciami."
           align="center"
           className="mx-auto"
         />

@@ -69,7 +69,7 @@ export function AssignGroupControl({
 
   if (!requestedPackage) {
     return (
-      <p className="text-xs text-ink/50">Brak pakietu — nie można przypisać grupy.</p>
+      <p className="text-xs text-ink/50">Brak pakietu - nie można przypisać grupy.</p>
     );
   }
 

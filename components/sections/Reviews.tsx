@@ -11,7 +11,7 @@ export function Reviews() {
         <SectionHeading
           eyebrow="Opinie"
           title="Co mówią rodzice i uczniowie"
-          description="Zaufanie budujemy wynikami i relacją — oto kilka opinii z naszych grup."
+          description="Zaufanie budujemy wynikami i relacją - oto kilka opinii z naszych grup."
           align="center"
           className="mx-auto"
         />

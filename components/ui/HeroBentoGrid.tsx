@@ -14,12 +14,12 @@ const HERO_TILES: HeroTile[] = [
   },
   {
     id: "tile-2",
-    label: "Materiały autorskie",
+    label: "Zadania i arkusze",
     className: "bg-olive-300 h-56 lg:h-64",
   },
   {
     id: "tile-3",
-    label: "Kameralna atmosfera",
+    label: "Przyjazna atmosfera",
     className: "bg-olive-100 h-52 lg:h-48",
   },
   {

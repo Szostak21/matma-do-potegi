@@ -62,7 +62,7 @@ function mapRenewPaymentError(code: RenewPaymentError["code"]): string {
     case "GROUP_FULL":
       return "Brak miejsc w grupie. Nie można odnowić wygasłej rezerwacji.";
     case "NO_GROUP":
-      return "Brak przypisanej grupy — przypisz grupę przed odnowieniem linku.";
+      return "Brak przypisanej grupy - przypisz grupę przed odnowieniem linku.";
     case "INVALID_STATUS":
       return "Nie można odnowić linku w tym statusie rezerwacji.";
     case "NOT_FOUND":
