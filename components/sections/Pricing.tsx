@@ -22,7 +22,7 @@ export function Pricing() {
               name={plan.name}
               price={plan.price}
               period={plan.period}
-              features={[plan.duration, ...plan.features]}
+              features={plan.features}
               highlighted={plan.highlighted}
             />
           ))}
