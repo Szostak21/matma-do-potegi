@@ -6,7 +6,7 @@ export type PricingCardProps = {
   name: string;
   price: string;
   period: string;
-  features: string[];
+  features: readonly string[];
   highlighted?: boolean;
   ctaHref?: string;
 };
