@@ -10,7 +10,7 @@ export const IMAGE_ASSETS = {
     closeUp: "/images/hero/close_up.png",
   },
   teacher: {
-    /** Zdjęcie nauczyciela - dodaj plik do `public/images/teacher/`. */
+    portrait: "/images/teacher/portrait.jpg",
   },
 } as const;
 

@@ -1,23 +1,29 @@
+import Image from "next/image";
+
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { IMAGE_ASSETS } from "@/lib/assets";
 import { TEACHER } from "@/lib/content";
 
 export function Teacher() {
   return (
     <Section id="nauczyciel" variant="deep">
       <Container>
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-olive-200 shadow-soft ring-1 ring-ink/5">
-            {/* Zdjęcie: dodaj plik do public/images/teacher/ i wpisz ścieżkę w lib/assets.ts */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-ink/70 backdrop-blur-sm">
-                Zdjęcie nauczyciela
-              </span>
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
+          <div className="shrink-0 self-center lg:self-auto lg:pt-2">
+            <div className="relative size-24 overflow-hidden rounded-full bg-olive-200 shadow-soft ring-2 ring-olive-200 sm:size-28 lg:size-32">
+              <Image
+                src={IMAGE_ASSETS.teacher.portrait}
+                alt={`${TEACHER.title} - nauczyciel matematyki`}
+                fill
+                sizes="(max-width: 640px) 96px, (max-width: 1024px) 112px, 128px"
+                className="object-cover"
+              />
             </div>
           </div>
 
-          <div>
+          <div className="min-w-0 flex-1">
             <SectionHeading
               eyebrow="Nauczyciel"
               title={TEACHER.title}
