@@ -3,6 +3,7 @@ import { CheckCircle, Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { PaymentSummary } from "@/components/pay/PaymentSummary";
+import { PurchaseTracker } from "@/components/pay/PurchaseTracker";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
@@ -44,6 +45,9 @@ export default async function PaySuccessPage({ searchParams }: PaySuccessPagePro
 
   return (
     <main className="flex min-h-full flex-1 items-center bg-oatmeal py-12">
+      {isPaid ? (
+        <PurchaseTracker token={token} amountGrosze={payment.amount} />
+      ) : null}
       <Container className="w-full max-w-lg">
         <Card className="text-center">
           {isPaid ? (

@@ -2,21 +2,15 @@
 
 import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useSyncExternalStore } from "react";
+import { Suspense, useEffect, useRef, useSyncExternalStore } from "react";
 
+import { trackPageView } from "@/lib/analytics-events";
 import { getGaMeasurementId, META_PIXEL_ID } from "@/lib/analytics-config";
 import {
   COOKIE_CONSENT_CHANGE_EVENT,
   getCookieConsent,
   type CookieConsent,
 } from "@/lib/cookie-consent";
-
-declare global {
-  interface Window {
-    dataLayer?: unknown[];
-    gtag?: (...args: unknown[]) => void;
-  }
-}
 
 const GA_ID = getGaMeasurementId();
 
@@ -32,21 +26,21 @@ function getServerConsentSnapshot(): CookieConsent | null {
   return null;
 }
 
-function GoogleAnalyticsPageView() {
+function RoutePageViewTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (!GA_ID || typeof window.gtag !== "function") {
-      return;
-    }
-
     const query = searchParams.toString();
     const pagePath = query ? `${pathname}?${query}` : pathname;
 
-    window.gtag("config", GA_ID, {
-      page_path: pagePath,
-    });
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    trackPageView(pagePath);
   }, [pathname, searchParams]);
 
   return null;
@@ -62,6 +56,8 @@ export function Analytics() {
   if (consent !== "granted") {
     return null;
   }
+
+  const hasTracking = Boolean(GA_ID || META_PIXEL_ID);
 
   return (
     <>
@@ -80,7 +76,10 @@ export function Analytics() {
               });
               gtag('config', '${GA_ID}', {
                 anonymize_ip: true,
-                send_page_view: true
+                send_page_view: false
+              });
+              gtag('event', 'page_view', {
+                page_path: window.location.pathname + window.location.search
               });
             `}
           </Script>
@@ -88,9 +87,6 @@ export function Analytics() {
             src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
             strategy="afterInteractive"
           />
-          <Suspense fallback={null}>
-            <GoogleAnalyticsPageView />
-          </Suspense>
         </>
       ) : null}
       {META_PIXEL_ID ? (
@@ -120,6 +116,11 @@ export function Analytics() {
             />
           </noscript>
         </>
+      ) : null}
+      {hasTracking ? (
+        <Suspense fallback={null}>
+          <RoutePageViewTracker />
+        </Suspense>
       ) : null}
     </>
   );

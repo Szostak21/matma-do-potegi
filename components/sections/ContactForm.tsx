@@ -2,7 +2,7 @@
 
 import type { PackageType } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { submitLead } from "@/actions/leads";
 import { Card } from "@/components/ui/Card";
@@ -22,6 +22,7 @@ import {
 } from "@/lib/content";
 import { PACKAGES } from "@/lib/constants";
 import type { PackageAvailability } from "@/lib/packages";
+import { trackFormStart, trackLeadSubmit } from "@/lib/analytics-events";
 import type { LeadFormState } from "@/lib/validations/lead";
 
 const initialState: LeadFormState = { status: "idle" };
@@ -73,6 +74,16 @@ export function ContactForm() {
   const [availability, setAvailability] = useState<PackageAvailability[]>([]);
   const [loadingAvailability, setLoadingAvailability] = useState(true);
   const packageFieldKey = state.values?.package ?? "package-default";
+  const formStartTracked = useRef(false);
+
+  function handleFormInteraction() {
+    if (formStartTracked.current) {
+      return;
+    }
+
+    formStartTracked.current = true;
+    trackFormStart();
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -108,9 +119,12 @@ export function ContactForm() {
 
   useEffect(() => {
     if (state.status === "success" && state.leadId) {
+      trackLeadSubmit({
+        packageType: state.values?.package ?? selectedPackage,
+      });
       router.push(`/rezerwacja/${state.leadId}/podsumowanie`);
     }
-  }, [state.status, state.leadId, router]);
+  }, [state.status, state.leadId, state.values?.package, selectedPackage, router]);
 
   const selectedAvailability = availability.find(
     (item) => item.packageType === selectedPackage,
@@ -132,7 +146,12 @@ export function ContactForm() {
           />
 
           <Card className="mt-10">
-            <form action={formAction} className="space-y-6">
+            <form
+              action={formAction}
+              className="space-y-6"
+              onFocus={handleFormInteraction}
+              onChange={handleFormInteraction}
+            >
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="parentName">

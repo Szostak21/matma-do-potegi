@@ -10,6 +10,8 @@ import {
 } from "@/actions/payments";
 import { Button } from "@/components/ui/Button";
 import { DEPOSIT_PAYMENT } from "@/lib/content";
+import { trackBeginCheckout } from "@/lib/analytics-events";
+import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
 
 const initialState: StartDepositCheckoutState = { status: "idle" };
 
@@ -37,6 +39,7 @@ export function PayButton({ token }: PayButtonProps) {
 
   useEffect(() => {
     if (state.status === "success" && state.url) {
+      trackBeginCheckout({ value: DEPOSIT_AMOUNT_GROSZE / 100 });
       window.location.href = state.url;
     }
   }, [state.status, state.url]);

@@ -294,6 +294,10 @@ export const LEGAL = {
               },
             ],
           },
+          {
+            kind: "paragraph",
+            text: "W ramach korzystania z Google Analytics 4 i Meta Pixel dane mogą być przekazywane do podmiotów z grupy Google LLC oraz Meta Platforms, Inc. z siedzibą w Stanach Zjednoczonych. Transfer odbywa się na podstawie decyzji Komisji Europejskiej w sprawie adekwatności ochrony (EU-US Data Privacy Framework) lub standardowych klauzul umownych zatwierdzonych przez Komisję Europejską.",
+          },
         ],
       },
       {
@@ -302,6 +306,10 @@ export const LEGAL = {
           {
             kind: "paragraph",
             text: "Dane związane z realizacją usług edukacyjnych przechowujemy przez okres ich świadczenia, a po zakończeniu współpracy – przez czas wymagany przepisami prawa podatkowego (standardowo 5 lat od końca roku kalendarzowego) oraz do czasu przedawnienia ewentualnych roszczeń cywilnoprawnych.",
+          },
+          {
+            kind: "paragraph",
+            text: "Decyzja o wyrażeniu lub odmowie zgody na pliki cookies analityczne i marketingowe jest zapisywana lokalnie w przeglądarce użytkownika (localStorage) i przechowywana do momentu jej wycofania lub usunięcia danych przeglądarki. Po upływie 12 miesięcy od ostatniej decyzji baner cookies może zostać wyświetlony ponownie w celu potwierdzenia preferencji.",
           },
         ],
       },
@@ -325,7 +333,7 @@ export const LEGAL = {
               { text: "wniesienia sprzeciwu wobec przetwarzania," },
               { text: "przenoszenia danych," },
               {
-                text: "cofnięcia zgody na pliki cookies analityczne (Google Analytics 4) i marketingowe (Meta Pixel) w dowolnym momencie.",
+                text: "cofnięcia zgody na pliki cookies analityczne (Google Analytics 4) i marketingowe (Meta Pixel) w dowolnym momencie - poprzez link „Ustawienia plików cookies” w stopce strony lub kontakt z Administratorem.",
               },
             ],
           },
@@ -356,7 +364,7 @@ export const LEGAL = {
                 text: "**Marketingowe (Meta Pixel):** służą do mierzenia konwersji, analizy ruchu z kampanii Meta Ads oraz kierowania spersonalizowanych reklam w serwisach Meta. Skrypt Meta Pixel oraz powiązane pliki cookies są ładowane wyłącznie po wyrażeniu zgody w banerze cookies.",
               },
               {
-                text: "**Zarządzanie zgodą:** wybór „Tylko niezbędne” oznacza odmowę plików cookies analitycznych i marketingowych - Google Analytics 4 i Meta Pixel nie zostaną załadowane. Zgodę możesz w każdej chwili wycofać, usuwając pliki cookies w przeglądarce i odświeżając stronę, aby baner pojawił się ponownie.",
+                text: "**Zarządzanie zgodą:** wybór „Tylko niezbędne” oznacza odmowę plików cookies analitycznych i marketingowych - Google Analytics 4 i Meta Pixel nie zostaną załadowane. Zgodę możesz w każdej chwili wycofać lub zmienić, klikając link „Ustawienia plików cookies” w stopce strony - baner cookies pojawi się ponownie i umożliwi nowy wybór. Decyzja jest zapisywana lokalnie w przeglądarce (localStorage), a nie w plikach cookies.",
               },
             ],
           },

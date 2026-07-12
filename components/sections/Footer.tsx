@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Container } from "@/components/ui/Container";
+import { CookieSettingsButton } from "@/components/ui/CookieSettingsButton";
 import { CONTACT_PHONE, CONTACT_PHONE_TEL, FOOTER } from "@/lib/content";
 
 export function Footer() {
@@ -27,6 +28,7 @@ export function Footer() {
                   {link.label}
                 </Link>
               ))}
+              <CookieSettingsButton />
             </div>
 
             <div className="flex flex-col gap-2 text-sm text-ink/60">

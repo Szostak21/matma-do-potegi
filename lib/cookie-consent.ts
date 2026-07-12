@@ -30,3 +30,16 @@ export function setCookieConsent(consent: CookieConsent): void {
 export function hasAnalyticsConsent(): boolean {
   return getCookieConsent() === "granted";
 }
+
+export function resetCookieConsent(): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  localStorage.removeItem(COOKIE_CONSENT_KEY);
+  window.dispatchEvent(
+    new CustomEvent<CookieConsent | null>(COOKIE_CONSENT_CHANGE_EVENT, {
+      detail: null,
+    }),
+  );
+}
