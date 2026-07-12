@@ -4,7 +4,10 @@ export const IMAGE_ASSETS = {
     logo: "/images/brand/logo.png",
   },
   hero: {
-    /** Zdjęcia do sekcji hero - dodaj pliki do `public/images/hero/`. */
+    main: "/images/hero/main.png",
+    exerciseCloseUp: "/images/hero/excercise_close_up.png",
+    bookshelf: "/images/hero/bookshelf.png",
+    closeUp: "/images/hero/close_up.png",
   },
   teacher: {
     /** Zdjęcie nauczyciela - dodaj plik do `public/images/teacher/`. */

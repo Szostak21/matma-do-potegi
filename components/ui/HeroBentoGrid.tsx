@@ -1,33 +1,46 @@
+import Image from "next/image";
+
 import { cn } from "@/lib/cn";
+import { IMAGE_ASSETS } from "@/lib/assets";
 
 type HeroTile = {
   id: string;
-  label: string;
+  alt: string;
+  src: string;
   className: string;
 };
+
+const HERO_IMAGE_SIZES = "(max-width: 1023px) 256px, 400px";
 
 const HERO_TILES: HeroTile[] = [
   {
     id: "tile-1",
-    label: "Zajęcia grupowe",
-    className: "bg-olive-200 h-48 lg:h-56",
+    alt: "Zajęcia grupowe z matematyki",
+    src: IMAGE_ASSETS.hero.main,
+    className: "h-48 lg:h-56",
   },
   {
     id: "tile-2",
-    label: "Zadania i arkusze",
-    className: "bg-olive-300 h-56 lg:h-64",
+    alt: "Zadania i arkusze maturalne",
+    src: IMAGE_ASSETS.hero.exerciseCloseUp,
+    className: "h-56 lg:h-64",
   },
   {
     id: "tile-3",
-    label: "Przyjazna atmosfera",
-    className: "bg-olive-100 h-52 lg:h-48",
+    alt: "Pomoce naukowe do nauki matematyki",
+    src: IMAGE_ASSETS.hero.bookshelf,
+    className: "h-52 lg:h-48",
   },
   {
     id: "tile-4",
-    label: "Przygotowanie do matury",
-    className: "bg-cream-deep h-48 lg:h-56",
+    alt: "Indywidualne podejście na zajęciach",
+    src: IMAGE_ASSETS.hero.closeUp,
+    className: "h-48 lg:h-56",
   },
 ];
+
+/** Kolejność jak w bento na desktopie: lewa kolumna (góra→dół), prawa kolumna (góra→dół). */
+const HERO_MARQUEE_TILES = [0, 2, 1, 3].map((index) => HERO_TILES[index]);
 
 const MOBILE_TILE_SIZE = "h-56";
 
@@ -41,16 +54,18 @@ function HeroTile({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-3xl shadow-soft ring-1 ring-ink/5",
+        "relative overflow-hidden rounded-3xl shadow-soft",
         uniformMobileSize ? MOBILE_TILE_SIZE : tile.className,
       )}
-      aria-label={tile.label}
     >
-      <div className="absolute inset-0 flex items-end p-4">
-        <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-medium text-ink/80 backdrop-blur-sm">
-          {tile.label}
-        </span>
-      </div>
+      <Image
+        src={tile.src}
+        alt={tile.alt}
+        fill
+        priority
+        sizes={HERO_IMAGE_SIZES}
+        className="object-cover"
+      />
     </div>
   );
 }
@@ -67,7 +82,7 @@ function HeroMobileMarqueeGroup({
       {tiles.map((tile) => (
         <div
           key={ariaHidden ? `${tile.id}-dup` : tile.id}
-          className="w-64 shrink-0"
+          className="relative w-64 shrink-0"
         >
           <HeroTile tile={tile} uniformMobileSize />
         </div>
@@ -81,8 +96,8 @@ function HeroMobileMarquee() {
     <div className="min-w-0 lg:hidden">
       <div className="hero-marquee-viewport">
         <div className="hero-marquee-track">
-          <HeroMobileMarqueeGroup tiles={HERO_TILES} />
-          <HeroMobileMarqueeGroup tiles={HERO_TILES} ariaHidden />
+          <HeroMobileMarqueeGroup tiles={HERO_MARQUEE_TILES} />
+          <HeroMobileMarqueeGroup tiles={HERO_MARQUEE_TILES} ariaHidden />
         </div>
       </div>
     </div>
@@ -92,7 +107,6 @@ function HeroMobileMarquee() {
 export function HeroBentoGrid() {
   return (
     <>
-      {/* Desktop: asymetryczny bento grid */}
       <div className="hidden lg:grid lg:grid-cols-2 lg:gap-4">
         <div className="flex flex-col gap-4">
           <HeroTile tile={HERO_TILES[0]} />
