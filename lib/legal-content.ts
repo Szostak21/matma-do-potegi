@@ -5,7 +5,7 @@ import { CONTACT_PHONE } from "@/lib/content";
 const LESSON_ADDRESS =
   "ul. Marii i Bolesława Wysłouchów 13/11, 30-611 Kraków";
 
-const LEGAL_UPDATED_AT = "6 lipca 2026";
+const LEGAL_UPDATED_AT = "12 lipca 2026";
 
 export const LEGAL = {
   terms: {
@@ -230,7 +230,7 @@ export const LEGAL = {
                 text: "**Dane ucznia i szczegóły edukacyjne:** wybrana grupa, imię ucznia, obecna ocena z matematyki, oczekiwany wynik (w celu odpowiedniego dostosowania poziomu zajęć i optymalizacji procesu nauczania).",
               },
               {
-                text: "**Dane techniczne i analityczne:** adres IP, informacje o przeglądarce i aktywności na stronie (w celach statystycznych, bezpieczeństwa oraz - za odrębną zgodą - marketingowych).",
+                text: "**Dane techniczne i analityczne:** adres IP, informacje o przeglądarce, aktywność na stronie oraz dane zbierane przez Google Analytics 4 i Meta Pixel (np. odwiedzone podstrony, źródło ruchu, zdarzenia konwersji) - wyłącznie w celach statystycznych i marketingowych, po wyrażeniu zgody w banerze cookies.",
               },
             ],
           },
@@ -257,7 +257,7 @@ export const LEGAL = {
                 text: "**art. 6 ust. 1 lit. f RODO:** prawnie uzasadniony interes (dochodzenie roszczeń, bezpieczeństwo serwisu).",
               },
               {
-                text: "**art. 6 ust. 1 lit. a RODO:** Twoja dobrowolna zgoda (w przypadku plików cookies marketingowych).",
+                text: "**art. 6 ust. 1 lit. a RODO:** Twoja dobrowolna zgoda (pliki cookies analityczne Google Analytics 4 oraz marketingowe Meta Pixel).",
               },
             ],
           },
@@ -287,7 +287,10 @@ export const LEGAL = {
                 text: "**Resend, Inc.** – infrastruktura pocztowa (wysyłka e-maili i linków do płatności).",
               },
               {
-                text: "**Meta Platforms Ireland Limited** – analityka i działania marketingowe (np. Meta Pixel), wyłącznie po wyrażeniu zgody przez użytkownika, jeśli takie narzędzia zostaną uruchomione.",
+                text: "**Google Ireland Limited (Google Analytics 4)** – narzędzie analityczne służące do mierzenia ruchu na stronie, analizy zachowań użytkowników oraz optymalizacji serwisu. Google Analytics 4 korzysta z plików cookies i uruchamia się wyłącznie po wyrażeniu zgody w banerze cookies na tej stronie.",
+              },
+              {
+                text: "**Meta Platforms Ireland Limited (Meta Pixel)** – narzędzie analityczne i marketingowe służące do mierzenia skuteczności kampanii reklamowych Meta (Facebook, Instagram), tworzenia grup odbiorców oraz kierowania spersonalizowanych reklam. Meta Pixel korzysta z plików cookies i uruchamia się wyłącznie po wyrażeniu zgody w banerze cookies na tej stronie.",
               },
             ],
           },
@@ -322,7 +325,7 @@ export const LEGAL = {
               { text: "wniesienia sprzeciwu wobec przetwarzania," },
               { text: "przenoszenia danych," },
               {
-                text: "cofnięcia zgody na ciasteczka marketingowe w dowolnym momencie.",
+                text: "cofnięcia zgody na pliki cookies analityczne (Google Analytics 4) i marketingowe (Meta Pixel) w dowolnym momencie.",
               },
             ],
           },
@@ -337,17 +340,23 @@ export const LEGAL = {
         blocks: [
           {
             kind: "paragraph",
-            text: "Nasz serwis wykorzystuje pliki cookies:",
+            text: "Nasz serwis wykorzystuje pliki cookies. Narzędzia analityczne i marketingowe (Google Analytics 4, Meta Pixel) uruchamiają się wyłącznie po kliknięciu „Akceptuj wszystkie” w banerze cookies wyświetlanym przy pierwszej wizycie na stronie.",
           },
           {
             kind: "list",
             ordered: false,
             items: [
               {
-                text: "**Niezbędne (techniczne):** wymagane do prawidłowego działania strony (np. mechanizmy płatności Stripe, sesje). Nie wymagają zgody.",
+                text: "**Niezbędne (techniczne):** wymagane do prawidłowego działania strony (np. mechanizmy płatności Stripe, bezpieczeństwo serwisu). Nie wymagają zgody i są aktywne niezależnie od ustawień banera.",
               },
               {
-                text: "**Marketingowe i analityczne:** jeśli uruchomimy narzędzia marketingowe (np. Meta Pixel), będą włączane wyłącznie po wyrażeniu zgody na banerze informacyjnym. Zgodę można w każdej chwili wycofać, czyszcząc pliki cookies w przeglądarce.",
+                text: "**Analityczne (Google Analytics 4):** służą do zbierania statystyk odwiedzin i korzystania ze strony (np. liczba odsłon, źródła ruchu, zachowanie użytkowników). Skrypt Google Analytics 4 oraz powiązane pliki cookies są ładowane wyłącznie po wyrażeniu zgody w banerze cookies.",
+              },
+              {
+                text: "**Marketingowe (Meta Pixel):** służą do mierzenia konwersji, analizy ruchu z kampanii Meta Ads oraz kierowania spersonalizowanych reklam w serwisach Meta. Skrypt Meta Pixel oraz powiązane pliki cookies są ładowane wyłącznie po wyrażeniu zgody w banerze cookies.",
+              },
+              {
+                text: "**Zarządzanie zgodą:** wybór „Tylko niezbędne” oznacza odmowę plików cookies analitycznych i marketingowych - Google Analytics 4 i Meta Pixel nie zostaną załadowane. Zgodę możesz w każdej chwili wycofać, usuwając pliki cookies w przeglądarce i odświeżając stronę, aby baner pojawił się ponownie.",
               },
             ],
           },

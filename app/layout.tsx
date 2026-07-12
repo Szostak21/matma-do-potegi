@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 
+import { ConsentManager } from "@/components/ConsentManager";
 import { BRAND_ASSETS } from "@/lib/assets";
 
 const instrumentSerif = Instrument_Serif({
@@ -35,7 +36,10 @@ export default function RootLayout({
       lang="pl"
       className={`${instrumentSerif.variable} ${inter.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        {children}
+        <ConsentManager />
+      </body>
     </html>
   );
 }
