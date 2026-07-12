@@ -1,3 +1,5 @@
+import type { PackageType } from "@prisma/client";
+
 import { PACKAGES } from "@/lib/constants";
 import { formatPln } from "@/lib/money";
 
@@ -178,19 +180,20 @@ export const FAQ_ITEMS = [
 export const CONTACT = {
   title: "Zapisz się na zajęcia",
   description:
-    "Wybierz poziom zajęć i zabezpiecz miejsce zaliczką. Pola oznaczone * są wymagane.",
+    "Pierwszy krok do lepszych wyników z matematyki zaczyna się tutaj.",
 } as const;
 
 export const PACKAGE_POOL_FULL_MESSAGE =
-  "Brak wolnych miejsc na wybranym poziomie. Skontaktuj się z nami - pomożemy znaleźć rozwiązanie.";
+  "Brak wolnych miejsc na wybranym poziomie. Napisz do nas - zobaczymy co da się zrobić!";
 
 export const PACKAGE_AVAILABILITY = {
   loading: "Sprawdzanie dostępności miejsc...",
   spotsRemaining: (count: number) =>
     count === 1
-      ? "Zostało 1 wolne miejsce na tym poziomie"
-      : `Zostały ${count} wolne miejsca na tym poziomie`,
-  noSpots: "Brak wolnych miejsc na tym poziomie",
+      ? "Zostało 1 wolne miejsce na wybranym poziomie"
+      : `Zostały ${count} wolne miejsca na wybranym poziomie`,
+  noSpots:
+    "Brak wolnych miejsc na wybranym poziomie. Napisz do nas - zobaczymy co da się zrobić!",
   octoberNote:
     "Start zajęć na początku października. Dokładny dzień i godzinę ustalimy wspólnie po zebraniu grupy oraz krótkim, darmowym teście poziomującym.",
 } as const;
@@ -256,7 +259,18 @@ export function formatRemainingSpots(
   return `Zostały ${displayedAvailable} z ${maxCapacity} miejsc`;
 }
 
-export function getDisplayedAvailableSpots(actualAvailable: number): number {
+export function getDisplayedAvailableSpots(
+  actualAvailable: number,
+  packageType: PackageType,
+): number | null {
+  if (packageType === "INDYWIDUALNE") {
+    return null;
+  }
+
+  if (packageType === "MATURA_PODSTAWOWA") {
+    return actualAvailable >= 3 ? 3 : actualAvailable;
+  }
+
   return actualAvailable >= 3 ? 2 : actualAvailable;
 }
 
@@ -309,7 +323,7 @@ export const EMAILS = {
 } as const;
 
 export const PACKAGE_OPTIONS = [
-  { value: "", label: "Wybierz poziom zajęć" },
+  { value: "", label: "Wybierz typ zajęć" },
   { value: "MATURA_ROZSZERZONA", label: PACKAGES.MATURA_ROZSZERZONA.name },
   { value: "MATURA_PODSTAWOWA", label: PACKAGES.MATURA_PODSTAWOWA.name },
   { value: "OSMOKLASISTA", label: PACKAGES.OSMOKLASISTA.name },

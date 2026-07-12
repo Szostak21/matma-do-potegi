@@ -19,7 +19,7 @@ export type PackageAvailability = {
   capacity: number;
   taken: number;
   available: number;
-  displayedAvailable: number;
+  displayedAvailable: number | null;
 };
 
 type TransactionClient = Prisma.TransactionClient;
@@ -50,7 +50,7 @@ export async function getPackageAvailability(
     capacity,
     taken,
     available,
-    displayedAvailable: getDisplayedAvailableSpots(available),
+    displayedAvailable: getDisplayedAvailableSpots(available, packageType),
   };
 }
 

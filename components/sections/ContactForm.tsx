@@ -48,7 +48,7 @@ function PackageAvailabilityHint({
 
   const entry = availability.find((item) => item.packageType === packageType);
 
-  if (!entry) {
+  if (!entry || entry.displayedAvailable === null) {
     return null;
   }
 
