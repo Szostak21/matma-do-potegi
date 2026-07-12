@@ -39,8 +39,8 @@ const HERO_TILES: HeroTile[] = [
   },
 ];
 
-/** Kolejność jak w bento na desktopie: lewa kolumna (góra→dół), prawa kolumna (góra→dół). */
-const HERO_MARQUEE_TILES = [0, 2, 1, 3].map((index) => HERO_TILES[index]);
+/** Kolejność jak w bento na desktopie: górny rząd (lewo→prawo), dolny rząd (lewo→prawo). */
+const HERO_MARQUEE_TILES = [0, 1, 2, 3].map((index) => HERO_TILES[index]);
 
 const MOBILE_TILE_SIZE = "h-56";
 
