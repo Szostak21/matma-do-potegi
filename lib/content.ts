@@ -34,7 +34,7 @@ export const FEATURES = [
   {
     title: "Kameralne grupy",
     description:
-      "Każdy uczeń ma przestrzeń na pytania. Nie giniesz w tłumie - uczysz się w atmosferze, która sprzyja koncentracji i rozwojowi.",
+      "Każdy uczeń ma przestrzeń na pytania. Dzięki małym grupom, zapewniamy indywidualnie podejście do każdego ucznia.",
     icon: "Users" as const,
   },
   {
