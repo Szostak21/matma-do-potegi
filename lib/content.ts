@@ -19,7 +19,7 @@ export const HERO = {
   badge: "Zapisy otwarte",
   title: "Matura z matematyki bez stresu. Otwieramy drzwi na wymarzone studia.",
   subtitle:
-    "Profesjonalne zajęcia matematyki w kameralnych grupach. Nowoczesna sala w centrum Krakowa, sprawdzone metody tłumaczenia i spokojna atmosfera, której zaufali uczniowie oraz ich rodzice.",
+    "Profesjonalne zajęcia matematyki w kameralnych grupach. Nowoczesna sala w centrum Krakowa, sprawdzone metody i spokojna atmosfera, której zaufali uczniowie oraz ich rodzice.",
   primaryCta: { label: "Zapisz się", href: "/#zapisy" },
   secondaryCta: { label: "Zobacz ofertę", href: "/#oferta" },
 } as const;
