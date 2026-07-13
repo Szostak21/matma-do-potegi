@@ -19,7 +19,7 @@ export const HERO = {
   badge: "Zapisy otwarte",
   title: "Matura z matematyki bez stresu. Otwieramy drzwi na wymarzone studia.",
   subtitle:
-    "Skuteczna nauka w kameralnych grupach w nowoczesnym lokalu w centrum Krakowa. Unikalne podejście, potwierdzone wynikami oraz opiniami rodziców i uczniów.",
+    "Profesjonalne zajęcia matematyki w kameralnych grupach. Nowoczesna sala w centrum Krakowa, sprawdzone metody tłumaczenia i spokojna atmosfera, której zaufali uczniowie oraz ich rodzice.",
   primaryCta: { label: "Zapisz się", href: "/#zapisy" },
   secondaryCta: { label: "Zobacz ofertę", href: "/#oferta" },
 } as const;
@@ -46,7 +46,7 @@ export const FEATURES = [
   {
     title: "Wsparcie między zajęciami",
     description:
-      "Grupa na Messengerze/WhatsApp dla każdej grupy. Odpowiadamy, na pytania uczniów kiedy potrzebują.",
+      "Grupa na Messengerze lub WhatsApp dla każdej grupy. Odpowiadamy, na pytania uczniów kiedy potrzebują.",
     icon: "MessageCircle" as const,
   },
   {
