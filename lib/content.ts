@@ -276,7 +276,7 @@ export function getDisplayedAvailableSpots(
 
 export const FOOTER = {
   brand: "Matma do potęgi",
-  location: "Kraków, ścisłe centrum · ul. Chocimska 9",
+  location: "Kraków · ul. Chocimska 9",
   email: "kontakt@matmadopotegi.pl",
   phone: CONTACT_PHONE,
   copyright: `© ${new Date().getFullYear()} Matma do potęgi. Wszelkie prawa zastrzeżone.`,
