@@ -19,7 +19,7 @@ export const HERO = {
   badge: "Zapisy otwarte",
   title: "Matura z matematyki bez stresu. Otwieramy drzwi na wymarzone studia.",
   subtitle:
-    "Skuteczna nauka w kameralnych grupach w nowoczesnym lokalu w ścisłym centrum Krakowa (okolice AGH). Świetny dojazd prosto po lekcjach do profesjonalnej przestrzeni edukacyjnej.",
+    "Skuteczna nauka w kameralnych grupach w nowoczesnym lokalu w centrum Krakowa. Unikalne podejście, potwierdzone wynikami oraz opiniami rodziców i uczniów.",
   primaryCta: { label: "Zapisz się", href: "/#zapisy" },
   secondaryCta: { label: "Zobacz ofertę", href: "/#oferta" },
 } as const;
@@ -27,7 +27,7 @@ export const HERO = {
 export const ABOUT = {
   title: "Metodologia, która daje wyniki bez stresu",
   description:
-    "Wygodnie, systematycznie i w przyjaznej grupie. Uczysz się w nowoczesnej przestrzeni w centrum Krakowa - bez tracenia czasu na dojazdy. Otrzymujesz pełen pakiet: od wyselekcjonowanych zadań egzaminacyjnych po ciągłe wsparcie między zajęciami.",
+    "Wygodnie, systematycznie i w przyjaznej grupie. Uczysz się w nowoczesnej przestrzeni w centrum Krakowa. Otrzymujesz pełen pakiet: od wyselekcjonowanych zadań egzaminacyjnych po ciągłe wsparcie między zajęciami.",
 } as const;
 
 export const FEATURES = [
@@ -46,13 +46,13 @@ export const FEATURES = [
   {
     title: "Wsparcie między zajęciami",
     description:
-      "Mikrogrupa na Messengerze dla każdej grupy. Pytasz o zadania asynchronicznie - odpowiadamy, gdy potrzebujesz.",
+      "Grupa na Messengerze/WhatsApp dla każdej grupy. Odpowiadamy, na pytania uczniów kiedy potrzebują.",
     icon: "MessageCircle" as const,
   },
   {
     title: "Świetna lokalizacja",
     description:
-      "Nowoczesna sala w ścisłym centrum Krakowa (okolice AGH). Świetny dojazd prosto po lekcjach - bez tracenia czasu.",
+      "Nowoczesna sala w centrum Krakowa. Świetny dojazd bezpośrednio z większości krakowskich szkół średnich.",
     icon: "MapPin" as const,
   },
 ] as const;
@@ -78,7 +78,7 @@ export const PRICING = [
     duration: `${PACKAGES.MATURA_ROZSZERZONA.durationMinutes} min / zajęcia`,
     highlighted: true,
     features: [
-      "Kameralne grupy",
+      "Kameralne, małe grupy",
       "120 minut intensywnej pracy",
       "Wyselekcjonowane zadania i próbne arkusze",
       "Wsparcie na Messengerze",
@@ -92,7 +92,7 @@ export const PRICING = [
     duration: `${PACKAGES.MATURA_PODSTAWOWA.durationMinutes} min / zajęcia`,
     highlighted: false,
     features: [
-      "Kameralne grupy",
+      "Kameralne, małe grupy",
       "90 minut skupionej nauki",
       "Wyselekcjonowane zadania i próbne arkusze",
       "Wsparcie na Messengerze",
@@ -106,7 +106,7 @@ export const PRICING = [
     duration: `${PACKAGES.OSMOKLASISTA.durationMinutes} min / zajęcia`,
     highlighted: false,
     features: [
-      "Kameralne grupy",
+      "Kameralne, małe grupy",
       "90 minut zajęć",
       "Przygotowanie do egzaminu ósmoklasisty",
       "Zestawy zadań i próbne arkusze w cenie",
@@ -168,7 +168,7 @@ export const FAQ_ITEMS = [
   {
     question: "Gdzie odbywają się zajęcia?",
     answer:
-      "W nowoczesnym lokalu w ścisłym centrum Krakowa (okolice AGH). Dokładny adres przekażemy po rezerwacji miejsca.",
+      "Na ulicy Chocimskiej 9, w nowoczesnym lokalu w centrum Krakowa. Dokładne szczegóły przekażemy po potwierdzeniu rezerwacji miejsca.",
   },
   {
     question: "Czy mogę zapisać się na zajęcia indywidualne?",
