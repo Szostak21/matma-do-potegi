@@ -19,7 +19,7 @@ export const HERO = {
   badge: "Zapisy otwarte",
   title: "Matura z matematyki bez stresu. Otwieramy drzwi na wymarzone studia.",
   subtitle:
-    "Skuteczna nauka w małych grupach (3–4 os.) na Kurdwanowie. Kompleksowe materiały, przyjazna atmosfera i pełne wsparcie między zajęciami.",
+    "Skuteczna nauka w kameralnych grupach w nowoczesnym lokalu w ścisłym centrum Krakowa (okolice AGH). Świetny dojazd prosto po lekcjach do profesjonalnej przestrzeni edukacyjnej.",
   primaryCta: { label: "Zapisz się", href: "/#zapisy" },
   secondaryCta: { label: "Zobacz ofertę", href: "/#oferta" },
 } as const;
@@ -27,12 +27,12 @@ export const HERO = {
 export const ABOUT = {
   title: "Metodologia, która daje wyniki bez stresu",
   description:
-    "Wygodnie, systematycznie i w przyjaznej grupie. Otrzymujesz pełen pakiet: od wyselekcjonowanych zadań egzaminacyjnych po ciągłe wsparcie między zajęciami.",
+    "Wygodnie, systematycznie i w przyjaznej grupie. Uczysz się w nowoczesnej przestrzeni w centrum Krakowa - bez tracenia czasu na dojazdy. Otrzymujesz pełen pakiet: od wyselekcjonowanych zadań egzaminacyjnych po ciągłe wsparcie między zajęciami.",
 } as const;
 
 export const FEATURES = [
   {
-    title: "Małe grupy 3–4 osobowe",
+    title: "Kameralne grupy",
     description:
       "Każdy uczeń ma przestrzeń na pytania. Nie giniesz w tłumie - uczysz się w atmosferze, która sprzyja koncentracji i rozwojowi.",
     icon: "Users" as const,
@@ -50,9 +50,9 @@ export const FEATURES = [
     icon: "MessageCircle" as const,
   },
   {
-    title: "Tuż obok domu",
+    title: "Świetna lokalizacja",
     description:
-      "Zajęcia na Kurdwanowie (ul. Wysłouchów). Bez dojazdów przez pół miasta - więcej czasu na naukę i odpoczynek.",
+      "Nowoczesna sala w ścisłym centrum Krakowa (okolice AGH). Świetny dojazd prosto po lekcjach - bez tracenia czasu.",
     icon: "MapPin" as const,
   },
 ] as const;
@@ -78,7 +78,7 @@ export const PRICING = [
     duration: `${PACKAGES.MATURA_ROZSZERZONA.durationMinutes} min / zajęcia`,
     highlighted: true,
     features: [
-      "Grupy 3–4 osobowe",
+      "Kameralne grupy",
       "120 minut intensywnej pracy",
       "Wyselekcjonowane zadania i próbne arkusze",
       "Wsparcie na Messengerze",
@@ -92,7 +92,7 @@ export const PRICING = [
     duration: `${PACKAGES.MATURA_PODSTAWOWA.durationMinutes} min / zajęcia`,
     highlighted: false,
     features: [
-      "Grupy 3–4 osobowe",
+      "Kameralne grupy",
       "90 minut skupionej nauki",
       "Wyselekcjonowane zadania i próbne arkusze",
       "Wsparcie na Messengerze",
@@ -106,7 +106,7 @@ export const PRICING = [
     duration: `${PACKAGES.OSMOKLASISTA.durationMinutes} min / zajęcia`,
     highlighted: false,
     features: [
-      "Grupy 3–4 osobowe",
+      "Kameralne grupy",
       "90 minut zajęć",
       "Przygotowanie do egzaminu ósmoklasisty",
       "Zestawy zadań i próbne arkusze w cenie",
@@ -153,7 +153,7 @@ export const FAQ_ITEMS = [
   {
     question: "Ile osób jest w grupie?",
     answer:
-      "Grupy liczą maksymalnie 3–4 osoby. Dzięki temu każdy uczeń ma czas na pytania, a nauczyciel zna indywidualne potrzeby grupy.",
+      "Uczymy w kameralnych grupach - każdy uczeń ma czas na pytania, a nauczyciel zna indywidualne potrzeby grupy.",
   },
   {
     question: "Co jeśli uczeń opuści zajęcia?",
@@ -168,7 +168,7 @@ export const FAQ_ITEMS = [
   {
     question: "Gdzie odbywają się zajęcia?",
     answer:
-      "Na Kurdwanowie, ul. Wysłouchów. Dokładny adres przekażemy po rezerwacji miejsca.",
+      "W nowoczesnym lokalu w ścisłym centrum Krakowa (okolice AGH). Dokładny adres przekażemy po rezerwacji miejsca.",
   },
   {
     question: "Czy mogę zapisać się na zajęcia indywidualne?",
@@ -246,7 +246,7 @@ export const ALTERNATE_TERM_CONTACT = {
 } as const;
 
 /** Domyślna pojemność grupy (zgodna ze schematem Prisma). Używane w UI bez zmiany API. */
-export const GROUP_MAX_CAPACITY = 4;
+export const GROUP_MAX_CAPACITY = 8;
 
 export function formatRemainingSpots(
   displayedAvailable: number,
@@ -276,7 +276,7 @@ export function getDisplayedAvailableSpots(
 
 export const FOOTER = {
   brand: "Matma do potęgi",
-  location: "Kraków, Kurdwanów · ul. Marii i Bolesława Wysłouchów",
+  location: "Kraków, ścisłe centrum · ul. Chocimska 9",
   email: "kontakt@matmadopotegi.pl",
   phone: CONTACT_PHONE,
   copyright: `© ${new Date().getFullYear()} Matma do potęgi. Wszelkie prawa zastrzeżone.`,

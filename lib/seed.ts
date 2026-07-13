@@ -89,7 +89,7 @@ export async function runSeed(prisma: PrismaClient): Promise<void> {
         priceMonthly: getPriceMonthly(group.packageType),
         teacherId: teacher.id,
         currentCount: 0,
-        maxCapacity: 4,
+        maxCapacity: 8,
         depositAmount: DEPOSIT_AMOUNT_GROSZE,
       },
       create: {
@@ -99,7 +99,7 @@ export async function runSeed(prisma: PrismaClient): Promise<void> {
         scheduleSlot: group.scheduleSlot,
         priceMonthly: getPriceMonthly(group.packageType),
         teacherId: teacher.id,
-        maxCapacity: 4,
+        maxCapacity: 8,
         depositAmount: DEPOSIT_AMOUNT_GROSZE,
       },
     });

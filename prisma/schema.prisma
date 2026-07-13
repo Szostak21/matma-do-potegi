@@ -81,7 +81,7 @@ model Group {
   name          String
   packageType   PackageType
   scheduleSlot  String
-  maxCapacity   Int         @default(4)
+  maxCapacity   Int         @default(8)
   currentCount  Int         @default(0)
   priceMonthly  Int
   depositAmount Int         @default(5000)

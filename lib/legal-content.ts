@@ -2,10 +2,15 @@ import type { LegalDocumentContent } from "@/lib/legal/types";
 
 import { CONTACT_PHONE } from "@/lib/content";
 
-const LESSON_ADDRESS =
+// Adres do korespondencji / adres przedsiębiorcy
+const CORRESPONDENCE_ADDRESS =
   "ul. Marii i Bolesława Wysłouchów 13/11, 30-611 Kraków";
+// Miejsce świadczenia usług (sala)
+const SERVICE_ADDRESS = "ul. Chocimska 9, 30-057 Kraków";
+// NIP: uzupełnić po przejściu na JDG
+// const COMPANY_NIP = "____________";
 
-const LEGAL_UPDATED_AT = "12 lipca 2026";
+const LEGAL_UPDATED_AT = "13 lipca 2026";
 
 export const LEGAL = {
   terms: {
@@ -25,7 +30,7 @@ export const LEGAL = {
                 text: "Usługodawcą i Prowadzącym zajęcia jest Paweł Szostak, prowadzący działalność nierejestrowaną, adres e-mail: kontakt@matmadopotegi.pl.",
               },
               {
-                text: `Zajęcia stacjonarne odbywają się w lokalu mieszkalnym przystosowanym do celów edukacyjnych, pod adresem: ${LESSON_ADDRESS}.`,
+                text: `Zajęcia stacjonarne odbywają się w profesjonalnej sali szkoleniowej (przestrzeń coworkingowa), pod adresem: ${SERVICE_ADDRESS}. Adres do korespondencji: ${CORRESPONDENCE_ADDRESS}.`,
               },
               {
                 text: "Zgłoszenie udziału w zajęciach oraz opłacenie zaliczki oznacza pełną akceptację niniejszego Regulaminu.",
@@ -77,7 +82,7 @@ export const LEGAL = {
                 text: "Zajęcia odbywają się według stałego harmonogramu ustalonego na początku semestru.",
               },
               {
-                text: "Ze względów logistycznych (brak wydzielonej poczekalni w lokalu), Uczniowie proszeni są o przybywanie na zajęcia **nie wcześniej niż 15 minut** przed ich planowanym rozpoczęciem.",
+                text: "Ze względów organizacyjnych Uczniowie proszeni są o przybywanie na zajęcia **nie wcześniej niż 15 minut** przed ich planowanym rozpoczęciem.",
               },
               {
                 text: "Zajęcia rozpoczynają się punktualnie. Prowadzący nie wstrzymuje rozpoczęcia lekcji ze względu na spóźniających się uczestników. Spóźniony uczeń dołącza do grupy w trakcie trwania zajęć, jednak Prowadzący nie wraca do już omówionego materiału. Spóźnienie ucznia nie powoduje przedłużenia zajęć, a czesne za ten czas nie podlega zwrotowi.",
@@ -196,7 +201,7 @@ export const LEGAL = {
         blocks: [
           {
             kind: "paragraph",
-            text: `Administratorem Twoich danych osobowych jest Paweł Szostak, prowadzący działalność nierejestrowaną w rozumieniu art. 5 ustawy Prawo przedsiębiorców, zamieszkały pod adresem: ${LESSON_ADDRESS}.`,
+            text: `Administratorem Twoich danych osobowych jest Paweł Szostak, prowadzący działalność nierejestrowaną w rozumieniu art. 5 ustawy Prawo przedsiębiorców, adres do korespondencji: ${CORRESPONDENCE_ADDRESS}. Zajęcia stacjonarne odbywają się pod adresem: ${SERVICE_ADDRESS}.`,
           },
           {
             kind: "paragraph",

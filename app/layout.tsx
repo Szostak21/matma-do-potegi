@@ -17,9 +17,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Matma do potęgi | Korepetycje z matematyki Kraków Kurdwanów",
+  title: "Matma do potęgi | Korepetycje z matematyki Kraków Centrum",
   description:
-    "Nauka bez stresu w małych grupach (3–4 os.) z matematyki na krakowskim Kurdwanowie. Przygotowanie do matury podstawowej, rozszerzonej i egzaminu ósmoklasisty.",
+    "Nauka bez stresu w kameralnych grupach z matematyki w ścisłym centrum Krakowa. Przygotowanie do matury podstawowej, rozszerzonej i egzaminu ósmoklasisty.",
   icons: {
     icon: BRAND_ASSETS.logo,
     apple: BRAND_ASSETS.logo,
