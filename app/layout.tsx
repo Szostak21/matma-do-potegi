@@ -3,7 +3,6 @@ import { Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 
 import { ConsentManager } from "@/components/ConsentManager";
-import { BRAND_ASSETS } from "@/lib/assets";
 
 const instrumentSerif = Instrument_Serif({
   weight: "400",
@@ -17,12 +16,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Matma do potęgi | Korepetycje z matematyki Kraków Centrum",
+  title: "Matma do potęgi | Korepetycje z matematyki Kraków",
   description:
-    "Nauka bez stresu w kameralnych grupach z matematyki w ścisłym centrum Krakowa. Przygotowanie do matury podstawowej, rozszerzonej i egzaminu ósmoklasisty.",
+    "Zapisy otwarte. Matura z matematyki bez stresu. Otwieramy drzwi na wymarzone studia. Skuteczna nauka w małych grupach w Krakowie.",
   icons: {
-    icon: BRAND_ASSETS.logo,
-    apple: BRAND_ASSETS.logo,
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
   },
 };
 
