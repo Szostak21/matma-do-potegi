@@ -27,7 +27,7 @@ export const HERO = {
 export const ABOUT = {
   title: "Inwestycja w pewne rezultaty",
   description:
-    "Systematyczna praca w kameralnych grupach i komfortowej przestrzeni w centrum Krakowa. Stawiamy na doskonały kontakt z młodzieżą, indywidualną analizę potrzeb każdego ucznia oraz angażujący sposób tłumaczenia."
+    "Systematyczna praca w komfortowej przestrzeni w centrum miasta. Stawiamy na doskonały kontakt z młodzieżą, indywidualną analizę potrzeb każdego ucznia oraz angażujący sposób tłumaczenia."
 } as const;
 
 export const FEATURES = [
