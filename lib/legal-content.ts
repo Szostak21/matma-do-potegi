@@ -10,13 +10,13 @@ const SERVICE_ADDRESS = "ul. Chocimska 9, 30-057 Kraków";
 // NIP: uzupełnić po przejściu na JDG
 // const COMPANY_NIP = "____________";
 
-const LEGAL_UPDATED_AT = "13 lipca 2026";
+const LEGAL_UPDATED_AT = "20 lipca 2026";
 
 export const LEGAL = {
   terms: {
     title: "Regulamin świadczenia usług edukacyjnych Matma do potęgi",
     intro:
-      "Niniejszy regulamin określa zasady korzystania ze stacjonarnych usług edukacyjnych (korepetycji grupowych) organizowanych przez Matma do potęgi.",
+      "Niniejszy regulamin określa zasady korzystania z usług edukacyjnych (korepetycji grupowych oraz indywidualnych) organizowanych przez Matma do potęgi.",
     updatedAt: LEGAL_UPDATED_AT,
     sections: [
       {
@@ -110,7 +110,40 @@ export const LEGAL = {
         ],
       },
       {
-        title: "4. Ferie, dni wolne i elastyczność harmonogramu",
+        title: "4. Zajęcia indywidualne",
+        blocks: [
+          {
+            kind: "list",
+            ordered: true,
+            items: [
+              {
+                text: "Niezależnie od zajęć grupowych Prowadzący oferuje odpłatne zajęcia indywidualne (w formule 1:1), realizowane na podstawie indywidualnych ustaleń co do terminu oraz miejsca ich prowadzenia.",
+              },
+              {
+                text: "Wysokość wynagrodzenia za zajęcia indywidualne uzależniona jest od miejsca ich realizacji i wynosi:",
+                subItems: [
+                  `120 zł za godzinę zegarową (60 minut) - w przypadku zajęć z dojazdem Prowadzącego do Ucznia, wyłącznie na terenie miasta Krakowa,`,
+                  `180 zł za godzinę zegarową (60 minut) - w przypadku zajęć odbywających się w sali szkoleniowej Prowadzącego pod adresem: ${SERVICE_ADDRESS}.`,
+                ],
+              },
+              {
+                text: "Zajęcia indywidualne z dojazdem Prowadzącego świadczone są wyłącznie w granicach administracyjnych miasta Krakowa. Prowadzący nie realizuje zajęć z dojazdem poza terenem Krakowa.",
+              },
+              {
+                text: "Warunkiem przeprowadzenia zajęć z dojazdem jest zapewnienie przez Ucznia (lub jego opiekuna) odpowiednich warunków do nauki, tj. cichego i oświetlonego miejsca z dostępem do stołu oraz miejsc siedzących.",
+              },
+              {
+                text: "Termin zajęć indywidualnych ustalany jest każdorazowo indywidualnie. Odwołanie lub zmiana ustalonego terminu przez Ucznia wymaga powiadomienia Prowadzącego z wyprzedzeniem co najmniej 24 godzin.",
+              },
+              {
+                text: "W przypadku odwołania zajęć w terminie krótszym niż 24 godziny, nieobecności Ucznia pod ustalonym adresem lub braku możliwości przeprowadzenia zajęć z przyczyn leżących po stronie Ucznia, Prowadzący zachowuje prawo do wynagrodzenia za zaplanowane zajęcia - z tytułu zarezerwowanego czasu oraz poniesionych kosztów dojazdu.",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        title: "5. Ferie, dni wolne i elastyczność harmonogramu",
         blocks: [
           {
             kind: "list",
@@ -132,7 +165,7 @@ export const LEGAL = {
         ],
       },
       {
-        title: "5. Odwołanie lub spóźnienie z winy Prowadzącego i zdarzenia losowe",
+        title: "6. Odwołanie lub spóźnienie z winy Prowadzącego i zdarzenia losowe",
         blocks: [
           {
             kind: "list",
@@ -149,7 +182,7 @@ export const LEGAL = {
         ],
       },
       {
-        title: "6. Rezygnacja z zajęć (rozwiązanie umowy)",
+        title: "7. Rezygnacja z zajęć (rozwiązanie umowy)",
         blocks: [
           {
             kind: "list",
@@ -172,7 +205,7 @@ export const LEGAL = {
         ],
       },
       {
-        title: "7. Postanowienia końcowe",
+        title: "8. Postanowienia końcowe",
         blocks: [
           {
             kind: "list",

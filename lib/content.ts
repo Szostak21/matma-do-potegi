@@ -25,9 +25,9 @@ export const HERO = {
 } as const;
 
 export const ABOUT = {
-  title: "Metodologia, która daje wyniki bez stresu",
+  title: "Inwestycja w pewne rezultaty",
   description:
-    "Wygodnie, systematycznie i w przyjaznej grupie. Uczysz się w nowoczesnej przestrzeni w centrum Krakowa. Otrzymujesz pełen pakiet: od wyselekcjonowanych zadań egzaminacyjnych po ciągłe wsparcie między zajęciami.",
+    "Systematyczna praca w kameralnych grupach i komfortowej przestrzeni w centrum Krakowa. Stawiamy na doskonały kontakt z młodzieżą, indywidualną analizę potrzeb każdego ucznia oraz angażujący sposób tłumaczenia."
 } as const;
 
 export const FEATURES = [
@@ -40,7 +40,7 @@ export const FEATURES = [
   {
     title: "Wyselekcjonowane zadania",
     description:
-      "Pracujemy na zestawach zgodnych z wymogami CKE. Ćwiczymy kluczowe typy zadań, oraz rozwiązujemy próbne arkusze na czas.",
+      "Pracujemy na starannie wyselekcjonowanych zadaniach i arkuszach, ucząc schematów gwarantujących wyniki.",
     icon: "BookOpen" as const,
   },
   {
@@ -79,7 +79,7 @@ export const PRICING = [
     highlighted: true,
     features: [
       "Kameralne, małe grupy",
-      "120 minut intensywnej pracy",
+      "120 minut zajęć",
       "Wyselekcjonowane zadania i próbne arkusze",
       "Wsparcie na Messengerze",
     ],
@@ -93,7 +93,7 @@ export const PRICING = [
     highlighted: false,
     features: [
       "Kameralne, małe grupy",
-      "90 minut skupionej nauki",
+      "90 minut zajęć",
       "Wyselekcjonowane zadania i próbne arkusze",
       "Wsparcie na Messengerze",
     ],
@@ -115,13 +115,13 @@ export const PRICING = [
   {
     id: "indywidualne",
     name: PACKAGES.INDYWIDUALNE.name,
-    price: formatPln(PACKAGES.INDYWIDUALNE.priceHourly),
+    price: `od ${formatPln(PACKAGES.INDYWIDUALNE.priceHourly)}`,
     period: "/ godzina",
     duration: `${PACKAGES.INDYWIDUALNE.durationMinutes} min / lekcja`,
     highlighted: false,
     features: [
-      "Formuła 1:1",
-      "60 minut indywidualnej pracy",
+      "120 zł/h u ucznia, 180 zł/h w sali",
+      "60 minut zajęć",
       "Elastyczny harmonogram",
       "Idealne do nadrobienia braków",
     ],
@@ -153,12 +153,12 @@ export const FAQ_ITEMS = [
   {
     question: "Ile osób jest w grupie?",
     answer:
-      "Uczymy w kameralnych grupach - każdy uczeń ma czas na pytania, a nauczyciel zna indywidualne potrzeby grupy.",
+      "Grupy liczą maksymalnie 8 osób - pozwala nam to zapewnić indywidualne podejście do każdego ucznia, prowadzić angażujące dyskusje oraz uniknąć wywierania nadmiernej presji na uczniach.",
   },
   {
     question: "Co jeśli uczeń opuści zajęcia?",
     answer:
-      "Opłata to abonament za miejsce - brak zwrotów za nieobecności, ale nie zostawiamy naszych uczniów w potrzebie - po każdej lekcji nieobecny uczeń otrzymuje podsumowanie zajęć, listę zadań do nadrobienia oraz pomoc. Można też dokupić lekcję indywidualną 1:1.",
+      "Opłata to abonament za miejsce - brak zwrotów za nieobecności, ale nie zostawiamy naszych uczniów w potrzebie - po każdej lekcji nieobecny uczeń otrzymuje podsumowanie zajęć, listę zadań do nadrobienia oraz pomoc.",
   },
   {
     question: "Jak wygląda proces zapisu?",
@@ -171,9 +171,9 @@ export const FAQ_ITEMS = [
       "Na ulicy Chocimskiej 9, w nowoczesnym lokalu w centrum Krakowa. Dokładne szczegóły przekażemy po potwierdzeniu rezerwacji miejsca.",
   },
   {
-    question: "Czy mogę zapisać się na zajęcia indywidualne?",
+    question: "Jak wyglądają zajęcia indywidualne?",
     answer:
-      "Tak. Lekcje 1:1 kosztują 120 zł za godzinę i są idealne do nadrobienia konkretnych zagadnień lub przygotowania do sprawdzianu.",
+      "Lekcje indywidualne kosztują 120 zł za godzinę u ucznia mieszkającego w Krakowie lub 180 zł za godzinę w naszej sali i są idealne do nadrobienia nieobecności lub przygotowania do sprawdzianu.",
   },
 ] as const;
 
