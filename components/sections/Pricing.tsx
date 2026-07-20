@@ -11,7 +11,7 @@ export function Pricing() {
         <SectionHeading
           eyebrow="Oferta"
           title="Cennik dopasowany do Twoich celów"
-          description="Przejrzyste pakiety bez ukrytych kosztów. Wszystkie ceny grupowe obejmują starannie dobrane zestawy zadań oraz próbne egzaminy i wsparcie między zajęciami."
+          description="Jasne zasady i kompletny system nauki. Każdy pakiet grupowy obejmuje starannie dobrane materiały, egzaminy próbne oraz stałe wsparcie korepetytora."
           align="center"
           className="mx-auto"
         />
