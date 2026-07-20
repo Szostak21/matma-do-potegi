@@ -11,7 +11,7 @@ export function Pricing() {
         <SectionHeading
           eyebrow="Oferta"
           title="Cennik dopasowany do Twoich celów"
-          description="Jasne zasady i kompletny system nauki. Każdy pakiet grupowy obejmuje starannie dobrane materiały, egzaminy próbne oraz stałe wsparcie korepetytora."
+          description="Jasne zasady i kompletny system nauki. Każdy pakiet grupowy obejmuje starannie dobrane materiały, egzaminy próbne oraz stałe wsparcie."
           align="center"
           className="mx-auto"
         />
