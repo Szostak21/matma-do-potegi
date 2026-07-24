@@ -153,7 +153,7 @@ export const FAQ_ITEMS = [
   {
     question: "Ile osób jest w grupie?",
     answer:
-      "Grupy liczą maksymalnie 8 osób - pozwala nam to zapewnić indywidualne podejście do każdego ucznia, prowadzić angażujące dyskusje oraz uniknąć wywierania nadmiernej presji na uczniach.",
+      "Grupy liczą od 4 do 8 osób - pozwala nam to zapewnić indywidualne podejście do każdego ucznia, prowadzić angażujące dyskusje oraz uniknąć wywierania nadmiernej presji na uczniach.",
   },
   {
     question: "Co jeśli uczeń opuści zajęcia?",
