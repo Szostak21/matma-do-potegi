@@ -320,6 +320,28 @@ export const EMAILS = {
     amountLabel: "Wpłacona kwota",
     closing: "Do zobaczenia na zajęciach!",
   },
+  adminNewLead: {
+    subject: (parentName: string) => `Nowe zgłoszenie - ${parentName}`,
+    preview: "Nowe zgłoszenie z formularza na stronie.",
+    heading: "Nowe zgłoszenie",
+    intro: "Ktoś właśnie wypełnił formularz zgłoszeniowy na stronie.",
+    parentLabel: "Rodzic",
+    studentLabel: "Uczeń",
+    phoneLabel: "Telefon",
+    emailLabel: "E-mail",
+    packageLabel: "Poziom zajęć",
+  },
+  adminDeposit: {
+    subject: (parentName: string) => `Opłacona zaliczka - ${parentName}`,
+    preview: "Klient opłacił zaliczkę.",
+    heading: "Opłacona zaliczka",
+    intro: "Lead właśnie opłacił zaliczkę.",
+    parentLabel: "Rodzic",
+    studentLabel: "Uczeń",
+    packageLabel: "Poziom zajęć",
+    amountLabel: "Kwota",
+    leadIdLabel: "ID leada",
+  },
 } as const;
 
 export const PACKAGE_OPTIONS = [

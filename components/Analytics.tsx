@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useSyncExternalStore } from "react";
 
 import { trackPageView } from "@/lib/analytics-events";
-import { getGaMeasurementId, META_PIXEL_ID } from "@/lib/analytics-config";
+import { CLARITY_ID, getGaMeasurementId, META_PIXEL_ID } from "@/lib/analytics-config";
 import {
   COOKIE_CONSENT_CHANGE_EVENT,
   getCookieConsent,
@@ -57,7 +57,7 @@ export function Analytics() {
     return null;
   }
 
-  const hasTracking = Boolean(GA_ID || META_PIXEL_ID);
+  const hasTracking = Boolean(GA_ID || META_PIXEL_ID || CLARITY_ID);
 
   return (
     <>
@@ -116,6 +116,11 @@ export function Analytics() {
             />
           </noscript>
         </>
+      ) : null}
+      {CLARITY_ID ? (
+        <Script id="clarity-init" strategy="afterInteractive">
+          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${CLARITY_ID}");`}
+        </Script>
       ) : null}
       {hasTracking ? (
         <Suspense fallback={null}>

@@ -2,6 +2,8 @@
 
 import { createDepositPaymentForLead } from "@/actions/payments";
 import { addMinutes, ONLINE_PAYMENT_EXPIRY_MINUTES } from "@/lib/dates";
+import { sendAdminLeadNotification } from "@/lib/emails";
+import { packageLabel } from "@/lib/labels";
 import { PackagePoolFullError, assertPackageHasCapacity } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
 import {
@@ -60,6 +62,18 @@ export async function submitLead(
         message: paymentResult.message ?? "Wystąpił błąd. Spróbuj ponownie.",
         values,
       };
+    }
+
+    try {
+      await sendAdminLeadNotification({
+        parentName: data.parentName,
+        studentName: data.studentName,
+        phone: data.phone,
+        email: data.email,
+        packageName: packageLabel(data.package),
+      });
+    } catch (error) {
+      console.error("sendAdminLeadNotification failed:", error);
     }
 
     return {

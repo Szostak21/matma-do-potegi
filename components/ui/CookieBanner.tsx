@@ -54,7 +54,8 @@ export function CookieBanner() {
           className="min-w-0 text-xs leading-snug text-ink/70 sm:text-sm sm:leading-normal"
         >
           Używamy niezbędnych plików cookies oraz - za Twoją zgodą -
-          analitycznych (Google Analytics 4) i marketingowych (Meta Pixel).{" "}
+          analitycznych (Google Analytics 4, Microsoft Clarity) i marketingowych
+          (Meta Pixel).{" "}
           <Link
             href="/polityka-prywatnosci"
             className="font-medium text-olive-800 underline-offset-2 hover:underline"

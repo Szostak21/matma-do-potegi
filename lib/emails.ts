@@ -2,6 +2,7 @@ import { createElement, type ReactElement } from "react";
 import { render } from "@react-email/render";
 import { Resend } from "resend";
 
+import { AdminNotificationEmail } from "@/emails/AdminNotificationEmail";
 import { DepositConfirmationEmail } from "@/emails/DepositConfirmationEmail";
 import { PaymentLinkEmail } from "@/emails/PaymentLinkEmail";
 import { EMAILS, FOOTER } from "@/lib/content";
@@ -13,6 +14,15 @@ export const DEFAULT_FROM =
   process.env.EMAIL_FROM ?? "MatmaDoPotęgi <noreply@matmadopotegi.pl>";
 
 const DEFAULT_REPLY_TO = FOOTER.email;
+
+const DEFAULT_ADMIN_RECIPIENTS = [
+  "kontakt@matmadopotegi.pl",
+] as const;
+
+export const ADMIN_NOTIFICATION_RECIPIENTS =
+  process.env.ADMIN_NOTIFICATION_EMAILS?.split(",")
+    .map((email) => email.trim())
+    .filter(Boolean) ?? [...DEFAULT_ADMIN_RECIPIENTS];
 
 function getResend(): Resend | null {
   const apiKey = process.env.RESEND_API_KEY;
@@ -30,7 +40,7 @@ function getResend(): Resend | null {
 }
 
 type SendEmailInput = {
-  to: string;
+  to: string | string[];
   subject: string;
   react: ReactElement;
   replyTo?: string;
@@ -116,6 +126,69 @@ export async function sendDepositConfirmationEmail(
       parentName: params.parentName,
       amountFormatted: formatPln(params.amountGrosze),
       packageName: params.packageName,
+    }),
+  });
+}
+
+export type AdminLeadNotificationParams = {
+  parentName: string;
+  studentName?: string | null;
+  phone: string;
+  email: string;
+  packageName: string;
+};
+
+export async function sendAdminLeadNotification(
+  params: AdminLeadNotificationParams,
+): Promise<{ ok: boolean }> {
+  const copy = EMAILS.adminNewLead;
+
+  return sendEmail({
+    to: ADMIN_NOTIFICATION_RECIPIENTS,
+    subject: copy.subject(params.parentName),
+    replyTo: params.email,
+    react: createElement(AdminNotificationEmail, {
+      preview: copy.preview,
+      heading: copy.heading,
+      intro: copy.intro,
+      rows: [
+        { label: copy.parentLabel, value: params.parentName },
+        { label: copy.studentLabel, value: params.studentName ?? "—" },
+        { label: copy.phoneLabel, value: params.phone },
+        { label: copy.emailLabel, value: params.email },
+        { label: copy.packageLabel, value: params.packageName },
+      ],
+    }),
+  });
+}
+
+export type AdminDepositNotificationParams = {
+  parentName: string;
+  studentName?: string | null;
+  packageName: string;
+  amountGrosze: number;
+  leadId: string;
+};
+
+export async function sendAdminDepositNotification(
+  params: AdminDepositNotificationParams,
+): Promise<{ ok: boolean }> {
+  const copy = EMAILS.adminDeposit;
+
+  return sendEmail({
+    to: ADMIN_NOTIFICATION_RECIPIENTS,
+    subject: copy.subject(params.parentName),
+    react: createElement(AdminNotificationEmail, {
+      preview: copy.preview,
+      heading: copy.heading,
+      intro: copy.intro,
+      rows: [
+        { label: copy.parentLabel, value: params.parentName },
+        { label: copy.studentLabel, value: params.studentName ?? "—" },
+        { label: copy.packageLabel, value: params.packageName },
+        { label: copy.amountLabel, value: formatPln(params.amountGrosze) },
+        { label: copy.leadIdLabel, value: params.leadId },
+      ],
     }),
   });
 }

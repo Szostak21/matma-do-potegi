@@ -1,6 +1,6 @@
 import { LeadStatus, PaymentStatus } from "@prisma/client";
 
-import { sendDepositConfirmationEmail } from "@/lib/emails";
+import { sendAdminDepositNotification, sendDepositConfirmationEmail } from "@/lib/emails";
 import { packageLabel } from "@/lib/labels";
 import { prisma } from "@/lib/prisma";
 
@@ -52,6 +52,13 @@ export async function markDepositPaymentPaid(
       parentName: lead.parentName,
       amountGrosze: result.payment.amount,
       packageName: packageLabel(lead.requestedPackage),
+    });
+    await sendAdminDepositNotification({
+      parentName: lead.parentName,
+      studentName: lead.studentName,
+      packageName: packageLabel(lead.requestedPackage),
+      amountGrosze: result.payment.amount,
+      leadId: lead.id,
     });
   }
 
