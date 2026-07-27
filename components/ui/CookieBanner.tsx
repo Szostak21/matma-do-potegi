@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/cn";
 import {
@@ -30,32 +30,55 @@ export function CookieBanner() {
     setCookieConsent(choice);
   }
 
+  useEffect(() => {
+    if (consent !== null) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [consent]);
+
   if (consent !== null) {
     return null;
   }
 
   return (
     <div
-      role="dialog"
-      aria-labelledby="cookie-banner-description"
       suppressHydrationWarning
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 border-t border-ink/10 bg-cream/95 backdrop-blur-sm",
+        "fixed inset-0 z-[100] flex items-center justify-center p-4",
+        "bg-black/30 backdrop-blur-sm",
       )}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cookie-banner-title"
+        aria-describedby="cookie-banner-description"
         className={cn(
-          "mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3",
-          "sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-2.5",
+          "w-full max-w-md rounded-3xl border border-ink/10 bg-cream p-6 shadow-soft",
+          "sm:p-8",
         )}
       >
+        <h2
+          id="cookie-banner-title"
+          className="font-serif text-2xl leading-tight text-ink sm:text-3xl"
+        >
+          Cenimy Twoją prywatność
+        </h2>
+
         <p
           id="cookie-banner-description"
-          className="min-w-0 text-xs leading-snug text-ink/70 sm:text-sm sm:leading-normal"
+          className="mt-3 text-sm leading-relaxed text-ink/70"
         >
           Używamy niezbędnych plików cookies oraz - za Twoją zgodą -
           analitycznych (Google Analytics 4, Microsoft Clarity) i marketingowych
-          (Meta Pixel).{" "}
+          (Meta Pixel), aby lepiej rozumieć, jak korzystasz ze strony.{" "}
           <Link
             href="/polityka-prywatnosci"
             className="font-medium text-olive-800 underline-offset-2 hover:underline"
@@ -63,18 +86,19 @@ export function CookieBanner() {
             Polityka prywatności
           </Link>
         </p>
-        <div className="flex shrink-0 items-center gap-2">
+
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <button
             type="button"
             onClick={() => handleChoice("denied")}
-            className="inline-flex items-center justify-center rounded-full border border-ink/15 px-3.5 py-1.5 text-xs font-medium text-ink transition hover:bg-ink/5 sm:px-4 sm:py-2 sm:text-sm"
+            className="inline-flex w-full items-center justify-center rounded-full border border-ink/15 px-5 py-2.5 text-sm font-medium text-ink transition hover:bg-ink/5 sm:w-auto"
           >
             Tylko niezbędne
           </button>
           <button
             type="button"
             onClick={() => handleChoice("granted")}
-            className="inline-flex items-center justify-center rounded-full bg-olive-700 px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-olive-800 sm:px-4 sm:py-2 sm:text-sm"
+            className="inline-flex w-full flex-1 items-center justify-center rounded-full bg-olive-700 px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-olive-800"
           >
             Akceptuj wszystkie
           </button>
