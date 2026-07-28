@@ -42,7 +42,7 @@ export async function submitLead(
           email: data.email,
           studentName: data.studentName,
           requestedPackage: data.package,
-          currentGrade: data.currentGrade,
+          schoolClass: data.schoolClass,
           expectedResult: data.expectedResult,
           notes: data.notes,
         },

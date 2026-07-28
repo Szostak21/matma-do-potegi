@@ -29,11 +29,10 @@ export const leadFormSchema = z.object({
     .string()
     .min(1, "Wybierz poziom zajęć")
     .pipe(z.enum(packageValues, { message: "Wybierz poziom zajęć" })),
-  currentGrade: z
+  schoolClass: z
     .string()
     .trim()
-    .optional()
-    .transform((value) => (value === "" ? undefined : value)),
+    .min(1, "Podaj klasę (np. 4)"),
   expectedResult: z
     .string()
     .trim()
@@ -81,7 +80,7 @@ export function formDataToObject(formData: FormData): Record<string, string> {
     email: String(formData.get("email") ?? ""),
     studentName: String(formData.get("studentName") ?? ""),
     package: String(formData.get("package") ?? ""),
-    currentGrade: String(formData.get("currentGrade") ?? ""),
+    schoolClass: String(formData.get("schoolClass") ?? ""),
     expectedResult: String(formData.get("expectedResult") ?? ""),
     notes: String(formData.get("notes") ?? ""),
     acceptTerms:

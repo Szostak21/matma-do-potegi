@@ -244,30 +244,17 @@ export function ContactForm() {
                   <FieldError message={state.errors?.package?.[0]} />
                 </div>
 
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="studentName">Imię ucznia</Label>
-                  <Input
-                    id="studentName"
-                    name="studentName"
-                    type="text"
-                    placeholder="Kasia"
-                    defaultValue={state.values?.studentName}
-                    aria-invalid={Boolean(state.errors?.studentName)}
-                  />
-                  <FieldError message={state.errors?.studentName?.[0]} />
-                </div>
-
                 <div className="space-y-2">
-                  <Label htmlFor="currentGrade">Ocena z matematyki</Label>
+                  <Label htmlFor="schoolClass">Klasa (od września) *</Label>
                   <Input
-                    id="currentGrade"
-                    name="currentGrade"
+                    id="schoolClass"
+                    name="schoolClass"
                     type="text"
                     placeholder="np. 4"
-                    defaultValue={state.values?.currentGrade}
-                    aria-invalid={Boolean(state.errors?.currentGrade)}
+                    defaultValue={state.values?.schoolClass}
+                    aria-invalid={Boolean(state.errors?.schoolClass)}
                   />
-                  <FieldError message={state.errors?.currentGrade?.[0]} />
+                  <FieldError message={state.errors?.schoolClass?.[0]} />
                 </div>
 
                 <div className="space-y-2">
@@ -281,6 +268,19 @@ export function ContactForm() {
                     aria-invalid={Boolean(state.errors?.expectedResult)}
                   />
                   <FieldError message={state.errors?.expectedResult?.[0]} />
+                </div>
+
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="studentName">Imię ucznia</Label>
+                  <Input
+                    id="studentName"
+                    name="studentName"
+                    type="text"
+                    placeholder="Kasia"
+                    defaultValue={state.values?.studentName}
+                    aria-invalid={Boolean(state.errors?.studentName)}
+                  />
+                  <FieldError message={state.errors?.studentName?.[0]} />
                 </div>
 
                 <div className="space-y-2 sm:col-span-2">

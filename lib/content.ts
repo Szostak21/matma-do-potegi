@@ -267,11 +267,7 @@ export function getDisplayedAvailableSpots(
     return null;
   }
 
-  if (packageType === "MATURA_PODSTAWOWA") {
-    return actualAvailable >= 3 ? 3 : actualAvailable;
-  }
-
-  return actualAvailable >= 3 ? 2 : actualAvailable;
+  return actualAvailable >= 4 ? 4 : actualAvailable;
 }
 
 export const FOOTER = {
