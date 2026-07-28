@@ -77,7 +77,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   }));
 
   return (
-    <main className="min-h-full flex-1 bg-oatmeal py-12">
+    <main className="min-h-full flex-1 select-text bg-oatmeal py-12">
       <Container>
         <div className="mb-8">
           <p className="text-xs font-medium uppercase tracking-widest text-olive-700">

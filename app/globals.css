@@ -29,6 +29,18 @@ html {
 body {
   background-color: var(--color-cream);
   color: var(--color-ink);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Zaznaczanie dozwolone w polach formularza i danych kontaktowych */
+input,
+textarea,
+[contenteditable="true"],
+a[href^="mailto:"],
+a[href^="tel:"] {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 .hide-scrollbar {
