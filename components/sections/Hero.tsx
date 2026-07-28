@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { HeroBentoGrid } from "@/components/ui/HeroBentoGrid";
+import { SectionLinkButton } from "@/components/ui/SectionLinkButton";
 import { HERO } from "@/lib/content";
 
 export function Hero() {
@@ -18,12 +18,15 @@ export function Hero() {
               {HERO.subtitle}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Button href={HERO.primaryCta.href} variant="primary">
+              <SectionLinkButton href={HERO.primaryCta.href} variant="primary">
                 {HERO.primaryCta.label}
-              </Button>
-              <Button href={HERO.secondaryCta.href} variant="secondary">
+              </SectionLinkButton>
+              <SectionLinkButton
+                href={HERO.secondaryCta.href}
+                variant="secondary"
+              >
                 {HERO.secondaryCta.label}
-              </Button>
+              </SectionLinkButton>
             </div>
           </div>
 

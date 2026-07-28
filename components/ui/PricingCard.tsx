@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { SectionLinkButton } from "@/components/ui/SectionLinkButton";
 import { cn } from "@/lib/cn";
 
 export type PricingCardProps = {
@@ -44,13 +44,13 @@ export function PricingCard({
           </li>
         ))}
       </ul>
-      <Button
+      <SectionLinkButton
         href={ctaHref}
         variant={highlighted ? "primary" : "secondary"}
         className="mt-8 w-full"
       >
         Zapisz się
-      </Button>
+      </SectionLinkButton>
     </Card>
   );
 }
