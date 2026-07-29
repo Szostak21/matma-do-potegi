@@ -23,9 +23,35 @@ import {
 import { PACKAGES } from "@/lib/constants";
 import type { PackageAvailability } from "@/lib/packages";
 import { trackFormStart, trackLeadSubmit } from "@/lib/analytics-events";
+import { scrollUpToFirstInvalidFieldLabel } from "@/lib/scroll";
 import type { LeadFormState } from "@/lib/validations/lead";
 
 const initialState: LeadFormState = { status: "idle" };
+
+/** Kolejność pól obowiązkowych w formularzu (do scrolla przy błędach walidacji). */
+const REQUIRED_FIELD_IDS = [
+  "parentName",
+  "phone",
+  "email",
+  "package",
+  "schoolClass",
+  "acceptTerms",
+] as const;
+
+function mapFieldErrors(
+  errors: Record<string, string[] | undefined>,
+): Record<string, string> {
+  const mapped: Record<string, string> = {};
+
+  for (const [key, messages] of Object.entries(errors)) {
+    const message = messages?.[0];
+    if (message) {
+      mapped[key] = message;
+    }
+  }
+
+  return mapped;
+}
 
 function FieldError({ message }: { message?: string }) {
   if (!message) {
@@ -73,8 +99,48 @@ export function ContactForm() {
   );
   const [availability, setAvailability] = useState<PackageAvailability[]>([]);
   const [loadingAvailability, setLoadingAvailability] = useState(true);
+  /**
+   * Pola, których komunikat użytkownik już zamknął focusem w tej rundzie walidacji.
+   * Resetowane synchronicznie przy nowym `state.errors` (wzorzec React: adjust state
+   * when props change) — bez setState w useEffect.
+   */
+  const [clearedFields, setClearedFields] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [trackedErrors, setTrackedErrors] = useState(state.errors);
   const packageFieldKey = state.values?.package ?? "package-default";
   const formStartTracked = useRef(false);
+
+  // Nowa odpowiedź walidacji → pełna lista komunikatów od nowa.
+  if (state.errors !== trackedErrors) {
+    setTrackedErrors(state.errors);
+    setClearedFields(new Set());
+  }
+
+  const serverErrors =
+    state.status === "error" && state.errors
+      ? mapFieldErrors(state.errors)
+      : {};
+
+  function activeError(fieldId: string): string | undefined {
+    if (clearedFields.has(fieldId)) {
+      return undefined;
+    }
+
+    return serverErrors[fieldId];
+  }
+
+  function clearFieldError(fieldId: string) {
+    setClearedFields((prev) => {
+      if (prev.has(fieldId) || !serverErrors[fieldId]) {
+        return prev;
+      }
+
+      const next = new Set(prev);
+      next.add(fieldId);
+      return next;
+    });
+  }
 
   function handleFormInteraction() {
     if (formStartTracked.current) {
@@ -134,12 +200,54 @@ export function ContactForm() {
     router,
   ]);
 
+  useEffect(() => {
+    if (state.status !== "error" || !state.errors) {
+      return;
+    }
+
+    const next = mapFieldErrors(state.errors);
+    const invalidIds = REQUIRED_FIELD_IDS.filter((id) => next[id]);
+
+    if (invalidIds.length === 0) {
+      return;
+    }
+
+    let cancelled = false;
+    let outerFrame = 0;
+    let innerFrame = 0;
+
+    // Double rAF — poczekaj aż komunikaty wejdą w layout przed pomiarem pozycji.
+    outerFrame = window.requestAnimationFrame(() => {
+      innerFrame = window.requestAnimationFrame(() => {
+        if (!cancelled) {
+          scrollUpToFirstInvalidFieldLabel(invalidIds);
+        }
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(outerFrame);
+      window.cancelAnimationFrame(innerFrame);
+    };
+  }, [state.status, state.errors]);
+
   const selectedAvailability = availability.find(
     (item) => item.packageType === selectedPackage,
   );
   const isPackageFull = selectedAvailability
     ? selectedAvailability.available <= 0
     : false;
+
+  const parentNameError = activeError("parentName");
+  const phoneError = activeError("phone");
+  const emailError = activeError("email");
+  const packageError = activeError("package");
+  const schoolClassError = activeError("schoolClass");
+  const expectedResultError = activeError("expectedResult");
+  const studentNameError = activeError("studentName");
+  const notesError = activeError("notes");
+  const acceptTermsError = activeError("acceptTerms");
 
   return (
     <Section id="zapisy" variant="deep">
@@ -172,9 +280,10 @@ export function ContactForm() {
                     autoComplete="name"
                     placeholder="Jan Kowalski"
                     defaultValue={state.values?.parentName}
-                    aria-invalid={Boolean(state.errors?.parentName)}
+                    aria-invalid={Boolean(parentNameError)}
+                    onFocus={() => clearFieldError("parentName")}
                   />
-                  <FieldError message={state.errors?.parentName?.[0]} />
+                  <FieldError message={parentNameError} />
                 </div>
 
                 <div className="space-y-2">
@@ -186,9 +295,10 @@ export function ContactForm() {
                     autoComplete="tel"
                     placeholder="+48 000 000 000"
                     defaultValue={state.values?.phone}
-                    aria-invalid={Boolean(state.errors?.phone)}
+                    aria-invalid={Boolean(phoneError)}
+                    onFocus={() => clearFieldError("phone")}
                   />
-                  <FieldError message={state.errors?.phone?.[0]} />
+                  <FieldError message={phoneError} />
                 </div>
 
                 <div className="space-y-2">
@@ -200,9 +310,10 @@ export function ContactForm() {
                     autoComplete="email"
                     placeholder="jan@example.com"
                     defaultValue={state.values?.email}
-                    aria-invalid={Boolean(state.errors?.email)}
+                    aria-invalid={Boolean(emailError)}
+                    onFocus={() => clearFieldError("email")}
                   />
-                  <FieldError message={state.errors?.email?.[0]} />
+                  <FieldError message={emailError} />
                 </div>
 
                 <div className="space-y-2 sm:col-span-2">
@@ -212,8 +323,12 @@ export function ContactForm() {
                     id="package"
                     name="package"
                     defaultValue={state.values?.package ?? ""}
-                    aria-invalid={Boolean(state.errors?.package)}
-                    onChange={(event) => setSelectedPackage(event.target.value)}
+                    aria-invalid={Boolean(packageError)}
+                    onFocus={() => clearFieldError("package")}
+                    onChange={(event) => {
+                      clearFieldError("package");
+                      setSelectedPackage(event.target.value);
+                    }}
                   >
                     {PACKAGE_OPTIONS.map((option) => {
                       const entry = availability.find(
@@ -249,7 +364,7 @@ export function ContactForm() {
                       availability={availability}
                     />
                   )}
-                  <FieldError message={state.errors?.package?.[0]} />
+                  <FieldError message={packageError} />
                 </div>
 
                 <div className="space-y-2">
@@ -260,9 +375,10 @@ export function ContactForm() {
                     type="text"
                     placeholder="np. 4"
                     defaultValue={state.values?.schoolClass}
-                    aria-invalid={Boolean(state.errors?.schoolClass)}
+                    aria-invalid={Boolean(schoolClassError)}
+                    onFocus={() => clearFieldError("schoolClass")}
                   />
-                  <FieldError message={state.errors?.schoolClass?.[0]} />
+                  <FieldError message={schoolClassError} />
                 </div>
 
                 <div className="space-y-2">
@@ -273,9 +389,10 @@ export function ContactForm() {
                     type="text"
                     placeholder="np. 70% na maturze"
                     defaultValue={state.values?.expectedResult}
-                    aria-invalid={Boolean(state.errors?.expectedResult)}
+                    aria-invalid={Boolean(expectedResultError)}
+                    onFocus={() => clearFieldError("expectedResult")}
                   />
-                  <FieldError message={state.errors?.expectedResult?.[0]} />
+                  <FieldError message={expectedResultError} />
                 </div>
 
                 <div className="space-y-2 sm:col-span-2">
@@ -286,9 +403,10 @@ export function ContactForm() {
                     type="text"
                     placeholder="Kasia"
                     defaultValue={state.values?.studentName}
-                    aria-invalid={Boolean(state.errors?.studentName)}
+                    aria-invalid={Boolean(studentNameError)}
+                    onFocus={() => clearFieldError("studentName")}
                   />
-                  <FieldError message={state.errors?.studentName?.[0]} />
+                  <FieldError message={studentNameError} />
                 </div>
 
                 <div className="space-y-2 sm:col-span-2">
@@ -299,15 +417,17 @@ export function ContactForm() {
                     rows={3}
                     placeholder="Np. preferowany termin, pytania o zajęcia..."
                     defaultValue={state.values?.notes}
-                    aria-invalid={Boolean(state.errors?.notes)}
+                    aria-invalid={Boolean(notesError)}
+                    onFocus={() => clearFieldError("notes")}
                   />
-                  <FieldError message={state.errors?.notes?.[0]} />
+                  <FieldError message={notesError} />
                 </div>
               </div>
 
               <TermsAcceptance
                 defaultChecked={state.values?.acceptTerms === "on"}
-                error={state.errors?.acceptTerms?.[0]}
+                error={acceptTermsError}
+                onInteract={() => clearFieldError("acceptTerms")}
               />
 
               {state.message ? (

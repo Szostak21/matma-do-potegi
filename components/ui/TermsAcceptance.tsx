@@ -7,9 +7,14 @@ import { cn } from "@/lib/cn";
 type TermsAcceptanceProps = {
   error?: string;
   defaultChecked?: boolean;
+  onInteract?: () => void;
 };
 
-export function TermsAcceptance({ error, defaultChecked }: TermsAcceptanceProps) {
+export function TermsAcceptance({
+  error,
+  defaultChecked,
+  onInteract,
+}: TermsAcceptanceProps) {
   return (
     <div className="space-y-2">
       <div
@@ -29,6 +34,8 @@ export function TermsAcceptance({ error, defaultChecked }: TermsAcceptanceProps)
             defaultChecked={defaultChecked}
             aria-invalid={Boolean(error)}
             className="mt-0.5"
+            onFocus={onInteract}
+            onChange={onInteract}
           />
           <span className="text-sm leading-relaxed text-ink/80">
             {TERMS.acceptancePrefix}{" "}
