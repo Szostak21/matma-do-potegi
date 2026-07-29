@@ -542,13 +542,9 @@ export async function startDepositCheckout(
       };
     }
 
-    // Serwerowe InitiateCheckout (CAPI) — ten sam eventId co Pixel (z formularza).
-    // Generowany w przeglądarce i przekazany jako hidden field → pewna deduplikacja.
-    const clientEventId = formData.get("eventId")?.toString()?.trim();
-    const eventId =
-      clientEventId && clientEventId.length > 0
-        ? clientEventId
-        : randomUUID();
+    // Serwerowe InitiateCheckout (CAPI) — dedup z Pixelem po wspólnym eventId.
+    // Gating zgody i identyfikatory Meta czytane są z żądania w meta-capi.
+    const eventId = randomUUID();
     const lead = payment.lead;
     after(() => {
       void sendMetaInitiateCheckoutEvent({

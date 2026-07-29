@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/cn";
@@ -12,9 +11,6 @@ import {
   type CookieConsent,
 } from "@/lib/cookie-consent";
 
-/** Na stronach prawnych baner nie zasłania treści — użytkownik ma móc przeczytać dokumenty. */
-const LEGAL_PATHS = new Set(["/polityka-prywatnosci", "/regulamin"]);
-
 function subscribeToConsentChanges(onStoreChange: () => void) {
   window.addEventListener(COOKIE_CONSENT_CHANGE_EVENT, onStoreChange);
 
@@ -24,22 +20,18 @@ function subscribeToConsentChanges(onStoreChange: () => void) {
 }
 
 export function CookieBanner() {
-  const pathname = usePathname();
   const consent = useSyncExternalStore(
     subscribeToConsentChanges,
     getCookieConsent,
     () => "denied" as CookieConsent,
   );
 
-  const isLegalPage = LEGAL_PATHS.has(pathname);
-  const isVisible = consent === null && !isLegalPage;
-
   function handleChoice(choice: CookieConsent) {
     setCookieConsent(choice);
   }
 
   useEffect(() => {
-    if (!isVisible) {
+    if (consent !== null) {
       return;
     }
 
@@ -49,9 +41,9 @@ export function CookieBanner() {
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isVisible]);
+  }, [consent]);
 
-  if (!isVisible) {
+  if (consent !== null) {
     return null;
   }
 
@@ -90,8 +82,6 @@ export function CookieBanner() {
           korzystasz ze strony.{" "}
           <Link
             href="/polityka-prywatnosci"
-            target="_blank"
-            rel="noopener noreferrer"
             className="font-medium text-olive-800 underline-offset-2 hover:underline"
           >
             Polityka prywatności

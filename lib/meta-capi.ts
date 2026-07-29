@@ -195,7 +195,7 @@ async function postMetaEvent(input: MetaServerEventInput): Promise<void> {
       {
         event_name: input.eventName,
         event_time: Math.floor(Date.now() / 1000),
-        event_id: String(input.eventId),
+        event_id: input.eventId,
         action_source: "website",
         ...(input.eventSourceUrl
           ? { event_source_url: input.eventSourceUrl }

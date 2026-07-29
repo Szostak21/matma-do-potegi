@@ -79,7 +79,7 @@ export async function markDepositPaymentPaid(
     // Zgoda, _fbp/_fbc, IP/UA z metadanych sesji Stripe → Advanced Matching.
     if (metaContext) {
       await sendMetaPurchaseEvent({
-        eventId: String(result.payment.token),
+        eventId: result.payment.token,
         value: result.payment.amount / 100,
         currency: "PLN",
         consentGranted: metaContext.consentGranted,
