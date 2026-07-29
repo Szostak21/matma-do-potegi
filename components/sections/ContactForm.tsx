@@ -121,10 +121,18 @@ export function ContactForm() {
     if (state.status === "success" && state.leadId) {
       trackLeadSubmit({
         packageType: state.values?.package ?? selectedPackage,
+        eventId: state.eventId,
       });
       router.push(`/rezerwacja/${state.leadId}/podsumowanie`);
     }
-  }, [state.status, state.leadId, state.values?.package, selectedPackage, router]);
+  }, [
+    state.status,
+    state.leadId,
+    state.eventId,
+    state.values?.package,
+    selectedPackage,
+    router,
+  ]);
 
   const selectedAvailability = availability.find(
     (item) => item.packageType === selectedPackage,

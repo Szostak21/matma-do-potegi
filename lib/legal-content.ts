@@ -10,7 +10,7 @@ const SERVICE_ADDRESS = "ul. Chocimska 9, 30-057 Kraków";
 // NIP: uzupełnić po przejściu na JDG
 // const COMPANY_NIP = "____________";
 
-const LEGAL_UPDATED_AT = "27 lipca 2026";
+const LEGAL_UPDATED_AT = "29 lipca 2026";
 
 export const LEGAL = {
   terms: {
@@ -268,7 +268,7 @@ export const LEGAL = {
                 text: "**Dane ucznia i szczegóły edukacyjne:** wybrana grupa, imię ucznia, obecna ocena z matematyki, oczekiwany wynik (w celu odpowiedniego dostosowania poziomu zajęć i optymalizacji procesu nauczania).",
               },
               {
-                text: "**Dane techniczne i analityczne:** adres IP, informacje o przeglądarce, aktywność na stronie oraz dane zbierane przez Google Analytics 4, Microsoft Clarity i Meta Pixel (np. odwiedzone podstrony, źródło ruchu, zdarzenia konwersji, nagrania sesji, heatmapy kliknięć) - wyłącznie w celach statystycznych i marketingowych, po wyrażeniu zgody w banerze cookies.",
+                text: "**Dane techniczne, analityczne i marketingowe:** adres IP, informacje o przeglądarce, aktywność na stronie oraz dane zbierane przez Google Analytics 4, Microsoft Clarity i narzędzia Meta (Meta Pixel oraz Meta Conversions API) - np. odwiedzone podstrony, źródło ruchu, zdarzenia konwersji (Lead, InitiateCheckout, Purchase), nagrania sesji, heatmapy kliknięć. W ramach Meta Conversions API mogą być przekazywane także zahashowane identyfikatory podane w formularzu (adres e-mail, numer telefonu, imię i nazwisko) oraz identyfikatory cookies Meta (`_fbp`, `_fbc`). Hashowanie nie oznacza anonimizacji w rozumieniu RODO. Przetwarzanie w tych celach następuje wyłącznie po wyrażeniu zgody w banerze cookies.",
               },
             ],
           },
@@ -295,7 +295,7 @@ export const LEGAL = {
                 text: "**art. 6 ust. 1 lit. f RODO:** prawnie uzasadniony interes (dochodzenie roszczeń, bezpieczeństwo serwisu).",
               },
               {
-                text: "**art. 6 ust. 1 lit. a RODO:** Twoja dobrowolna zgoda (pliki cookies analityczne Google Analytics 4, Microsoft Clarity oraz marketingowe Meta Pixel).",
+                text: "**art. 6 ust. 1 lit. a RODO:** Twoja dobrowolna zgoda (pliki cookies analityczne Google Analytics 4 i Microsoft Clarity oraz narzędzia marketingowe Meta: Meta Pixel i Meta Conversions API, w tym zaawansowane dopasowywanie konwersji).",
               },
             ],
           },
@@ -331,13 +331,13 @@ export const LEGAL = {
                 text: "**Microsoft Ireland Operations Limited (Microsoft Clarity)** – narzędzie analityczne służące do analizy zachowań użytkowników na stronie (np. heatmapy kliknięć, nagrania sesji, czas spędzony na podstronach). Microsoft Clarity korzysta z plików cookies i uruchamia się wyłącznie po wyrażeniu zgody w banerze cookies na tej stronie.",
               },
               {
-                text: "**Meta Platforms Ireland Limited (Meta Pixel)** – narzędzie analityczne i marketingowe służące do mierzenia skuteczności kampanii reklamowych Meta (Facebook, Instagram), tworzenia grup odbiorców oraz kierowania spersonalizowanych reklam. Meta Pixel korzysta z plików cookies i uruchamia się wyłącznie po wyrażeniu zgody w banerze cookies na tej stronie.",
+                text: "**Meta Platforms Ireland Limited (Meta Pixel oraz Meta Conversions API)** – narzędzia analityczne i marketingowe służące do mierzenia skuteczności kampanii reklamowych Meta (Facebook, Instagram), analizy konwersji, tworzenia grup odbiorców oraz kierowania spersonalizowanych reklam. Dane mogą być przekazywane zarówno przez skrypt w przeglądarce (Meta Pixel), jak i przez bezpieczne wywołania serwerowe (Meta Conversions API). Uruchomienie następuje wyłącznie po wyrażeniu zgody w banerze cookies na tej stronie; wybór „Tylko niezbędne” oznacza brak Pixela i brak Conversions API.",
               },
             ],
           },
           {
             kind: "paragraph",
-            text: "W ramach korzystania z Google Analytics 4, Microsoft Clarity i Meta Pixel dane mogą być przekazywane do podmiotów z grupy Google LLC, Microsoft Corporation oraz Meta Platforms, Inc. z siedzibą w Stanach Zjednoczonych. Transfer odbywa się na podstawie decyzji Komisji Europejskiej w sprawie adekwatności ochrony (EU-US Data Privacy Framework) lub standardowych klauzul umownych zatwierdzonych przez Komisję Europejską.",
+            text: "W ramach korzystania z Google Analytics 4, Microsoft Clarity oraz narzędzi Meta (Pixel i Conversions API) dane mogą być przekazywane do podmiotów z grupy Google LLC, Microsoft Corporation oraz Meta Platforms, Inc. z siedzibą w Stanach Zjednoczonych. Transfer odbywa się na podstawie decyzji Komisji Europejskiej w sprawie adekwatności ochrony (EU-US Data Privacy Framework) lub standardowych klauzul umownych zatwierdzonych przez Komisję Europejską.",
           },
         ],
       },
@@ -350,7 +350,7 @@ export const LEGAL = {
           },
           {
             kind: "paragraph",
-            text: "Decyzja o wyrażeniu lub odmowie zgody na pliki cookies analityczne i marketingowe jest zapisywana lokalnie w przeglądarce użytkownika (localStorage) i przechowywana do momentu jej wycofania lub usunięcia danych przeglądarki. Po upływie 12 miesięcy od ostatniej decyzji baner cookies może zostać wyświetlony ponownie w celu potwierdzenia preferencji.",
+            text: "Decyzja o wyrażeniu lub odmowie zgody na pliki cookies analityczne i marketingowe jest zapisywana lokalnie w przeglądarce użytkownika (localStorage) oraz - w zakresie niezbędnym do respektowania tej decyzji także po stronie serwera (m.in. Meta Conversions API) - w pliku cookie preferencji `matma_cookie_consent`. Preferencje są przechowywane do momentu ich wycofania lub usunięcia danych przeglądarki. Po upływie 12 miesięcy od ostatniej decyzji baner cookies może zostać wyświetlony ponownie w celu potwierdzenia preferencji.",
           },
         ],
       },
@@ -374,7 +374,7 @@ export const LEGAL = {
               { text: "wniesienia sprzeciwu wobec przetwarzania," },
               { text: "przenoszenia danych," },
               {
-                text: "cofnięcia zgody na pliki cookies analityczne (Google Analytics 4, Microsoft Clarity) i marketingowe (Meta Pixel) w dowolnym momencie - poprzez link „Ustawienia plików cookies” w stopce strony lub kontakt z Administratorem.",
+                text: "cofnięcia zgody na pliki cookies analityczne (Google Analytics 4, Microsoft Clarity) i marketingowe (Meta Pixel oraz Meta Conversions API) w dowolnym momencie - poprzez link „Ustawienia plików cookies” w stopce strony lub kontakt z Administratorem.",
               },
             ],
           },
@@ -389,7 +389,7 @@ export const LEGAL = {
         blocks: [
           {
             kind: "paragraph",
-            text: "Nasz serwis wykorzystuje pliki cookies. Narzędzia analityczne i marketingowe (Google Analytics 4, Microsoft Clarity, Meta Pixel) uruchamiają się wyłącznie po kliknięciu „Akceptuj wszystkie” w banerze cookies wyświetlanym przy pierwszej wizycie na stronie.",
+            text: "Nasz serwis wykorzystuje pliki cookies. Narzędzia analityczne i marketingowe (Google Analytics 4, Microsoft Clarity, Meta Pixel oraz Meta Conversions API) uruchamiają się wyłącznie po kliknięciu „Akceptuj wszystkie” w banerze cookies wyświetlanym przy pierwszej wizycie na stronie.",
           },
           {
             kind: "list",
@@ -399,16 +399,19 @@ export const LEGAL = {
                 text: "**Niezbędne (techniczne):** wymagane do prawidłowego działania strony (np. mechanizmy płatności Stripe, bezpieczeństwo serwisu). Nie wymagają zgody i są aktywne niezależnie od ustawień banera.",
               },
               {
+                text: "**Preferencje zgody (`matma_cookie_consent`):** zapisują Twój wybór dotyczący cookies analitycznych i marketingowych, abyśmy mogli go respektować także po stronie serwera (np. przy Meta Conversions API). Cookie preferencji nie służy do śledzenia reklamowego.",
+              },
+              {
                 text: "**Analityczne (Google Analytics 4):** służą do zbierania statystyk odwiedzin i korzystania ze strony (np. liczba odsłon, źródła ruchu, zachowanie użytkowników). Skrypt Google Analytics 4 oraz powiązane pliki cookies są ładowane wyłącznie po wyrażeniu zgody w banerze cookies.",
               },
               {
                 text: "**Analityczne (Microsoft Clarity):** służą do analizy zachowań użytkowników na stronie (np. heatmapy kliknięć, nagrania sesji, czas spędzony na podstronach). Skrypt Microsoft Clarity oraz powiązane pliki cookies są ładowane wyłącznie po wyrażeniu zgody w banerze cookies.",
               },
               {
-                text: "**Marketingowe (Meta Pixel):** służą do mierzenia konwersji, analizy ruchu z kampanii Meta Ads oraz kierowania spersonalizowanych reklam w serwisach Meta. Skrypt Meta Pixel oraz powiązane pliki cookies są ładowane wyłącznie po wyrażeniu zgody w banerze cookies.",
+                text: "**Marketingowe (Meta Pixel i Meta Conversions API):** służą do mierzenia konwersji, analizy ruchu z kampanii Meta Ads oraz kierowania spersonalizowanych reklam w serwisach Meta. Ta sama zgoda obejmuje skrypt Meta Pixel w przeglądarce oraz serwerowy pomiar konwersji (Conversions API). Uruchomienie następuje wyłącznie po wyrażeniu zgody w banerze cookies.",
               },
               {
-                text: "**Zarządzanie zgodą:** wybór „Tylko niezbędne” oznacza odmowę plików cookies analitycznych i marketingowych - Google Analytics 4, Microsoft Clarity i Meta Pixel nie zostaną załadowane. Zgodę możesz w każdej chwili wycofać lub zmienić, klikając link „Ustawienia plików cookies” w stopce strony - baner cookies pojawi się ponownie i umożliwi nowy wybór. Decyzja jest zapisywana lokalnie w przeglądarce (localStorage), a nie w plikach cookies.",
+                text: "**Zarządzanie zgodą:** wybór „Tylko niezbędne” oznacza odmowę narzędzi analitycznych i marketingowych - Google Analytics 4, Microsoft Clarity, Meta Pixel i Meta Conversions API nie zostaną uruchomione. Zgodę możesz w każdej chwili wycofać lub zmienić, klikając link „Ustawienia plików cookies” w stopce strony - baner cookies pojawi się ponownie i umożliwi nowy wybór. Decyzja jest zapisywana w localStorage oraz w cookie preferencji `matma_cookie_consent`.",
               },
             ],
           },

@@ -78,7 +78,8 @@ export function CookieBanner() {
         >
           Używamy niezbędnych plików cookies oraz - za Twoją zgodą -
           analitycznych (Google Analytics 4, Microsoft Clarity) i marketingowych
-          (Meta Pixel), aby lepiej rozumieć, jak korzystasz ze strony.{" "}
+          (Meta Pixel i pomiar konwersji Meta), aby lepiej rozumieć, jak
+          korzystasz ze strony.{" "}
           <Link
             href="/polityka-prywatnosci"
             className="font-medium text-olive-800 underline-offset-2 hover:underline"

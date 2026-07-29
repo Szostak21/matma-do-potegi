@@ -57,6 +57,8 @@ export type LeadFormState = {
   values?: Record<string, string>;
   leadId?: string;
   requestedPackage?: string;
+  /** Wspólny identyfikator zdarzenia dla deduplikacji Pixel <-> CAPI. */
+  eventId?: string;
 };
 
 export function normalizePhone(phone: string): string {

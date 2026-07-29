@@ -26,12 +26,20 @@ function trackGaEvent(eventName: string, params?: EventParams) {
   window.gtag("event", eventName, params);
 }
 
-function trackMetaStandardEvent(eventName: string, params?: EventParams) {
+function trackMetaStandardEvent(
+  eventName: string,
+  params?: EventParams,
+  options?: { eventID?: string },
+) {
   if (typeof window.fbq !== "function") {
     return;
   }
 
-  window.fbq("track", eventName, params);
+  if (options?.eventID) {
+    window.fbq("track", eventName, params, { eventID: options.eventID });
+  } else {
+    window.fbq("track", eventName, params);
+  }
 }
 
 function trackMetaCustomEvent(eventName: string, params?: EventParams) {
@@ -47,6 +55,7 @@ export function trackEvent(
   metaEventName: string,
   params?: EventParams,
   metaMode: "standard" | "custom" = "standard",
+  options?: { eventID?: string },
 ) {
   if (!hasAnalyticsConsent()) {
     return;
@@ -57,7 +66,7 @@ export function trackEvent(
   if (metaMode === "custom") {
     trackMetaCustomEvent(metaEventName, params);
   } else {
-    trackMetaStandardEvent(metaEventName, params);
+    trackMetaStandardEvent(metaEventName, params, options);
   }
 }
 
@@ -65,7 +74,14 @@ export function trackFormStart() {
   trackEvent("form_start", "FormStart", { form_name: "lead_signup" }, "custom");
 }
 
-export function trackLeadSubmit({ packageType }: { packageType: string }) {
+export function trackLeadSubmit({
+  packageType,
+  eventId,
+}: {
+  packageType: string;
+  /** Ten sam eventId co w zdarzeniu serwerowym CAPI — dla deduplikacji. */
+  eventId?: string;
+}) {
   trackEvent(
     "generate_lead",
     "Lead",
@@ -74,6 +90,7 @@ export function trackLeadSubmit({ packageType }: { packageType: string }) {
       form_name: "lead_signup",
     },
     "standard",
+    eventId ? { eventID: eventId } : undefined,
   );
 }
 

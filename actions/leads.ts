@@ -1,9 +1,20 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
+
+import { cookies, headers } from "next/headers";
+import { after } from "next/server";
+
 import { createDepositPaymentForLead } from "@/actions/payments";
+import {
+  COOKIE_CONSENT_KEY,
+  parseCookieConsent,
+} from "@/lib/cookie-consent";
+import { PACKAGE_POOL_FULL_MESSAGE } from "@/lib/content";
 import { addMinutes, ONLINE_PAYMENT_EXPIRY_MINUTES } from "@/lib/dates";
 import { sendAdminLeadNotification } from "@/lib/emails";
 import { packageLabel } from "@/lib/labels";
+import { sendMetaLeadEvent } from "@/lib/meta-capi";
 import { PackagePoolFullError, assertPackageHasCapacity } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
 import {
@@ -12,7 +23,6 @@ import {
   normalizePhone,
   type LeadFormState,
 } from "@/lib/validations/lead";
-import { PACKAGE_POOL_FULL_MESSAGE } from "@/lib/content";
 
 export async function submitLead(
   _prevState: LeadFormState,
@@ -76,10 +86,52 @@ export async function submitLead(
       console.error("sendAdminLeadNotification failed:", error);
     }
 
+    // Meta Pixel + CAPI: ta sama zgoda marketingowa (cookie matma_cookie_consent).
+    // eventId tylko przy zgodzie — deduplikacja z Pixelem w przeglądarce.
+    const cookieStore = await cookies();
+    const hasMarketingConsent =
+      parseCookieConsent(cookieStore.get(COOKIE_CONSENT_KEY)?.value) ===
+      "granted";
+    const eventId = hasMarketingConsent ? randomUUID() : undefined;
+
+    if (eventId) {
+      const requestHeaders = await headers();
+      const forwardedFor = requestHeaders.get("x-forwarded-for");
+      const clientIpAddress =
+        forwardedFor?.split(",")[0]?.trim() ??
+        requestHeaders.get("x-real-ip") ??
+        null;
+      const eventSourceUrl = requestHeaders.get("referer");
+      const clientUserAgent = requestHeaders.get("user-agent");
+      const fbp = cookieStore.get("_fbp")?.value ?? null;
+      const fbc = cookieStore.get("_fbc")?.value ?? null;
+      const packageType = data.package;
+      const email = data.email;
+      const phone = normalizePhone(data.phone);
+      const fullName = data.parentName;
+
+      // Nie blokuj odpowiedzi formularza na Graph API.
+      after(() => {
+        void sendMetaLeadEvent({
+          eventId,
+          eventSourceUrl,
+          email,
+          phone,
+          fullName,
+          clientIpAddress,
+          clientUserAgent,
+          fbp,
+          fbc,
+          customData: { package_type: packageType, form_name: "lead_signup" },
+        });
+      });
+    }
+
     return {
       status: "success",
       leadId: lead.id,
       requestedPackage: data.package,
+      eventId,
     };
   } catch (error) {
     if (error instanceof PackagePoolFullError) {
