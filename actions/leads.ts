@@ -74,17 +74,20 @@ export async function submitLead(
       };
     }
 
-    try {
-      await sendAdminLeadNotification({
-        parentName: data.parentName,
-        studentName: data.studentName,
-        phone: data.phone,
-        email: data.email,
-        packageName: packageLabel(data.package),
+    // Mail admina poza ścieżką krytyczną — szybszy return success / redirect.
+    // Po disconnectcie klienta after() i tak dociągnie powiadomienie.
+    const adminNotification = {
+      parentName: data.parentName,
+      studentName: data.studentName,
+      phone: data.phone,
+      email: data.email,
+      packageName: packageLabel(data.package),
+    };
+    after(() => {
+      void sendAdminLeadNotification(adminNotification).catch((error) => {
+        console.error("sendAdminLeadNotification failed:", error);
       });
-    } catch (error) {
-      console.error("sendAdminLeadNotification failed:", error);
-    }
+    });
 
     // Meta Pixel + CAPI: ta sama zgoda marketingowa (cookie matma_cookie_consent).
     // eventId tylko przy zgodzie — deduplikacja z Pixelem w przeglądarce.

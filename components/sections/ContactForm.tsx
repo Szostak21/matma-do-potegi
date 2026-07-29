@@ -12,7 +12,11 @@ import { Label } from "@/components/ui/Label";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Select } from "@/components/ui/Select";
-import { SubmitButton } from "@/components/ui/SubmitButton";
+import {
+  PreventUnloadWhilePending,
+  ReleaseSubmitLockOnSettle,
+  SubmitButton,
+} from "@/components/ui/SubmitButton";
 import { TermsAcceptance } from "@/components/ui/TermsAcceptance";
 import { Textarea } from "@/components/ui/Textarea";
 import {
@@ -110,6 +114,8 @@ export function ContactForm() {
   const [trackedErrors, setTrackedErrors] = useState(state.errors);
   const packageFieldKey = state.values?.package ?? "package-default";
   const formStartTracked = useRef(false);
+  /** Blokada od pierwszego kliknięcia — zanim useFormStatus.pending zdąży się ustawić. */
+  const submitLockedRef = useRef(false);
 
   // Nowa odpowiedź walidacji → pełna lista komunikatów od nowa.
   if (state.errors !== trackedErrors) {
@@ -150,6 +156,29 @@ export function ContactForm() {
     formStartTracked.current = true;
     trackFormStart();
   }
+
+  function handleFormAction(formData: FormData) {
+    if (submitLockedRef.current) {
+      return;
+    }
+
+    submitLockedRef.current = true;
+    formAction(formData);
+  }
+
+  // Przywrócenie strony z bfcache (Wstecz) — odblokuj formularz.
+  useEffect(() => {
+    function handlePageShow(event: PageTransitionEvent) {
+      if (event.persisted) {
+        submitLockedRef.current = false;
+      }
+    }
+
+    window.addEventListener("pageshow", handlePageShow);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -263,7 +292,7 @@ export function ContactForm() {
 
           <Card className="mt-10">
             <form
-              action={formAction}
+              action={handleFormAction}
               className="space-y-6"
               onFocus={handleFormInteraction}
               onChange={handleFormInteraction}
@@ -439,6 +468,11 @@ export function ContactForm() {
                 </p>
               ) : null}
 
+              <PreventUnloadWhilePending />
+              <ReleaseSubmitLockOnSettle
+                lockedRef={submitLockedRef}
+                keepLocked={state.status === "success"}
+              />
               <SubmitButton disabled={isPackageFull} />
             </form>
           </Card>
