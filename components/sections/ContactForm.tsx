@@ -2,7 +2,13 @@
 
 import type { PackageType } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useRef, useState } from "react";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 
 import { submitLead } from "@/actions/leads";
 import { Card } from "@/components/ui/Card";
@@ -141,10 +147,19 @@ export function ContactForm() {
     string,
     string[]
   > | null>(null);
+  /** Ostatnie wartości z nieudanej walidacji klienta — hardening po ewentualnym form.reset(). */
+  const [draftValues, setDraftValues] = useState<Record<
+    string,
+    string
+  > | null>(null);
+  /** Remount pól po zapisie draftu, żeby uncontrolled defaultValue weszło w życie. */
+  const [draftEpoch, setDraftEpoch] = useState(0);
   const [trackedErrors, setTrackedErrors] = useState(state.errors);
   const [trackedClientErrors, setTrackedClientErrors] = useState(clientErrors);
   const [redirecting, setRedirecting] = useState(false);
-  const packageFieldKey = state.values?.package ?? "package-default";
+  const fieldValues = draftValues ?? state.values;
+  const packageFieldKey =
+    fieldValues?.package ?? "package-default";
   const formStartTracked = useRef(false);
   /** Blokada od pierwszego kliknięcia — zanim useFormStatus.pending zdąży się ustawić. */
   const submitLockedRef = useRef(false);
@@ -153,6 +168,10 @@ export function ContactForm() {
   if (state.errors !== trackedErrors) {
     setTrackedErrors(state.errors);
     setClientErrors(null);
+    if (state.values) {
+      setDraftValues(state.values);
+      setDraftEpoch((epoch) => epoch + 1);
+    }
     setClearedFields(new Set());
   }
 
@@ -199,19 +218,31 @@ export function ContactForm() {
     trackFormStart();
   }
 
-  function handleFormAction(formData: FormData) {
+  /**
+   * Fail-fast w onSubmit + preventDefault — React 19 nie woła wtedy action,
+   * więc nie robi form.reset() i nie kasuje uncontrolled inputs.
+   */
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     if (submitLockedRef.current || redirecting) {
+      event.preventDefault();
       return;
     }
 
+    const formData = new FormData(event.currentTarget);
     const values = formDataToObject(formData);
     const parsed = leadFormSchema.safeParse(values);
 
     if (!parsed.success) {
+      event.preventDefault();
       const fieldErrors = parsed.error.flatten().fieldErrors as Record<
         string,
         string[]
       >;
+      setDraftValues(values);
+      setDraftEpoch((epoch) => epoch + 1);
+      if (values.package) {
+        setSelectedPackage(values.package);
+      }
       setClientErrors(fieldErrors);
       trackFormValidationError({ fields: fieldErrorKeys(fieldErrors) });
       scheduleScrollToInvalidFields(
@@ -222,7 +253,6 @@ export function ContactForm() {
 
     setClientErrors(null);
     submitLockedRef.current = true;
-    formAction(formData);
   }
 
   // Przywrócenie strony z bfcache (Wstecz) — odblokuj formularz.
@@ -359,12 +389,14 @@ export function ContactForm() {
 
           <Card className="mt-10">
             <form
-              action={handleFormAction}
+              action={formAction}
+              onSubmit={handleSubmit}
               className="space-y-6"
               onFocus={handleFormInteraction}
               onChange={handleFormInteraction}
             >
-              <div className="grid gap-6 sm:grid-cols-2">
+              <div key={draftEpoch} className="space-y-6">
+                <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="parentName">
                     Imię i nazwisko osoby zgłaszającej *
@@ -375,7 +407,7 @@ export function ContactForm() {
                     type="text"
                     autoComplete="name"
                     placeholder="Jan Kowalski"
-                    defaultValue={state.values?.parentName}
+                    defaultValue={fieldValues?.parentName}
                     aria-invalid={Boolean(parentNameError)}
                     onFocus={() => clearFieldError("parentName")}
                   />
@@ -390,7 +422,7 @@ export function ContactForm() {
                     type="tel"
                     autoComplete="tel"
                     placeholder="+48 000 000 000"
-                    defaultValue={state.values?.phone}
+                    defaultValue={fieldValues?.phone}
                     aria-invalid={Boolean(phoneError)}
                     onFocus={() => clearFieldError("phone")}
                   />
@@ -405,7 +437,7 @@ export function ContactForm() {
                     type="email"
                     autoComplete="email"
                     placeholder="jan@example.com"
-                    defaultValue={state.values?.email}
+                    defaultValue={fieldValues?.email}
                     aria-invalid={Boolean(emailError)}
                     onFocus={() => clearFieldError("email")}
                   />
@@ -418,7 +450,7 @@ export function ContactForm() {
                     key={packageFieldKey}
                     id="package"
                     name="package"
-                    defaultValue={state.values?.package ?? ""}
+                    defaultValue={fieldValues?.package ?? ""}
                     aria-invalid={Boolean(packageError)}
                     onFocus={() => clearFieldError("package")}
                     onChange={(event) => {
@@ -470,7 +502,7 @@ export function ContactForm() {
                     name="schoolClass"
                     type="text"
                     placeholder="np. 4"
-                    defaultValue={state.values?.schoolClass}
+                    defaultValue={fieldValues?.schoolClass}
                     aria-invalid={Boolean(schoolClassError)}
                     onFocus={() => clearFieldError("schoolClass")}
                   />
@@ -484,7 +516,7 @@ export function ContactForm() {
                     name="expectedResult"
                     type="text"
                     placeholder="np. 70% na maturze"
-                    defaultValue={state.values?.expectedResult}
+                    defaultValue={fieldValues?.expectedResult}
                     aria-invalid={Boolean(expectedResultError)}
                     onFocus={() => clearFieldError("expectedResult")}
                   />
@@ -498,7 +530,7 @@ export function ContactForm() {
                     name="studentName"
                     type="text"
                     placeholder="Kasia"
-                    defaultValue={state.values?.studentName}
+                    defaultValue={fieldValues?.studentName}
                     aria-invalid={Boolean(studentNameError)}
                     onFocus={() => clearFieldError("studentName")}
                   />
@@ -512,19 +544,20 @@ export function ContactForm() {
                     name="notes"
                     rows={3}
                     placeholder="Np. preferowany termin, pytania o zajęcia..."
-                    defaultValue={state.values?.notes}
+                    defaultValue={fieldValues?.notes}
                     aria-invalid={Boolean(notesError)}
                     onFocus={() => clearFieldError("notes")}
                   />
                   <FieldError message={notesError} />
                 </div>
-              </div>
+                </div>
 
-              <TermsAcceptance
-                defaultChecked={state.values?.acceptTerms === "on"}
-                error={acceptTermsError}
-                onInteract={() => clearFieldError("acceptTerms")}
-              />
+                <TermsAcceptance
+                  defaultChecked={fieldValues?.acceptTerms === "on"}
+                  error={acceptTermsError}
+                  onInteract={() => clearFieldError("acceptTerms")}
+                />
+              </div>
 
               {state.message ? (
                 <p
