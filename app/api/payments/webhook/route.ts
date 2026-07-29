@@ -36,6 +36,8 @@ async function handleCheckoutSessionCompleted(
     consentGranted: session.metadata?.mktConsent === "granted",
     fbp: session.metadata?.fbp ?? null,
     fbc: session.metadata?.fbc ?? null,
+    clientIpAddress: session.metadata?.clientIp ?? null,
+    clientUserAgent: session.metadata?.clientUa ?? null,
   });
 }
 

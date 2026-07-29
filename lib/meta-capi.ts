@@ -23,9 +23,11 @@ import {
 
 const META_CAPI_ACCESS_TOKEN = process.env.META_CAPI_ACCESS_TOKEN?.trim() ?? "";
 
-/** Kod testowy z Events Manager -> Test Events (opcjonalny, tylko do debugowania). */
-const META_CAPI_TEST_EVENT_CODE =
-  process.env.META_CAPI_TEST_EVENT_CODE?.trim() ?? "";
+/**
+ * Kod testowy Events Manager → Test Events.
+ * TODO: usuń po weryfikacji w zakładce "Testuj zdarzenia" (wróć do env META_CAPI_TEST_EVENT_CODE).
+ */
+const META_CAPI_TEST_EVENT_CODE = "TEST83272";
 
 const GRAPH_API_VERSION = "v21.0";
 
@@ -42,9 +44,18 @@ function hashEmail(email: string): string {
   return sha256(email.trim().toLowerCase());
 }
 
-/** Meta wymaga: same cyfry z kodem kraju (bez "+"/spacji/liter), następnie SHA-256. */
+/**
+ * Meta wymaga: same cyfry z kodem kraju (bez "+"/spacji/liter), następnie SHA-256.
+ * Polskie 9-cyfrowe numery uzupełniamy o prefix 48 (Advanced Matching / cross-device).
+ */
 function hashPhone(phone: string): string {
-  return sha256(phone.replace(/\D/g, ""));
+  let digits = phone.replace(/\D/g, "");
+
+  if (digits.length === 9) {
+    digits = `48${digits}`;
+  }
+
+  return sha256(digits);
 }
 
 /** Meta wymaga: trim + lowercase, następnie SHA-256. */
@@ -195,6 +206,7 @@ async function postMetaEvent(input: MetaServerEventInput): Promise<void> {
     ],
   };
 
+  // Tymczasowo zawsze wysyłamy test_event_code (zob. META_CAPI_TEST_EVENT_CODE powyżej).
   if (META_CAPI_TEST_EVENT_CODE) {
     payload.test_event_code = META_CAPI_TEST_EVENT_CODE;
   }
@@ -298,8 +310,10 @@ export async function sendMetaInitiateCheckoutEvent(input: {
 
 /**
  * Serwerowe zdarzenie "Purchase" — z webhooka Stripe (brak kontekstu żądania).
- * Zgoda i identyfikatory Meta (_fbp/_fbc) pochodzą z metadanych sesji Stripe,
+ * Zgoda, _fbp/_fbc oraz IP/UA pochodzą z metadanych sesji Stripe,
  * zapisanych przy tworzeniu checkoutu. eventId = token płatności (dedup z Pixelem).
+ *
+ * em/ph/fn/ln (SHA-256) + IP/UA + fbp/fbc = Advanced Matching cross-device.
  */
 export async function sendMetaPurchaseEvent(input: {
   eventId: string;
@@ -309,6 +323,8 @@ export async function sendMetaPurchaseEvent(input: {
   contact: LeadContact;
   fbp?: string | null;
   fbc?: string | null;
+  clientIpAddress?: string | null;
+  clientUserAgent?: string | null;
 }): Promise<void> {
   if (!input.consentGranted) {
     return;
@@ -320,6 +336,8 @@ export async function sendMetaPurchaseEvent(input: {
     email: input.contact.email,
     phone: input.contact.phone,
     fullName: input.contact.fullName,
+    clientIpAddress: input.clientIpAddress,
+    clientUserAgent: input.clientUserAgent,
     fbp: input.fbp,
     fbc: input.fbc,
     customData: {

@@ -17,6 +17,8 @@ export type PaidMetaContext = {
   consentGranted: boolean;
   fbp: string | null;
   fbc: string | null;
+  clientIpAddress: string | null;
+  clientUserAgent: string | null;
 };
 
 export async function markDepositPaymentPaid(
@@ -74,7 +76,7 @@ export async function markDepositPaymentPaid(
     });
 
     // Serwerowe Purchase (CAPI) — eventId = token (dedup z Pixelem w przeglądarce).
-    // Zgoda i _fbp/_fbc pochodzą z metadanych sesji Stripe. Fire-and-forget.
+    // Zgoda, _fbp/_fbc, IP/UA z metadanych sesji Stripe → Advanced Matching.
     if (metaContext) {
       await sendMetaPurchaseEvent({
         eventId: result.payment.token,
@@ -88,6 +90,8 @@ export async function markDepositPaymentPaid(
         },
         fbp: metaContext.fbp,
         fbc: metaContext.fbc,
+        clientIpAddress: metaContext.clientIpAddress,
+        clientUserAgent: metaContext.clientUserAgent,
       });
     }
   }

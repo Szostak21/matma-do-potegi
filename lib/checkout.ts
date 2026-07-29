@@ -102,13 +102,20 @@ export async function createDepositCheckoutSession(
     const paymentExpiryUnix = Math.floor(payment.expiresAt.getTime() / 1000);
     const expiresAtUnix = Math.max(paymentExpiryUnix, stripeMinExpiryUnix);
 
-    // Kontekst marketingowy klienta (zgoda + _fbp/_fbc) zapisujemy w metadanych
-    // sesji, aby webhook mógł wysłać zdarzenie Purchase do CAPI po zgodzie.
+    // Kontekst marketingowy klienta (zgoda + _fbp/_fbc + IP/UA) zapisujemy w metadanych
+    // sesji, aby webhook mógł wysłać zdarzenie Purchase do CAPI z Advanced Matching.
+    // Stripe metadata: wartości max 500 znaków.
     const marketingCtx = await getServerMarketingContext();
     const marketingMetadata: Record<string, string> = {
       mktConsent: marketingCtx.consentGranted ? "granted" : "denied",
       ...(marketingCtx.fbp ? { fbp: marketingCtx.fbp } : {}),
       ...(marketingCtx.fbc ? { fbc: marketingCtx.fbc } : {}),
+      ...(marketingCtx.clientIpAddress
+        ? { clientIp: marketingCtx.clientIpAddress.slice(0, 500) }
+        : {}),
+      ...(marketingCtx.clientUserAgent
+        ? { clientUa: marketingCtx.clientUserAgent.slice(0, 500) }
+        : {}),
     };
 
     const paymentMetadata = {
@@ -206,6 +213,8 @@ export async function confirmDepositPaymentByToken(
         consentGranted: session.metadata?.mktConsent === "granted",
         fbp: session.metadata?.fbp ?? null,
         fbc: session.metadata?.fbc ?? null,
+        clientIpAddress: session.metadata?.clientIp ?? null,
+        clientUserAgent: session.metadata?.clientUa ?? null,
       });
     }
   } catch (error) {
