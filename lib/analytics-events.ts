@@ -90,6 +90,22 @@ export function trackFormStart() {
   trackEvent("form_start", "FormStart", { form_name: "lead_signup" }, "custom");
 }
 
+/**
+ * GA4-only: które pola nie przeszły walidacji (same nazwy, bez wartości / PII).
+ * Nie wysyłamy do Meta — kampania Lead nienaruszona.
+ */
+export function trackFormValidationError({ fields }: { fields: string[] }) {
+  if (!hasAnalyticsConsent() || fields.length === 0) {
+    return;
+  }
+
+  trackGaEvent("form_validation_error", {
+    form_name: "lead_signup",
+    invalid_fields: fields.join(","),
+    field_count: fields.length,
+  });
+}
+
 export function trackLeadSubmit({
   packageType,
   eventId,

@@ -2,14 +2,15 @@
 
 import { randomUUID } from "node:crypto";
 
+import { LeadStatus, PaymentStatus, PaymentType } from "@prisma/client";
 import { cookies } from "next/headers";
 import { after } from "next/server";
 
-import { createDepositPaymentForLead } from "@/actions/payments";
 import {
   COOKIE_CONSENT_KEY,
   parseCookieConsent,
 } from "@/lib/cookie-consent";
+import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
 import { PACKAGE_POOL_FULL_MESSAGE } from "@/lib/content";
 import { addMinutes, ONLINE_PAYMENT_EXPIRY_MINUTES } from "@/lib/dates";
 import { sendAdminLeadNotification } from "@/lib/emails";
@@ -17,6 +18,7 @@ import { packageLabel } from "@/lib/labels";
 import { sendMetaLeadEvent } from "@/lib/meta-capi";
 import { PackagePoolFullError, assertPackageHasCapacity } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
+import { generatePaymentToken } from "@/lib/tokens";
 import {
   formDataToObject,
   leadFormSchema,
@@ -45,7 +47,7 @@ export async function submitLead(
     const lead = await prisma.$transaction(async (tx) => {
       await assertPackageHasCapacity(data.package, tx);
 
-      return tx.lead.create({
+      const created = await tx.lead.create({
         data: {
           parentName: data.parentName,
           phoneNumber: normalizePhone(data.phone),
@@ -55,24 +57,26 @@ export async function submitLead(
           schoolClass: data.schoolClass,
           expectedResult: data.expectedResult,
           notes: data.notes,
+          status: LeadStatus.PENDING_DEPOSIT,
         },
       });
+
+      const payment = await tx.payment.create({
+        data: {
+          leadId: created.id,
+          type: PaymentType.DEPOSIT,
+          amount: DEPOSIT_AMOUNT_GROSZE,
+          status: PaymentStatus.PENDING,
+          token: generatePaymentToken(),
+          expiresAt: addMinutes(new Date(), ONLINE_PAYMENT_EXPIRY_MINUTES),
+        },
+      });
+
+      return tx.lead.update({
+        where: { id: created.id },
+        data: { activePaymentId: payment.id },
+      });
     });
-
-    const expiresAt = addMinutes(new Date(), ONLINE_PAYMENT_EXPIRY_MINUTES);
-    const paymentResult = await createDepositPaymentForLead(lead.id, expiresAt, {
-      skipCheckout: true,
-    });
-
-    if (paymentResult.status === "error") {
-      await prisma.lead.delete({ where: { id: lead.id } });
-
-      return {
-        status: "error",
-        message: paymentResult.message ?? "Wystąpił błąd. Spróbuj ponownie.",
-        values,
-      };
-    }
 
     // Mail admina poza ścieżką krytyczną — szybszy return success / redirect.
     // Po disconnectcie klienta after() i tak dociągnie powiadomienie.

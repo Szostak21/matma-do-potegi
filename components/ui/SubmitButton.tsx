@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/Button";
 
 type SubmitButtonProps = {
   disabled?: boolean;
+  /** Po udanym submitcie — do nawigacji, żeby przycisk nie migotał „Wyślij”. */
+  redirecting?: boolean;
 };
 
 /**
@@ -64,20 +66,24 @@ export function ReleaseSubmitLockOnSettle({
   return null;
 }
 
-export function SubmitButton({ disabled = false }: SubmitButtonProps) {
+export function SubmitButton({
+  disabled = false,
+  redirecting = false,
+}: SubmitButtonProps) {
   const { pending } = useFormStatus();
+  const busy = pending || redirecting;
 
   return (
     <Button
       type="submit"
       variant="primary"
       className="w-full"
-      disabled={pending || disabled}
+      disabled={busy || disabled}
     >
-      {pending ? (
+      {busy ? (
         <>
           <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-          Wysyłanie...
+          {redirecting ? "Przekierowujemy..." : "Wysyłanie..."}
         </>
       ) : (
         "Wyślij zgłoszenie"

@@ -26,9 +26,17 @@ import {
 } from "@/lib/content";
 import { PACKAGES } from "@/lib/constants";
 import type { PackageAvailability } from "@/lib/packages";
-import { trackFormStart, trackLeadSubmit } from "@/lib/analytics-events";
+import {
+  trackFormStart,
+  trackFormValidationError,
+  trackLeadSubmit,
+} from "@/lib/analytics-events";
 import { scrollUpToFirstInvalidFieldLabel } from "@/lib/scroll";
-import type { LeadFormState } from "@/lib/validations/lead";
+import {
+  formDataToObject,
+  leadFormSchema,
+  type LeadFormState,
+} from "@/lib/validations/lead";
 
 const initialState: LeadFormState = { status: "idle" };
 
@@ -95,6 +103,24 @@ function PackageAvailabilityHint({
   );
 }
 
+function fieldErrorKeys(
+  errors: Record<string, string[] | undefined>,
+): string[] {
+  return Object.keys(errors).filter((key) => Boolean(errors[key]?.[0]));
+}
+
+function scheduleScrollToInvalidFields(invalidIds: string[]) {
+  if (invalidIds.length === 0) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      scrollUpToFirstInvalidFieldLabel(invalidIds);
+    });
+  });
+}
+
 export function ContactForm() {
   const router = useRouter();
   const [state, formAction] = useActionState(submitLead, initialState);
@@ -105,21 +131,33 @@ export function ContactForm() {
   const [loadingAvailability, setLoadingAvailability] = useState(true);
   /**
    * Pola, których komunikat użytkownik już zamknął focusem w tej rundzie walidacji.
-   * Resetowane synchronicznie przy nowym `state.errors` (wzorzec React: adjust state
-   * when props change) — bez setState w useEffect.
+   * Resetowane synchronicznie przy nowym `state.errors` / `clientErrors`
+   * (wzorzec React: adjust state when props change) — bez setState w useEffect.
    */
   const [clearedFields, setClearedFields] = useState<Set<string>>(
     () => new Set(),
   );
+  const [clientErrors, setClientErrors] = useState<Record<
+    string,
+    string[]
+  > | null>(null);
   const [trackedErrors, setTrackedErrors] = useState(state.errors);
+  const [trackedClientErrors, setTrackedClientErrors] = useState(clientErrors);
+  const [redirecting, setRedirecting] = useState(false);
   const packageFieldKey = state.values?.package ?? "package-default";
   const formStartTracked = useRef(false);
   /** Blokada od pierwszego kliknięcia — zanim useFormStatus.pending zdąży się ustawić. */
   const submitLockedRef = useRef(false);
 
-  // Nowa odpowiedź walidacji → pełna lista komunikatów od nowa.
+  // Nowa odpowiedź walidacji serwera → pełna lista komunikatów od nowa.
   if (state.errors !== trackedErrors) {
     setTrackedErrors(state.errors);
+    setClientErrors(null);
+    setClearedFields(new Set());
+  }
+
+  if (clientErrors !== trackedClientErrors) {
+    setTrackedClientErrors(clientErrors);
     setClearedFields(new Set());
   }
 
@@ -127,18 +165,22 @@ export function ContactForm() {
     state.status === "error" && state.errors
       ? mapFieldErrors(state.errors)
       : {};
+  const localErrors = clientErrors ? mapFieldErrors(clientErrors) : {};
 
   function activeError(fieldId: string): string | undefined {
     if (clearedFields.has(fieldId)) {
       return undefined;
     }
 
-    return serverErrors[fieldId];
+    return localErrors[fieldId] ?? serverErrors[fieldId];
   }
 
   function clearFieldError(fieldId: string) {
     setClearedFields((prev) => {
-      if (prev.has(fieldId) || !serverErrors[fieldId]) {
+      if (
+        prev.has(fieldId) ||
+        (!localErrors[fieldId] && !serverErrors[fieldId])
+      ) {
         return prev;
       }
 
@@ -158,10 +200,27 @@ export function ContactForm() {
   }
 
   function handleFormAction(formData: FormData) {
-    if (submitLockedRef.current) {
+    if (submitLockedRef.current || redirecting) {
       return;
     }
 
+    const values = formDataToObject(formData);
+    const parsed = leadFormSchema.safeParse(values);
+
+    if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors as Record<
+        string,
+        string[]
+      >;
+      setClientErrors(fieldErrors);
+      trackFormValidationError({ fields: fieldErrorKeys(fieldErrors) });
+      scheduleScrollToInvalidFields(
+        REQUIRED_FIELD_IDS.filter((id) => fieldErrors[id]?.[0]),
+      );
+      return;
+    }
+
+    setClientErrors(null);
     submitLockedRef.current = true;
     formAction(formData);
   }
@@ -171,6 +230,7 @@ export function ContactForm() {
     function handlePageShow(event: PageTransitionEvent) {
       if (event.persisted) {
         submitLockedRef.current = false;
+        setRedirecting(false);
       }
     }
 
@@ -214,8 +274,12 @@ export function ContactForm() {
 
   useEffect(() => {
     if (state.status === "success" && state.leadId) {
+      setRedirecting(true);
       trackLeadSubmit({
-        packageType: state.values?.package ?? selectedPackage,
+        packageType:
+          state.requestedPackage ??
+          state.values?.package ??
+          selectedPackage,
         eventId: state.eventId,
       });
       router.push(`/rezerwacja/${state.leadId}/podsumowanie`);
@@ -224,6 +288,7 @@ export function ContactForm() {
     state.status,
     state.leadId,
     state.eventId,
+    state.requestedPackage,
     state.values?.package,
     selectedPackage,
     router,
@@ -233,6 +298,8 @@ export function ContactForm() {
     if (state.status !== "error" || !state.errors) {
       return;
     }
+
+    trackFormValidationError({ fields: fieldErrorKeys(state.errors) });
 
     const next = mapFieldErrors(state.errors);
     const invalidIds = REQUIRED_FIELD_IDS.filter((id) => next[id]);
@@ -471,9 +538,12 @@ export function ContactForm() {
               <PreventUnloadWhilePending />
               <ReleaseSubmitLockOnSettle
                 lockedRef={submitLockedRef}
-                keepLocked={state.status === "success"}
+                keepLocked={state.status === "success" || redirecting}
               />
-              <SubmitButton disabled={isPackageFull} />
+              <SubmitButton
+                disabled={isPackageFull}
+                redirecting={redirecting}
+              />
             </form>
           </Card>
         </div>
