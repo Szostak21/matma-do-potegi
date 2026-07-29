@@ -23,12 +23,6 @@ import {
 
 const META_CAPI_ACCESS_TOKEN = process.env.META_CAPI_ACCESS_TOKEN?.trim() ?? "";
 
-/**
- * Kod testowy Events Manager → Test Events.
- * TODO: usuń po weryfikacji w zakładce "Testuj zdarzenia" (wróć do env META_CAPI_TEST_EVENT_CODE).
- */
-const META_CAPI_TEST_EVENT_CODE = "TEST83272";
-
 const GRAPH_API_VERSION = "v21.0";
 
 export function isMetaCapiConfigured(): boolean {
@@ -205,11 +199,6 @@ async function postMetaEvent(input: MetaServerEventInput): Promise<void> {
       },
     ],
   };
-
-  // Tymczasowo zawsze wysyłamy test_event_code (zob. META_CAPI_TEST_EVENT_CODE powyżej).
-  if (META_CAPI_TEST_EVENT_CODE) {
-    payload.test_event_code = META_CAPI_TEST_EVENT_CODE;
-  }
 
   const url = `https://graph.facebook.com/${GRAPH_API_VERSION}/${META_PIXEL_ID}/events`;
 
