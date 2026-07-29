@@ -2,7 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { after } from "next/server";
 
 import { createDepositPaymentForLead } from "@/actions/payments";
@@ -95,16 +95,6 @@ export async function submitLead(
     const eventId = hasMarketingConsent ? randomUUID() : undefined;
 
     if (eventId) {
-      const requestHeaders = await headers();
-      const forwardedFor = requestHeaders.get("x-forwarded-for");
-      const clientIpAddress =
-        forwardedFor?.split(",")[0]?.trim() ??
-        requestHeaders.get("x-real-ip") ??
-        null;
-      const eventSourceUrl = requestHeaders.get("referer");
-      const clientUserAgent = requestHeaders.get("user-agent");
-      const fbp = cookieStore.get("_fbp")?.value ?? null;
-      const fbc = cookieStore.get("_fbc")?.value ?? null;
       const packageType = data.package;
       const email = data.email;
       const phone = normalizePhone(data.phone);
@@ -114,15 +104,10 @@ export async function submitLead(
       after(() => {
         void sendMetaLeadEvent({
           eventId,
-          eventSourceUrl,
           email,
           phone,
           fullName,
-          clientIpAddress,
-          clientUserAgent,
-          fbp,
-          fbc,
-          customData: { package_type: packageType, form_name: "lead_signup" },
+          packageType,
         });
       });
     }

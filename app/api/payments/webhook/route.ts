@@ -32,7 +32,11 @@ async function handleCheckoutSessionCompleted(
     return;
   }
 
-  await markDepositPaymentPaid(payment.id);
+  await markDepositPaymentPaid(payment.id, {
+    consentGranted: session.metadata?.mktConsent === "granted",
+    fbp: session.metadata?.fbp ?? null,
+    fbc: session.metadata?.fbc ?? null,
+  });
 }
 
 export async function POST(request: Request) {

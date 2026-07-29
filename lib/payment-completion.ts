@@ -2,14 +2,26 @@ import { LeadStatus, PaymentStatus } from "@prisma/client";
 
 import { sendAdminDepositNotification, sendDepositConfirmationEmail } from "@/lib/emails";
 import { packageLabel } from "@/lib/labels";
+import { sendMetaPurchaseEvent } from "@/lib/meta-capi";
 import { prisma } from "@/lib/prisma";
 
 export type MarkDepositPaymentPaidResult = {
   didTransition: boolean;
 };
 
+/**
+ * Kontekst marketingowy przeniesiony z metadanych sesji Stripe.
+ * Pozwala wysłać serwerowe Purchase (CAPI) po zgodzie, bez kontekstu żądania.
+ */
+export type PaidMetaContext = {
+  consentGranted: boolean;
+  fbp: string | null;
+  fbc: string | null;
+};
+
 export async function markDepositPaymentPaid(
   paymentId: string,
+  metaContext?: PaidMetaContext,
 ): Promise<MarkDepositPaymentPaidResult> {
   const result = await prisma.$transaction(async (tx) => {
     const payment = await tx.payment.findUnique({
@@ -60,6 +72,24 @@ export async function markDepositPaymentPaid(
       amountGrosze: result.payment.amount,
       leadId: lead.id,
     });
+
+    // Serwerowe Purchase (CAPI) — eventId = token (dedup z Pixelem w przeglądarce).
+    // Zgoda i _fbp/_fbc pochodzą z metadanych sesji Stripe. Fire-and-forget.
+    if (metaContext) {
+      await sendMetaPurchaseEvent({
+        eventId: result.payment.token,
+        value: result.payment.amount / 100,
+        currency: "PLN",
+        consentGranted: metaContext.consentGranted,
+        contact: {
+          email: lead.email,
+          phone: lead.phoneNumber,
+          fullName: lead.parentName,
+        },
+        fbp: metaContext.fbp,
+        fbc: metaContext.fbc,
+      });
+    }
   }
 
   return { didTransition: result.didTransition };

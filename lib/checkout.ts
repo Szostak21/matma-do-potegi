@@ -1,6 +1,7 @@
 import type { Group, Lead, Payment } from "@prisma/client";
 
 import { packageLabel } from "@/lib/labels";
+import { getServerMarketingContext } from "@/lib/meta-capi";
 import { markDepositPaymentPaid } from "@/lib/payment-completion";
 import {
   buildCancelUrl,
@@ -101,6 +102,22 @@ export async function createDepositCheckoutSession(
     const paymentExpiryUnix = Math.floor(payment.expiresAt.getTime() / 1000);
     const expiresAtUnix = Math.max(paymentExpiryUnix, stripeMinExpiryUnix);
 
+    // Kontekst marketingowy klienta (zgoda + _fbp/_fbc) zapisujemy w metadanych
+    // sesji, aby webhook mógł wysłać zdarzenie Purchase do CAPI po zgodzie.
+    const marketingCtx = await getServerMarketingContext();
+    const marketingMetadata: Record<string, string> = {
+      mktConsent: marketingCtx.consentGranted ? "granted" : "denied",
+      ...(marketingCtx.fbp ? { fbp: marketingCtx.fbp } : {}),
+      ...(marketingCtx.fbc ? { fbc: marketingCtx.fbc } : {}),
+    };
+
+    const paymentMetadata = {
+      leadId: payment.leadId,
+      paymentId: payment.id,
+      paymentToken: payment.token,
+      ...marketingMetadata,
+    };
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       customer_email: payment.lead.email,
@@ -118,17 +135,9 @@ export async function createDepositCheckoutSession(
           },
         },
       ],
-      metadata: {
-        leadId: payment.leadId,
-        paymentId: payment.id,
-        paymentToken: payment.token,
-      },
+      metadata: paymentMetadata,
       payment_intent_data: {
-        metadata: {
-          leadId: payment.leadId,
-          paymentId: payment.id,
-          paymentToken: payment.token,
-        },
+        metadata: paymentMetadata,
       },
       success_url: buildSuccessUrl(payment.token),
       cancel_url: buildCancelUrl(),
@@ -193,7 +202,11 @@ export async function confirmDepositPaymentByToken(
     );
 
     if (session.payment_status === "paid") {
-      await markDepositPaymentPaid(payment.id);
+      await markDepositPaymentPaid(payment.id, {
+        consentGranted: session.metadata?.mktConsent === "granted",
+        fbp: session.metadata?.fbp ?? null,
+        fbc: session.metadata?.fbc ?? null,
+      });
     }
   } catch (error) {
     console.error("confirmDepositPaymentByToken failed:", error);

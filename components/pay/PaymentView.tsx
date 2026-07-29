@@ -5,6 +5,7 @@ import type { PaymentType } from "@prisma/client";
 
 import { DepositNote } from "@/components/pay/DepositPaymentExtras";
 import { PayButton } from "@/components/pay/PayButton";
+import { ViewContentTracker } from "@/components/pay/ViewContentTracker";
 import { AlternateTermPhoneGate } from "@/components/ui/AlternateTermPhoneGate";
 import { Card } from "@/components/ui/Card";
 import { DEPOSIT_PAYMENT } from "@/lib/content";
@@ -133,6 +134,7 @@ export function PaymentView({
 
   return (
     <Card>
+      <ViewContentTracker packageName={packageName} value={amount} />
       <p className="text-xs font-medium uppercase tracking-widest text-olive-700">
         Matma do potęgi
       </p>

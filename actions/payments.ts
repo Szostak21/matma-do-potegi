@@ -1,6 +1,9 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
+
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { LeadStatus, PaymentStatus, PaymentType } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
 
@@ -10,6 +13,7 @@ import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
 import { addHours, PHONE_PAYMENT_EXPIRY_HOURS } from "@/lib/dates";
 import { sendPaymentLinkEmail } from "@/lib/emails";
 import { packageLabel } from "@/lib/labels";
+import { sendMetaInitiateCheckoutEvent } from "@/lib/meta-capi";
 import {
   assertPackageHasCapacity,
   PackagePoolFullError,
@@ -29,6 +33,8 @@ export type StartDepositCheckoutState = {
   status: "idle" | "success" | "error";
   url?: string;
   message?: string;
+  /** Wspólny identyfikator zdarzenia InitiateCheckout (dedup Pixel <-> CAPI). */
+  eventId?: string;
 };
 
 export type GeneratePaymentState = {
@@ -513,6 +519,7 @@ export async function startDepositCheckout(
   try {
     const payment = await prisma.payment.findUnique({
       where: { token },
+      include: { lead: true },
     });
 
     if (!payment) {
@@ -535,7 +542,24 @@ export async function startDepositCheckout(
       };
     }
 
-    return { status: "success", url: checkout.url };
+    // Serwerowe InitiateCheckout (CAPI) — dedup z Pixelem po wspólnym eventId.
+    // Gating zgody i identyfikatory Meta czytane są z żądania w meta-capi.
+    const eventId = randomUUID();
+    const lead = payment.lead;
+    after(() => {
+      void sendMetaInitiateCheckoutEvent({
+        eventId,
+        value: payment.amount / 100,
+        currency: "PLN",
+        contact: {
+          email: lead.email,
+          phone: lead.phoneNumber,
+          fullName: lead.parentName,
+        },
+      });
+    });
+
+    return { status: "success", url: checkout.url, eventId };
   } catch {
     return {
       status: "error",

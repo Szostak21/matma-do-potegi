@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
@@ -36,13 +36,30 @@ function SubmitLabel() {
 
 export function PayButton({ token }: PayButtonProps) {
   const [state, formAction] = useActionState(startDepositCheckout, initialState);
+  const redirectStartedRef = useRef(false);
 
   useEffect(() => {
-    if (state.status === "success" && state.url) {
-      trackBeginCheckout({ value: DEPOSIT_AMOUNT_GROSZE / 100 });
-      window.location.href = state.url;
+    if (
+      state.status !== "success" ||
+      !state.url ||
+      redirectStartedRef.current
+    ) {
+      return;
     }
-  }, [state.status, state.url]);
+
+    redirectStartedRef.current = true;
+    const destination = state.url;
+    const eventId = state.eventId;
+
+    // Poczekaj aż InitiateCheckout/begin_checkout wyjdą, potem redirect do Stripe.
+    // eventId współdzielony z serwerowym CAPI (dedup po stronie Meta).
+    void trackBeginCheckout({
+      value: DEPOSIT_AMOUNT_GROSZE / 100,
+      eventId,
+    }).finally(() => {
+      window.location.href = destination;
+    });
+  }, [state.status, state.url, state.eventId]);
 
   return (
     <div className="space-y-3">

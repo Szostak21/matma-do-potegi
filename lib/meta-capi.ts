@@ -2,7 +2,7 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 import { META_PIXEL_ID } from "@/lib/analytics-config";
 import {
@@ -11,14 +11,13 @@ import {
 } from "@/lib/cookie-consent";
 
 /**
- * Meta Conversions API (CAPI) — wysyłka zdarzeń serwerowych.
+ * Meta Conversions API (CAPI) — zdarzenia serwerowe.
  *
  * Token dostępu to SEKRET — czytany wyłącznie po stronie serwera (bez NEXT_PUBLIC_).
  * Pixel ID współdzielimy z warstwą przeglądarkową (NEXT_PUBLIC_META_PIXEL_ID),
- * dzięki czemu Meta może zdeduplikować zdarzenie przeglądarkowe i serwerowe
- * po wspólnym `event_id`.
+ * dzięki czemu Meta deduplikuje zdarzenie przeglądarkowe i serwerowe po `event_id`.
  *
- * CAPI uruchamia się wyłącznie przy zgodzie marketingowej (ten sam wybór
+ * Wszystkie zdarzenia wysyłamy wyłącznie przy zgodzie marketingowej (ta sama
  * co Meta Pixel: cookie `matma_cookie_consent=granted`).
  */
 
@@ -34,13 +33,6 @@ export function isMetaCapiConfigured(): boolean {
   return Boolean(META_PIXEL_ID && META_CAPI_ACCESS_TOKEN);
 }
 
-async function hasMarketingConsent(): Promise<boolean> {
-  const cookieStore = await cookies();
-  return (
-    parseCookieConsent(cookieStore.get(COOKIE_CONSENT_KEY)?.value) === "granted"
-  );
-}
-
 function sha256(value: string): string {
   return createHash("sha256").update(value).digest("hex");
 }
@@ -52,8 +44,7 @@ function hashEmail(email: string): string {
 
 /** Meta wymaga: same cyfry z kodem kraju (bez "+"/spacji/liter), następnie SHA-256. */
 function hashPhone(phone: string): string {
-  const digitsOnly = phone.replace(/\D/g, "");
-  return sha256(digitsOnly);
+  return sha256(phone.replace(/\D/g, ""));
 }
 
 /** Meta wymaga: trim + lowercase, następnie SHA-256. */
@@ -79,22 +70,6 @@ function splitAndHashName(fullName: string): { fn?: string[]; ln?: string[] } {
   return result;
 }
 
-type MetaLeadEventInput = {
-  /** Wspólny identyfikator zdarzenia dla deduplikacji z Pixelem przeglądarkowym. */
-  eventId: string;
-  eventSourceUrl?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  fullName?: string | null;
-  clientIpAddress?: string | null;
-  clientUserAgent?: string | null;
-  /** Wartość cookie _fbp (Meta browser id). */
-  fbp?: string | null;
-  /** Wartość cookie _fbc (Meta click id). */
-  fbc?: string | null;
-  customData?: Record<string, string | number | boolean>;
-};
-
 type MetaUserData = {
   em?: string[];
   ph?: string[];
@@ -106,20 +81,75 @@ type MetaUserData = {
   fbc?: string;
 };
 
-/**
- * Wysyła standardowe zdarzenie "Lead" do Meta Conversions API.
- *
- * Side-effect: nigdy nie rzuca wyjątkiem. Wymaga zgody marketingowej
- * (ta sama co Meta Pixel).
- */
-export async function sendMetaLeadEvent(
-  input: MetaLeadEventInput,
-): Promise<void> {
-  if (!isMetaCapiConfigured()) {
-    return;
-  }
+type MetaServerEventInput = {
+  eventName: "Lead" | "InitiateCheckout" | "Purchase";
+  /** Wspólny identyfikator zdarzenia dla deduplikacji z Pixelem przeglądarkowym. */
+  eventId: string;
+  eventSourceUrl?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  fullName?: string | null;
+  clientIpAddress?: string | null;
+  clientUserAgent?: string | null;
+  fbp?: string | null;
+  fbc?: string | null;
+  customData?: Record<string, string | number | boolean>;
+};
 
-  if (!(await hasMarketingConsent())) {
+/**
+ * Kontekst marketingowy z żądania (zgoda + identyfikatory Meta + IP/UA).
+ * Używany w Server Actions / Route Handlers, gdzie dostępne są cookies()/headers().
+ */
+export type ServerMarketingContext = {
+  consentGranted: boolean;
+  fbp: string | null;
+  fbc: string | null;
+  clientIpAddress: string | null;
+  clientUserAgent: string | null;
+  eventSourceUrl: string | null;
+};
+
+export async function getServerMarketingContext(): Promise<ServerMarketingContext> {
+  try {
+    const [cookieStore, requestHeaders] = await Promise.all([
+      cookies(),
+      headers(),
+    ]);
+
+    const forwardedFor = requestHeaders.get("x-forwarded-for");
+    const clientIpAddress =
+      forwardedFor?.split(",")[0]?.trim() ??
+      requestHeaders.get("x-real-ip") ??
+      null;
+
+    return {
+      consentGranted:
+        parseCookieConsent(cookieStore.get(COOKIE_CONSENT_KEY)?.value) ===
+        "granted",
+      fbp: cookieStore.get("_fbp")?.value ?? null,
+      fbc: cookieStore.get("_fbc")?.value ?? null,
+      clientIpAddress,
+      clientUserAgent: requestHeaders.get("user-agent"),
+      eventSourceUrl: requestHeaders.get("referer"),
+    };
+  } catch {
+    return {
+      consentGranted: false,
+      fbp: null,
+      fbc: null,
+      clientIpAddress: null,
+      clientUserAgent: null,
+      eventSourceUrl: null,
+    };
+  }
+}
+
+/**
+ * Niskopoziomowa wysyłka zdarzenia do Graph API. Nie sprawdza zgody
+ * (to odpowiedzialność wywołującego) i nigdy nie rzuca wyjątkiem.
+ */
+async function postMetaEvent(input: MetaServerEventInput): Promise<void> {
+  if (!isMetaCapiConfigured()) {
     return;
   }
 
@@ -152,7 +182,7 @@ export async function sendMetaLeadEvent(
   const payload: Record<string, unknown> = {
     data: [
       {
-        event_name: "Lead",
+        event_name: input.eventName,
         event_time: Math.floor(Date.now() / 1000),
         event_id: input.eventId,
         action_source: "website",
@@ -185,10 +215,116 @@ export async function sendMetaLeadEvent(
     if (!response.ok) {
       const detail = await response.text();
       console.error(
-        `[Meta CAPI] Lead event failed (${response.status}): ${detail}`,
+        `[Meta CAPI] ${input.eventName} failed (${response.status}): ${detail}`,
       );
     }
   } catch (error) {
-    console.error("[Meta CAPI] Lead event request error:", error);
+    console.error(`[Meta CAPI] ${input.eventName} request error:`, error);
   }
+}
+
+type LeadContact = {
+  email?: string | null;
+  phone?: string | null;
+  fullName?: string | null;
+};
+
+/**
+ * Serwerowe zdarzenie "Lead". Wymaga zgody (czytana z cookie w kontekście żądania).
+ */
+export async function sendMetaLeadEvent(
+  input: {
+    eventId: string;
+    packageType?: string | null;
+  } & LeadContact,
+): Promise<void> {
+  const ctx = await getServerMarketingContext();
+
+  if (!ctx.consentGranted) {
+    return;
+  }
+
+  await postMetaEvent({
+    eventName: "Lead",
+    eventId: input.eventId,
+    email: input.email,
+    phone: input.phone,
+    fullName: input.fullName,
+    clientIpAddress: ctx.clientIpAddress,
+    clientUserAgent: ctx.clientUserAgent,
+    fbp: ctx.fbp,
+    fbc: ctx.fbc,
+    eventSourceUrl: ctx.eventSourceUrl,
+    customData: {
+      form_name: "lead_signup",
+      ...(input.packageType ? { package_type: input.packageType } : {}),
+    },
+  });
+}
+
+/**
+ * Serwerowe zdarzenie "InitiateCheckout" — z kontekstu żądania (Server Action).
+ * eventId musi być współdzielony z Pixelem przeglądarkowym (dedup).
+ */
+export async function sendMetaInitiateCheckoutEvent(input: {
+  eventId: string;
+  value: number;
+  currency?: string;
+  contact: LeadContact;
+}): Promise<void> {
+  const ctx = await getServerMarketingContext();
+
+  if (!ctx.consentGranted) {
+    return;
+  }
+
+  await postMetaEvent({
+    eventName: "InitiateCheckout",
+    eventId: input.eventId,
+    email: input.contact.email,
+    phone: input.contact.phone,
+    fullName: input.contact.fullName,
+    clientIpAddress: ctx.clientIpAddress,
+    clientUserAgent: ctx.clientUserAgent,
+    fbp: ctx.fbp,
+    fbc: ctx.fbc,
+    eventSourceUrl: ctx.eventSourceUrl,
+    customData: {
+      value: input.value,
+      currency: input.currency ?? "PLN",
+    },
+  });
+}
+
+/**
+ * Serwerowe zdarzenie "Purchase" — z webhooka Stripe (brak kontekstu żądania).
+ * Zgoda i identyfikatory Meta (_fbp/_fbc) pochodzą z metadanych sesji Stripe,
+ * zapisanych przy tworzeniu checkoutu. eventId = token płatności (dedup z Pixelem).
+ */
+export async function sendMetaPurchaseEvent(input: {
+  eventId: string;
+  value: number;
+  currency?: string;
+  consentGranted: boolean;
+  contact: LeadContact;
+  fbp?: string | null;
+  fbc?: string | null;
+}): Promise<void> {
+  if (!input.consentGranted) {
+    return;
+  }
+
+  await postMetaEvent({
+    eventName: "Purchase",
+    eventId: input.eventId,
+    email: input.contact.email,
+    phone: input.contact.phone,
+    fullName: input.contact.fullName,
+    fbp: input.fbp,
+    fbc: input.fbc,
+    customData: {
+      value: input.value,
+      currency: input.currency ?? "PLN",
+    },
+  });
 }

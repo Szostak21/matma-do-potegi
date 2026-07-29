@@ -4,6 +4,7 @@ import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useSyncExternalStore } from "react";
 
+import { ContactLinkTracker } from "@/components/ContactLinkTracker";
 import { trackPageView } from "@/lib/analytics-events";
 import { CLARITY_ID, getGaMeasurementId, META_PIXEL_ID } from "@/lib/analytics-config";
 import {
@@ -76,7 +77,8 @@ export function Analytics() {
               });
               gtag('config', '${GA_ID}', {
                 anonymize_ip: true,
-                send_page_view: false
+                send_page_view: false,
+                transport_type: 'beacon'
               });
               gtag('event', 'page_view', {
                 page_path: window.location.pathname + window.location.search
@@ -123,9 +125,12 @@ export function Analytics() {
         </Script>
       ) : null}
       {hasTracking ? (
-        <Suspense fallback={null}>
-          <RoutePageViewTracker />
-        </Suspense>
+        <>
+          <Suspense fallback={null}>
+            <RoutePageViewTracker />
+          </Suspense>
+          <ContactLinkTracker />
+        </>
       ) : null}
     </>
   );
