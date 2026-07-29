@@ -26,6 +26,7 @@ export type AdminLeadRow = {
   parentName: string;
   studentName: string | null;
   schoolClass: string | null;
+  expectedResult: string | null;
   email: string;
   phoneNumber: string;
   requestedPackage: PackageType | null;
@@ -218,6 +219,7 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                 <th className="px-6 py-4 font-medium">Rodzic</th>
                 <th className="px-6 py-4 font-medium">Uczeń</th>
                 <th className="px-6 py-4 font-medium">Klasa</th>
+                <th className="px-6 py-4 font-medium">Oczekiwany wynik</th>
                 <th className="px-6 py-4 font-medium">Kontakt</th>
                 <th className="px-6 py-4 font-medium">Pakiet</th>
                 <th className="px-6 py-4 font-medium">Uwagi</th>
@@ -242,6 +244,9 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                   </td>
                   <td className="px-6 py-4 text-ink/80">
                     {lead.schoolClass ?? "-"}
+                  </td>
+                  <td className="px-6 py-4 text-ink/80">
+                    {lead.expectedResult ?? "-"}
                   </td>
                   <td className="px-6 py-4 text-ink/80">
                     <div>{lead.email}</div>

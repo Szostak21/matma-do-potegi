@@ -49,6 +49,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     parentName: lead.parentName,
     studentName: lead.studentName,
     schoolClass: lead.schoolClass,
+    expectedResult: lead.expectedResult,
     email: lead.email,
     phoneNumber: lead.phoneNumber,
     requestedPackage: lead.requestedPackage,
