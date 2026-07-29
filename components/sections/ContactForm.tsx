@@ -75,6 +75,9 @@ export function ContactForm() {
   const [loadingAvailability, setLoadingAvailability] = useState(true);
   const packageFieldKey = state.values?.package ?? "package-default";
   const formStartTracked = useRef(false);
+  const leadTrackedRef = useRef(false);
+  /** Generowany przed submitem — ten sam ID idzie do CAPI Lead i Pixela. */
+  const leadEventIdRef = useRef<string | null>(null);
 
   function handleFormInteraction() {
     if (formStartTracked.current) {
@@ -83,6 +86,13 @@ export function ContactForm() {
 
     formStartTracked.current = true;
     trackFormStart();
+  }
+
+  function handleFormAction(formData: FormData) {
+    const eventId = crypto.randomUUID();
+    leadEventIdRef.current = eventId;
+    formData.set("eventId", eventId);
+    formAction(formData);
   }
 
   useEffect(() => {
@@ -118,13 +128,16 @@ export function ContactForm() {
   }, []);
 
   useEffect(() => {
-    if (state.status === "success" && state.leadId) {
-      trackLeadSubmit({
-        packageType: state.values?.package ?? selectedPackage,
-        eventId: state.eventId,
-      });
-      router.push(`/rezerwacja/${state.leadId}/podsumowanie`);
+    if (state.status !== "success" || !state.leadId || leadTrackedRef.current) {
+      return;
     }
+
+    leadTrackedRef.current = true;
+    trackLeadSubmit({
+      packageType: state.values?.package ?? selectedPackage,
+      eventId: leadEventIdRef.current ?? state.eventId,
+    });
+    router.push(`/rezerwacja/${state.leadId}/podsumowanie`);
   }, [
     state.status,
     state.leadId,
@@ -155,7 +168,7 @@ export function ContactForm() {
 
           <Card className="mt-10">
             <form
-              action={formAction}
+              action={handleFormAction}
               className="space-y-6"
               onFocus={handleFormInteraction}
               onChange={handleFormInteraction}

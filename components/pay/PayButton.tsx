@@ -37,6 +37,8 @@ function SubmitLabel() {
 export function PayButton({ token }: PayButtonProps) {
   const [state, formAction] = useActionState(startDepositCheckout, initialState);
   const redirectStartedRef = useRef(false);
+  /** Generowany w przeglądarce przed submitem — ten sam ID idzie do CAPI i Pixela. */
+  const checkoutEventIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (
@@ -49,10 +51,9 @@ export function PayButton({ token }: PayButtonProps) {
 
     redirectStartedRef.current = true;
     const destination = state.url;
-    const eventId = state.eventId;
+    // Preferuj ID wygenerowane lokalnie (gwarantowany match z CAPI).
+    const eventId = checkoutEventIdRef.current ?? state.eventId;
 
-    // Poczekaj aż InitiateCheckout/begin_checkout wyjdą, potem redirect do Stripe.
-    // eventId współdzielony z serwerowym CAPI (dedup po stronie Meta).
     void trackBeginCheckout({
       value: DEPOSIT_AMOUNT_GROSZE / 100,
       eventId,
@@ -61,9 +62,16 @@ export function PayButton({ token }: PayButtonProps) {
     });
   }, [state.status, state.url, state.eventId]);
 
+  function handleAction(formData: FormData) {
+    const eventId = crypto.randomUUID();
+    checkoutEventIdRef.current = eventId;
+    formData.set("eventId", eventId);
+    formAction(formData);
+  }
+
   return (
     <div className="space-y-3">
-      <form action={formAction}>
+      <form action={handleAction}>
         <input type="hidden" name="token" value={token} />
         <Button type="submit" variant="primary" className="w-full">
           <SubmitLabel />

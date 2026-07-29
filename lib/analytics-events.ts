@@ -45,8 +45,12 @@ function trackMetaStandardEvent(
     return false;
   }
 
-  if (options?.eventID) {
-    window.fbq("track", eventName, params, { eventID: options.eventID });
+  // Meta wymaga eventID jako 4. argument (nie w params). String() — pewność
+  // że typ jest identyczny z CAPI event_id (deduplikacja).
+  const eventID = options?.eventID ? String(options.eventID) : undefined;
+
+  if (eventID) {
+    window.fbq("track", eventName, params ?? {}, { eventID });
   } else {
     window.fbq("track", eventName, params);
   }
@@ -260,11 +264,11 @@ export function trackPurchase({
     ],
   });
 
-  // Meta Purchase — value/currency; eventID = token płatności (dedup z przyszłym CAPI).
+  // Meta Purchase — value/currency; eventID = token płatności (dedup z CAPI).
   const meta = trackMetaStandardEvent(
     "Purchase",
     { value, currency },
-    { eventID: transactionId },
+    { eventID: String(transactionId) },
   );
 
   return { ga, meta };

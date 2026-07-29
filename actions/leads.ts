@@ -87,12 +87,18 @@ export async function submitLead(
     }
 
     // Meta Pixel + CAPI: ta sama zgoda marketingowa (cookie matma_cookie_consent).
-    // eventId tylko przy zgodzie — deduplikacja z Pixelem w przeglądarce.
+    // eventId z przeglądarki (formData) — ten sam ID w Pixelu i CAPI (deduplikacja).
     const cookieStore = await cookies();
     const hasMarketingConsent =
       parseCookieConsent(cookieStore.get(COOKIE_CONSENT_KEY)?.value) ===
       "granted";
-    const eventId = hasMarketingConsent ? randomUUID() : undefined;
+
+    const clientEventId = formData.get("eventId")?.toString()?.trim();
+    const eventId = hasMarketingConsent
+      ? clientEventId && clientEventId.length > 0
+        ? clientEventId
+        : randomUUID()
+      : undefined;
 
     if (eventId) {
       const packageType = data.package;
