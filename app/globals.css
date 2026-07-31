@@ -52,21 +52,12 @@ a[href^="tel:"] {
   display: none;
 }
 
-@keyframes hero-marquee-scroll {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
 .hero-marquee-track {
   display: flex;
   width: max-content;
-  animation: hero-marquee-scroll 32s linear infinite;
   will-change: transform;
+  user-select: none;
+  touch-action: pan-y;
 }
 
 .hero-marquee-group {
@@ -86,10 +77,23 @@ a[href^="tel:"] {
   margin-right: -50vw;
   overflow: hidden;
   padding-block: 2rem;
+  touch-action: pan-y;
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 3%,
+    #000 97%,
+    transparent 100%
+  );
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hero-marquee-track {
-    animation: none;
-  }
+.hero-marquee-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.hero-marquee-viewport.is-dragging .hero-marquee-track {
+  cursor: grabbing;
 }

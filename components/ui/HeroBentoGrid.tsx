@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { HeroMobileMarquee } from "@/components/ui/HeroMobileMarquee";
 import { cn } from "@/lib/cn";
 import { IMAGE_ASSETS } from "@/lib/assets";
 
@@ -39,23 +40,12 @@ const HERO_TILES: HeroTile[] = [
   },
 ];
 
-/** Kolejność jak w bento na desktopie: górny rząd (lewo→prawo), dolny rząd (lewo→prawo). */
-const HERO_MARQUEE_TILES = [2, 0, 1, 3].map((index) => HERO_TILES[index]);
-
-const MOBILE_TILE_SIZE = "h-56";
-
-function HeroTile({
-  tile,
-  uniformMobileSize = false,
-}: {
-  tile: HeroTile;
-  uniformMobileSize?: boolean;
-}) {
+function HeroTile({ tile }: { tile: HeroTile }) {
   return (
     <div
       className={cn(
         "relative overflow-hidden rounded-3xl shadow-soft",
-        uniformMobileSize ? MOBILE_TILE_SIZE : tile.className,
+        tile.className,
       )}
     >
       <Image
@@ -66,40 +56,6 @@ function HeroTile({
         sizes={HERO_IMAGE_SIZES}
         className="object-cover"
       />
-    </div>
-  );
-}
-
-function HeroMobileMarqueeGroup({
-  tiles,
-  ariaHidden = false,
-}: {
-  tiles: HeroTile[];
-  ariaHidden?: boolean;
-}) {
-  return (
-    <div className="hero-marquee-group" aria-hidden={ariaHidden || undefined}>
-      {tiles.map((tile) => (
-        <div
-          key={ariaHidden ? `${tile.id}-dup` : tile.id}
-          className="relative w-64 shrink-0"
-        >
-          <HeroTile tile={tile} uniformMobileSize />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function HeroMobileMarquee() {
-  return (
-    <div className="min-w-0 lg:hidden">
-      <div className="hero-marquee-viewport">
-        <div className="hero-marquee-track">
-          <HeroMobileMarqueeGroup tiles={HERO_MARQUEE_TILES} />
-          <HeroMobileMarqueeGroup tiles={HERO_MARQUEE_TILES} ariaHidden />
-        </div>
-      </div>
     </div>
   );
 }
