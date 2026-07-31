@@ -57,6 +57,10 @@ export async function submitLead(
           schoolClass: data.schoolClass,
           expectedResult: data.expectedResult,
           notes: data.notes,
+          utmSource: data.utmSource,
+          utmMedium: data.utmMedium,
+          utmCampaign: data.utmCampaign,
+          utmContent: data.utmContent,
           status: LeadStatus.PENDING_DEPOSIT,
         },
       });

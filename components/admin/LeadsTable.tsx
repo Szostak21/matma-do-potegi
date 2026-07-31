@@ -20,6 +20,7 @@ import {
   findActiveDepositPayment,
   getActiveDepositCheckoutUrl,
 } from "@/lib/payments";
+import { formatUtmForAdmin } from "@/lib/utm";
 
 export type AdminLeadRow = {
   id: string;
@@ -36,6 +37,10 @@ export type AdminLeadRow = {
   groupScheduleSlot: string | null;
   notes: string | null;
   placementTestNotes: string | null;
+  utmSource: string | null;
+  utmMedium: string | null;
+  utmCampaign: string | null;
+  utmContent: string | null;
   createdAt: string;
   payments: Array<{
     token: string;
@@ -222,6 +227,7 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                 <th className="px-6 py-4 font-medium">Oczekiwany wynik</th>
                 <th className="px-6 py-4 font-medium">Kontakt</th>
                 <th className="px-6 py-4 font-medium">Pakiet</th>
+                <th className="px-6 py-4 font-medium">UTM</th>
                 <th className="px-6 py-4 font-medium">Uwagi</th>
                 <th className="px-6 py-4 font-medium">Test poziomujący</th>
                 <th className="px-6 py-4 font-medium">Grupa</th>
@@ -231,7 +237,15 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
               </tr>
             </thead>
             <tbody>
-              {leads.map((lead) => (
+              {leads.map((lead) => {
+                const utmLabel = formatUtmForAdmin({
+                  utmSource: lead.utmSource,
+                  utmMedium: lead.utmMedium,
+                  utmCampaign: lead.utmCampaign,
+                  utmContent: lead.utmContent,
+                });
+
+                return (
                 <tr
                   key={lead.id}
                   className="border-b border-ink/5 last:border-b-0"
@@ -254,6 +268,15 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                   </td>
                   <td className="px-6 py-4 text-ink/80">
                     {packageLabel(lead.requestedPackage)}
+                  </td>
+                  <td className="max-w-[220px] px-6 py-4 text-xs text-ink/70">
+                    {utmLabel ? (
+                      <pre className="whitespace-pre-wrap font-sans">
+                        {utmLabel}
+                      </pre>
+                    ) : (
+                      <span className="text-ink/40">-</span>
+                    )}
                   </td>
                   <td className="max-w-[180px] px-6 py-4 text-xs text-ink/70">
                     {lead.notes ?? "-"}
@@ -291,7 +314,8 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                     <LeadAction lead={lead} groups={groups} secret={secret} />
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </Card>

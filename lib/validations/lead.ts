@@ -46,6 +46,30 @@ export const leadFormSchema = z.object({
   acceptTerms: z.literal("on", {
     message: TERMS.validationError,
   }),
+  utmSource: z
+    .string()
+    .trim()
+    .max(200)
+    .optional()
+    .transform((value) => (value === "" ? undefined : value)),
+  utmMedium: z
+    .string()
+    .trim()
+    .max(200)
+    .optional()
+    .transform((value) => (value === "" ? undefined : value)),
+  utmCampaign: z
+    .string()
+    .trim()
+    .max(200)
+    .optional()
+    .transform((value) => (value === "" ? undefined : value)),
+  utmContent: z
+    .string()
+    .trim()
+    .max(200)
+    .optional()
+    .transform((value) => (value === "" ? undefined : value)),
 });
 
 export type LeadFormValues = z.infer<typeof leadFormSchema>;
@@ -87,5 +111,9 @@ export function formDataToObject(formData: FormData): Record<string, string> {
     notes: String(formData.get("notes") ?? ""),
     acceptTerms:
       formData.get("acceptTerms") === "on" ? "on" : "",
+    utmSource: String(formData.get("utmSource") ?? ""),
+    utmMedium: String(formData.get("utmMedium") ?? ""),
+    utmCampaign: String(formData.get("utmCampaign") ?? ""),
+    utmContent: String(formData.get("utmContent") ?? ""),
   };
 }

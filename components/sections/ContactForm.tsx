@@ -39,6 +39,11 @@ import {
 } from "@/lib/analytics-events";
 import { scrollUpToFirstInvalidFieldLabel } from "@/lib/scroll";
 import {
+  captureFirstTouchUtmFromSearch,
+  readStoredUtm,
+  type UtmParams,
+} from "@/lib/utm";
+import {
   formDataToObject,
   leadFormSchema,
   type LeadFormState,
@@ -157,6 +162,7 @@ export function ContactForm() {
   const [trackedErrors, setTrackedErrors] = useState(state.errors);
   const [trackedClientErrors, setTrackedClientErrors] = useState(clientErrors);
   const [redirecting, setRedirecting] = useState(false);
+  const [utm, setUtm] = useState<UtmParams>({});
   const fieldValues = draftValues ?? state.values;
   const packageFieldKey =
     fieldValues?.package ?? "package-default";
@@ -268,6 +274,12 @@ export function ContactForm() {
     return () => {
       window.removeEventListener("pageshow", handlePageShow);
     };
+  }, []);
+
+  // First-touch UTM (kampania) — z URL / sessionStorage do hidden fields.
+  useEffect(() => {
+    captureFirstTouchUtmFromSearch(window.location.search);
+    setUtm(readStoredUtm());
   }, []);
 
   useEffect(() => {
@@ -395,6 +407,18 @@ export function ContactForm() {
               onFocus={handleFormInteraction}
               onChange={handleFormInteraction}
             >
+              <input type="hidden" name="utmSource" value={utm.utm_source ?? ""} />
+              <input type="hidden" name="utmMedium" value={utm.utm_medium ?? ""} />
+              <input
+                type="hidden"
+                name="utmCampaign"
+                value={utm.utm_campaign ?? ""}
+              />
+              <input
+                type="hidden"
+                name="utmContent"
+                value={utm.utm_content ?? ""}
+              />
               <div key={draftEpoch} className="space-y-6">
                 <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">

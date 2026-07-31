@@ -59,6 +59,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     groupScheduleSlot: lead.group?.scheduleSlot ?? null,
     notes: lead.notes,
     placementTestNotes: lead.placementTestNotes,
+    utmSource: lead.utmSource,
+    utmMedium: lead.utmMedium,
+    utmCampaign: lead.utmCampaign,
+    utmContent: lead.utmContent,
     createdAt: lead.createdAt.toISOString(),
     payments: lead.payments.map((payment) => ({
       token: payment.token,
