@@ -132,7 +132,6 @@ export async function sendDepositConfirmationEmail(
 
 export type AdminLeadNotificationParams = {
   parentName: string;
-  studentName?: string | null;
   phone: string;
   email: string;
   packageName: string;
@@ -153,7 +152,6 @@ export async function sendAdminLeadNotification(
       intro: copy.intro,
       rows: [
         { label: copy.parentLabel, value: params.parentName },
-        { label: copy.studentLabel, value: params.studentName ?? "—" },
         { label: copy.phoneLabel, value: params.phone },
         { label: copy.emailLabel, value: params.email },
         { label: copy.packageLabel, value: params.packageName },
@@ -164,7 +162,6 @@ export async function sendAdminLeadNotification(
 
 export type AdminDepositNotificationParams = {
   parentName: string;
-  studentName?: string | null;
   packageName: string;
   amountGrosze: number;
   leadId: string;
@@ -184,7 +181,6 @@ export async function sendAdminDepositNotification(
       intro: copy.intro,
       rows: [
         { label: copy.parentLabel, value: params.parentName },
-        { label: copy.studentLabel, value: params.studentName ?? "—" },
         { label: copy.packageLabel, value: params.packageName },
         { label: copy.amountLabel, value: formatPln(params.amountGrosze) },
         { label: copy.leadIdLabel, value: params.leadId },

@@ -47,9 +47,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const rows = leads.map((lead) => ({
     id: lead.id,
     parentName: lead.parentName,
-    studentName: lead.studentName,
     schoolClass: lead.schoolClass,
-    expectedResult: lead.expectedResult,
     email: lead.email,
     phoneNumber: lead.phoneNumber,
     requestedPackage: lead.requestedPackage,

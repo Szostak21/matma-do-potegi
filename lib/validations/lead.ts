@@ -20,11 +20,6 @@ export const leadFormSchema = z.object({
     .trim()
     .regex(polishPhoneRegex, "Niepoprawny numer telefonu"),
   email: z.string().trim().email("Niepoprawny adres e-mail"),
-  studentName: z
-    .string()
-    .trim()
-    .optional()
-    .transform((value) => (value === "" ? undefined : value)),
   package: z
     .string()
     .min(1, "Wybierz poziom zajęć")
@@ -33,11 +28,6 @@ export const leadFormSchema = z.object({
     .string()
     .trim()
     .min(1, "Podaj klasę (np. 4)"),
-  expectedResult: z
-    .string()
-    .trim()
-    .optional()
-    .transform((value) => (value === "" ? undefined : value)),
   notes: z
     .string()
     .trim()
@@ -104,10 +94,8 @@ export function formDataToObject(formData: FormData): Record<string, string> {
     parentName: String(formData.get("parentName") ?? ""),
     phone: String(formData.get("phone") ?? ""),
     email: String(formData.get("email") ?? ""),
-    studentName: String(formData.get("studentName") ?? ""),
     package: String(formData.get("package") ?? ""),
     schoolClass: String(formData.get("schoolClass") ?? ""),
-    expectedResult: String(formData.get("expectedResult") ?? ""),
     notes: String(formData.get("notes") ?? ""),
     acceptTerms:
       formData.get("acceptTerms") === "on" ? "on" : "",

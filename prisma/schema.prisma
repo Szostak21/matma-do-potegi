@@ -99,10 +99,8 @@ model Lead {
   parentName      String
   phoneNumber     String
   email           String
-  studentName        String?
   requestedPackage   PackageType?
   schoolClass        String?    @map("currentGrade")
-  expectedResult     String?
   notes              String?
   placementTestNotes String?
   utmSource          String?

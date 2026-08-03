@@ -127,15 +127,6 @@ export function AddLeadModal({ secret }: AddLeadModalProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="manual-studentName">Imię ucznia</Label>
-                <Input
-                  id="manual-studentName"
-                  name="studentName"
-                  placeholder="Kasia"
-                />
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="manual-package">Poziom zajęć *</Label>
                 <Select id="manual-package" name="package" required defaultValue="">
                   {PACKAGE_OPTIONS.map((option) => (

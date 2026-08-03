@@ -382,8 +382,6 @@ export function ContactForm() {
   const emailError = activeError("email");
   const packageError = activeError("package");
   const schoolClassError = activeError("schoolClass");
-  const expectedResultError = activeError("expectedResult");
-  const studentNameError = activeError("studentName");
   const notesError = activeError("notes");
   const acceptTermsError = activeError("acceptTerms");
 
@@ -468,7 +466,7 @@ export function ContactForm() {
                   <FieldError message={emailError} />
                 </div>
 
-                <div className="space-y-2 sm:col-span-2">
+                <div className="space-y-2">
                   <Label htmlFor="package">Wybierz poziom zajęć *</Label>
                   <Select
                     key={packageFieldKey}
@@ -531,34 +529,6 @@ export function ContactForm() {
                     onFocus={() => clearFieldError("schoolClass")}
                   />
                   <FieldError message={schoolClassError} />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="expectedResult">Oczekiwany wynik</Label>
-                  <Input
-                    id="expectedResult"
-                    name="expectedResult"
-                    type="text"
-                    placeholder="np. 70% na maturze"
-                    defaultValue={fieldValues?.expectedResult}
-                    aria-invalid={Boolean(expectedResultError)}
-                    onFocus={() => clearFieldError("expectedResult")}
-                  />
-                  <FieldError message={expectedResultError} />
-                </div>
-
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="studentName">Imię ucznia</Label>
-                  <Input
-                    id="studentName"
-                    name="studentName"
-                    type="text"
-                    placeholder="Kasia"
-                    defaultValue={fieldValues?.studentName}
-                    aria-invalid={Boolean(studentNameError)}
-                    onFocus={() => clearFieldError("studentName")}
-                  />
-                  <FieldError message={studentNameError} />
                 </div>
 
                 <div className="space-y-2 sm:col-span-2">

@@ -52,10 +52,8 @@ export async function submitLead(
           parentName: data.parentName,
           phoneNumber: normalizePhone(data.phone),
           email: data.email,
-          studentName: data.studentName,
           requestedPackage: data.package,
           schoolClass: data.schoolClass,
-          expectedResult: data.expectedResult,
           notes: data.notes,
           utmSource: data.utmSource,
           utmMedium: data.utmMedium,
@@ -86,7 +84,6 @@ export async function submitLead(
     // Po disconnectcie klienta after() i tak dociągnie powiadomienie.
     const adminNotification = {
       parentName: data.parentName,
-      studentName: data.studentName,
       phone: data.phone,
       email: data.email,
       packageName: packageLabel(data.package),

@@ -151,6 +151,16 @@ export const REVIEWS = [
 
 export const FAQ_ITEMS = [
   {
+    question: "Kiedy odbywają się zajęcia?",
+    answer:
+      "Dokładne dni oraz godziny zajęć są ustalane we wrześniu tak aby pasowały do planów lekcji oraz grafików wszystkich osób w grupie.",
+  },
+  {
+    question: "Jak wyglądają zajęcia wrześniowe?",
+    answer:
+      "Zajęcia we wrześniu są w 100% darmowe (pierwszy abonament płacą Państwo dopiero w październiku). Wrzesień przeznaczamy na test poziomujący oraz lekcje wstępne, aby precyzyjnie dobrać grupę i grafik do każdego ucznia.",
+  },
+  {
     question: "Ile osób jest w grupie?",
     answer:
       "Grupy liczą od 4 do 8 osób - pozwala nam to zapewnić indywidualne podejście do każdego ucznia, prowadzić angażujące dyskusje oraz uniknąć wywierania nadmiernej presji na uczniach.",
@@ -158,22 +168,12 @@ export const FAQ_ITEMS = [
   {
     question: "Co jeśli uczeń opuści zajęcia?",
     answer:
-      "Opłata to abonament za miejsce - brak zwrotów za nieobecności, ale nie zostawiamy naszych uczniów w potrzebie - po każdej lekcji nieobecny uczeń otrzymuje podsumowanie zajęć, listę zadań do nadrobienia oraz pomoc.",
-  },
-  {
-    question: "Jak wygląda proces zapisu?",
-    answer:
-      `Wypełniasz formularz, wybierasz poziom zajęć i wpłacasz zaliczkę 50 zł. Po potwierdzeniu wpłaty miejsce na danym poziomie jest zarezerwowane. Dokładny termin ustalimy we wrześniu po teście poziomującym.`,
+      "Żadna lekcja nie przepadnie! W przypadku nieobecności uczeń otrzymuje podsumowanie danych zajęć, listę zadań do zrobienia oraz pomoc nauczyciela na dedykowanej grupie w razie problemów z materiałem.",
   },
   {
     question: "Gdzie odbywają się zajęcia?",
     answer:
       "Na ulicy Chocimskiej 9, w nowoczesnym lokalu w centrum Krakowa. Dokładne szczegóły przekażemy po potwierdzeniu rezerwacji miejsca.",
-  },
-  {
-    question: "Jak wyglądają zajęcia indywidualne?",
-    answer:
-      "Lekcje indywidualne kosztują 120 zł za godzinę u ucznia mieszkającego w Krakowie lub 180 zł za godzinę w naszej sali i są idealne do nadrobienia nieobecności lub przygotowania do sprawdzianu.",
   },
 ] as const;
 
@@ -322,7 +322,6 @@ export const EMAILS = {
     heading: "Nowe zgłoszenie",
     intro: "Ktoś właśnie wypełnił formularz zgłoszeniowy na stronie.",
     parentLabel: "Rodzic",
-    studentLabel: "Uczeń",
     phoneLabel: "Telefon",
     emailLabel: "E-mail",
     packageLabel: "Poziom zajęć",
@@ -333,7 +332,6 @@ export const EMAILS = {
     heading: "Opłacona zaliczka",
     intro: "Lead właśnie opłacił zaliczkę.",
     parentLabel: "Rodzic",
-    studentLabel: "Uczeń",
     packageLabel: "Poziom zajęć",
     amountLabel: "Kwota",
     leadIdLabel: "ID leada",

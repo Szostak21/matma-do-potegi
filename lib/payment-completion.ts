@@ -69,7 +69,6 @@ export async function markDepositPaymentPaid(
     });
     await sendAdminDepositNotification({
       parentName: lead.parentName,
-      studentName: lead.studentName,
       packageName: packageLabel(lead.requestedPackage),
       amountGrosze: result.payment.amount,
       leadId: lead.id,

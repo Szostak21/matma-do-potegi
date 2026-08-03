@@ -25,9 +25,7 @@ import { formatUtmForAdmin } from "@/lib/utm";
 export type AdminLeadRow = {
   id: string;
   parentName: string;
-  studentName: string | null;
   schoolClass: string | null;
-  expectedResult: string | null;
   email: string;
   phoneNumber: string;
   requestedPackage: PackageType | null;
@@ -218,13 +216,11 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
         </Card>
       ) : (
         <Card className="overflow-x-auto p-0">
-          <table className="w-full min-w-[1200px] text-left text-sm">
+          <table className="w-full min-w-[1000px] text-left text-sm">
             <thead>
               <tr className="border-b border-ink/10 text-xs uppercase tracking-wide text-ink/50">
                 <th className="px-6 py-4 font-medium">Rodzic</th>
-                <th className="px-6 py-4 font-medium">Uczeń</th>
                 <th className="px-6 py-4 font-medium">Klasa</th>
-                <th className="px-6 py-4 font-medium">Oczekiwany wynik</th>
                 <th className="px-6 py-4 font-medium">Kontakt</th>
                 <th className="px-6 py-4 font-medium">Pakiet</th>
                 <th className="px-6 py-4 font-medium">UTM</th>
@@ -254,13 +250,7 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                     {lead.parentName}
                   </td>
                   <td className="px-6 py-4 text-ink/80">
-                    {lead.studentName ?? "-"}
-                  </td>
-                  <td className="px-6 py-4 text-ink/80">
                     {lead.schoolClass ?? "-"}
-                  </td>
-                  <td className="px-6 py-4 text-ink/80">
-                    {lead.expectedResult ?? "-"}
                   </td>
                   <td className="px-6 py-4 text-ink/80">
                     <div>{lead.email}</div>
