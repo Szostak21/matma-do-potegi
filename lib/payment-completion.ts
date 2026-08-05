@@ -1,4 +1,4 @@
-import { LeadStatus, PaymentStatus } from "@prisma/client";
+import { LeadStatus, PackageType, PaymentStatus } from "@prisma/client";
 
 import { REFERRAL_DISCOUNT_GROSZE } from "@/lib/constants";
 import { sendAdminDepositNotification, sendDepositConfirmationEmail } from "@/lib/emails";
@@ -24,6 +24,109 @@ export type PaidMetaContext = {
   clientUserAgent: string | null;
 };
 
+/**
+ * Idempotentna nagroda referral — poza transakcją PAID, żeby błąd zniżki
+ * nigdy nie rollbackował opłaconej zaliczki. updateMany + flaga = bezpieczne przy retry.
+ */
+async function applyReferralRewardForLead(leadId: string): Promise<void> {
+  const lead = await prisma.lead.findUnique({
+    where: { id: leadId },
+    select: {
+      referredById: true,
+      referralRewardApplied: true,
+    },
+  });
+
+  if (!lead?.referredById || lead.referralRewardApplied) {
+    return;
+  }
+
+  const rewarded = await prisma.lead.updateMany({
+    where: {
+      id: leadId,
+      referredById: { not: null },
+      referralRewardApplied: false,
+    },
+    data: {
+      referralRewardApplied: true,
+      firstMonthDiscountGrosze: { increment: REFERRAL_DISCOUNT_GROSZE },
+    },
+  });
+
+  if (rewarded.count !== 1 || !lead.referredById) {
+    return;
+  }
+
+  await prisma.lead.updateMany({
+    where: {
+      id: lead.referredById,
+      isDeleted: false,
+    },
+    data: {
+      firstMonthDiscountGrosze: { increment: REFERRAL_DISCOUNT_GROSZE },
+    },
+  });
+}
+
+async function sendPaidSideEffects(
+  payment: {
+    id: string;
+    token: string;
+    amount: number;
+    lead: {
+      id: string;
+      email: string;
+      phoneNumber: string;
+      parentName: string;
+      requestedPackage: PackageType | null;
+    };
+  },
+  metaContext?: PaidMetaContext,
+): Promise<void> {
+  const { lead } = payment;
+
+  let referralUrl: string | undefined;
+  try {
+    referralUrl = buildReferralUrl(lead.id, getAppBaseUrl());
+  } catch (error) {
+    console.error("buildReferralUrl failed:", error);
+  }
+
+  await sendDepositConfirmationEmail({
+    to: lead.email,
+    parentName: lead.parentName,
+    amountGrosze: payment.amount,
+    packageName: packageLabel(lead.requestedPackage),
+    referralUrl,
+  });
+  await sendAdminDepositNotification({
+    parentName: lead.parentName,
+    packageName: packageLabel(lead.requestedPackage),
+    amountGrosze: payment.amount,
+    leadId: lead.id,
+  });
+
+  // Serwerowe Purchase (CAPI) — eventId = token (dedup z Pixelem w przeglądarce).
+  // Zgoda, _fbp/_fbc, IP/UA z metadanych sesji Stripe → Advanced Matching.
+  if (metaContext) {
+    await sendMetaPurchaseEvent({
+      eventId: payment.token,
+      value: payment.amount / 100,
+      currency: "PLN",
+      consentGranted: metaContext.consentGranted,
+      contact: {
+        email: lead.email,
+        phone: lead.phoneNumber,
+        fullName: lead.parentName,
+      },
+      fbp: metaContext.fbp,
+      fbc: metaContext.fbc,
+      clientIpAddress: metaContext.clientIpAddress,
+      clientUserAgent: metaContext.clientUserAgent,
+    });
+  }
+}
+
 export async function markDepositPaymentPaid(
   paymentId: string,
   metaContext?: PaidMetaContext,
@@ -41,7 +144,12 @@ export async function markDepositPaymentPaid(
     }
 
     if (payment.status === PaymentStatus.PAID) {
-      return { didTransition: false, payment: null };
+      // Już opłacone — zwróć leadId do ewentualnego backfillu zniżki.
+      return {
+        didTransition: false,
+        payment: null,
+        leadIdForReferral: payment.leadId,
+      };
     }
 
     await tx.payment.update({
@@ -59,78 +167,29 @@ export async function markDepositPaymentPaid(
       });
     }
 
-    // Zniżka referral: dopiero po udanej zaliczce; atomowo przez updateMany.
-    if (payment.lead.referredById && !payment.lead.referralRewardApplied) {
-      const rewarded = await tx.lead.updateMany({
-        where: {
-          id: payment.leadId,
-          referredById: { not: null },
-          referralRewardApplied: false,
-        },
-        data: {
-          referralRewardApplied: true,
-          firstMonthDiscountGrosze: { increment: REFERRAL_DISCOUNT_GROSZE },
-        },
-      });
-
-      if (rewarded.count === 1 && payment.lead.referredById) {
-        // updateMany: brak referrera / soft-delete nie rollbackuje PAID.
-        await tx.lead.updateMany({
-          where: {
-            id: payment.lead.referredById,
-            isDeleted: false,
-          },
-          data: {
-            firstMonthDiscountGrosze: { increment: REFERRAL_DISCOUNT_GROSZE },
-          },
-        });
-      }
-    }
-
-    return { didTransition: true, payment };
+    return {
+      didTransition: true,
+      payment,
+      leadIdForReferral: payment.leadId,
+    };
   });
 
-  if (result.didTransition && result.payment) {
-    const { lead } = result.payment;
-    let referralUrl: string | undefined;
+  // Referral poza transakcją PAID — błąd zniżki nie cofa płatności.
+  // Wywołujemy też przy retry webhooka (już PAID), gdy poprzedni run padł po commit.
+  if (result.leadIdForReferral) {
     try {
-      referralUrl = buildReferralUrl(lead.id, getAppBaseUrl());
+      await applyReferralRewardForLead(result.leadIdForReferral);
     } catch (error) {
-      console.error("buildReferralUrl failed:", error);
+      console.error("applyReferralRewardForLead failed:", error);
     }
+  }
 
-    await sendDepositConfirmationEmail({
-      to: lead.email,
-      parentName: lead.parentName,
-      amountGrosze: result.payment.amount,
-      packageName: packageLabel(lead.requestedPackage),
-      referralUrl,
-    });
-    await sendAdminDepositNotification({
-      parentName: lead.parentName,
-      packageName: packageLabel(lead.requestedPackage),
-      amountGrosze: result.payment.amount,
-      leadId: lead.id,
-    });
-
-    // Serwerowe Purchase (CAPI) — eventId = token (dedup z Pixelem w przeglądarce).
-    // Zgoda, _fbp/_fbc, IP/UA z metadanych sesji Stripe → Advanced Matching.
-    if (metaContext) {
-      await sendMetaPurchaseEvent({
-        eventId: result.payment.token,
-        value: result.payment.amount / 100,
-        currency: "PLN",
-        consentGranted: metaContext.consentGranted,
-        contact: {
-          email: lead.email,
-          phone: lead.phoneNumber,
-          fullName: lead.parentName,
-        },
-        fbp: metaContext.fbp,
-        fbc: metaContext.fbc,
-        clientIpAddress: metaContext.clientIpAddress,
-        clientUserAgent: metaContext.clientUserAgent,
-      });
+  if (result.didTransition && result.payment) {
+    try {
+      await sendPaidSideEffects(result.payment, metaContext);
+    } catch (error) {
+      // Płatność już zapisana — side-effecty nie mogą wywalić webhooka / checkoutu.
+      console.error("post-payment side effects failed:", error);
     }
   }
 

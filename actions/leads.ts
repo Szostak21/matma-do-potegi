@@ -2,7 +2,12 @@
 
 import { randomUUID } from "node:crypto";
 
-import { LeadStatus, PaymentStatus, PaymentType } from "@prisma/client";
+import {
+  LeadStatus,
+  PaymentStatus,
+  PaymentType,
+  Prisma,
+} from "@prisma/client";
 import { cookies } from "next/headers";
 import { after } from "next/server";
 
@@ -43,14 +48,21 @@ export async function submitLead(
   }
 
   const data = parsed.data;
-  const referredById = await resolveValidReferrerId({
-    referredById: data.referredById,
-    newEmail: data.email,
-    newPhone: data.phone,
-  });
 
+  // Referral nigdy nie blokuje zapisu — błąd DB / dziwny ref → zapis bez polecenia.
+  let referredById: string | undefined;
   try {
-    const lead = await prisma.$transaction(async (tx) => {
+    referredById = await resolveValidReferrerId({
+      referredById: data.referredById,
+      newEmail: data.email,
+      newPhone: data.phone,
+    });
+  } catch (error) {
+    console.error("resolveValidReferrerId failed:", error);
+  }
+
+  async function createLeadAndDeposit(refId: string | undefined) {
+    return prisma.$transaction(async (tx) => {
       await assertPackageHasCapacity(data.package, tx);
 
       const created = await tx.lead.create({
@@ -65,7 +77,7 @@ export async function submitLead(
           utmMedium: data.utmMedium,
           utmCampaign: data.utmCampaign,
           utmContent: data.utmContent,
-          referredById,
+          referredById: refId,
           status: LeadStatus.PENDING_DEPOSIT,
         },
       });
@@ -86,6 +98,28 @@ export async function submitLead(
         data: { activePaymentId: payment.id },
       });
     });
+  }
+
+  try {
+    let lead;
+    try {
+      lead = await createLeadAndDeposit(referredById);
+    } catch (error) {
+      // Race: referrer usunięty między walidacją a INSERT (FK P2003) → bez polecenia.
+      if (
+        referredById &&
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2003"
+      ) {
+        console.error(
+          "Lead create FK on referredById failed, retrying without referral:",
+          error,
+        );
+        lead = await createLeadAndDeposit(undefined);
+      } else {
+        throw error;
+      }
+    }
 
     // Mail admina poza ścieżką krytyczną — szybszy return success / redirect.
     // Po disconnectcie klienta after() i tak dociągnie powiadomienie.

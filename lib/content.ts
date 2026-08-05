@@ -314,13 +314,16 @@ export const EMAILS = {
     confirmedClosing: "Cieszymy się, że dołączacie do nas!",
     packageLabel: "Poziom zajęć",
     amountLabel: "Wpłacona kwota",
-    referralHeading: "Podziel się miejscem ze znajomym",
+    referralHeading: "Zaproś znajomego i odbierzcie 50zł!",
     referralBodyLine1:
       "Zafunduj Sobie i znajomemu 50zł zniżki na pierwszy miesiąc!",
     referralBodyLine2:
       "Przekaż znajomemu link poniżej - po rezerwacji oboje otrzymacie zniżkę!",
     referralLinkLabel: "Twój link polecający",
-    referralCta: "Otwórz link polecający",
+    referralCta: "Wyślij link znajomemu",
+    referralMailtoSubject: "Polecam korepetycje z matematyki — Matma do potęgi",
+    referralMailtoBody: (referralUrl: string) =>
+      `Cześć! Rezerwuję miejsce w Matmie do potęgi i mam dla Ciebie 50 zł zniżki na pierwszy miesiąc. Zapisz się tutaj:\n\n${referralUrl}`,
   },
   adminNewLead: {
     subject: (parentName: string) => `Nowe zgłoszenie - ${parentName}`,

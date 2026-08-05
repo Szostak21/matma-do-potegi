@@ -283,11 +283,17 @@ export function ContactForm() {
   }, []);
 
   // First-touch UTM + referral — z URL / storage do hidden fields.
+  // Błąd storage / parse nigdy nie blokuje formularza.
   useEffect(() => {
-    captureFirstTouchUtmFromSearch(window.location.search);
-    captureFirstTouchRefFromSearch(window.location.search);
-    setUtm(readStoredUtm());
-    setReferredById(readStoredRef() ?? "");
+    try {
+      captureFirstTouchUtmFromSearch(window.location.search);
+      captureFirstTouchRefFromSearch(window.location.search);
+      setUtm(readStoredUtm());
+      setReferredById(readStoredRef() ?? "");
+    } catch {
+      setUtm({});
+      setReferredById("");
+    }
   }, []);
 
   useEffect(() => {

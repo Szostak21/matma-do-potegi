@@ -23,10 +23,13 @@ export function DepositConfirmationEmail({
   referralUrl,
 }: DepositConfirmationEmailProps) {
   const copy = EMAILS.depositConfirmation;
+  const shareMailto = referralUrl
+    ? `mailto:?subject=${encodeURIComponent(copy.referralMailtoSubject)}&body=${encodeURIComponent(copy.referralMailtoBody(referralUrl))}`
+    : undefined;
 
   return (
     <BaseLayout preview={copy.preview}>
-      {referralUrl ? (
+      {referralUrl && shareMailto ? (
         <Section
           style={{
             backgroundColor: emailTheme.colors.creamDeep,
@@ -82,7 +85,7 @@ export function DepositConfirmationEmail({
           >
             {referralUrl}
           </Text>
-          <Link href={referralUrl} style={primaryButtonStyle}>
+          <Link href={shareMailto} style={primaryButtonStyle}>
             {copy.referralCta}
           </Link>
         </Section>
