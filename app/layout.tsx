@@ -3,6 +3,7 @@ import { Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 
 import { ConsentManager } from "@/components/ConsentManager";
+import { ReferralCapture } from "@/components/ReferralCapture";
 import { UtmCapture } from "@/components/UtmCapture";
 
 const instrumentSerif = Instrument_Serif({
@@ -51,6 +52,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans">
         {children}
         <UtmCapture />
+        <ReferralCapture />
         <ConsentManager />
       </body>
     </html>

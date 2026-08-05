@@ -18,6 +18,7 @@ import { packageLabel } from "@/lib/labels";
 import { sendMetaLeadEvent } from "@/lib/meta-capi";
 import { PackagePoolFullError, assertPackageHasCapacity } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
+import { resolveValidReferrerId } from "@/lib/referral-server";
 import { generatePaymentToken } from "@/lib/tokens";
 import {
   formDataToObject,
@@ -42,6 +43,11 @@ export async function submitLead(
   }
 
   const data = parsed.data;
+  const referredById = await resolveValidReferrerId({
+    referredById: data.referredById,
+    newEmail: data.email,
+    newPhone: data.phone,
+  });
 
   try {
     const lead = await prisma.$transaction(async (tx) => {
@@ -59,6 +65,7 @@ export async function submitLead(
           utmMedium: data.utmMedium,
           utmCampaign: data.utmCampaign,
           utmContent: data.utmContent,
+          referredById,
           status: LeadStatus.PENDING_DEPOSIT,
         },
       });

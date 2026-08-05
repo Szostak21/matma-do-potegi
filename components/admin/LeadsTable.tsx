@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { LEAD_STATUS_LABELS, packageLabel } from "@/lib/labels";
+import { formatPln } from "@/lib/money";
 import {
   findActiveDepositPayment,
   getActiveDepositCheckoutUrl,
@@ -39,6 +40,10 @@ export type AdminLeadRow = {
   utmMedium: string | null;
   utmCampaign: string | null;
   utmContent: string | null;
+  referredByParentName: string | null;
+  referredById: string | null;
+  referralCount: number;
+  firstMonthDiscountGrosze: number;
   createdAt: string;
   payments: Array<{
     token: string;
@@ -216,7 +221,7 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
         </Card>
       ) : (
         <Card className="overflow-x-auto p-0">
-          <table className="w-full min-w-[1000px] text-left text-sm">
+          <table className="w-full min-w-[1200px] text-left text-sm">
             <thead>
               <tr className="border-b border-ink/10 text-xs uppercase tracking-wide text-ink/50">
                 <th className="px-6 py-4 font-medium">Rodzic</th>
@@ -224,6 +229,8 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                 <th className="px-6 py-4 font-medium">Kontakt</th>
                 <th className="px-6 py-4 font-medium">Pakiet</th>
                 <th className="px-6 py-4 font-medium">UTM</th>
+                <th className="px-6 py-4 font-medium">Polecenie</th>
+                <th className="px-6 py-4 font-medium">Zniżka X</th>
                 <th className="px-6 py-4 font-medium">Uwagi</th>
                 <th className="px-6 py-4 font-medium">Test poziomujący</th>
                 <th className="px-6 py-4 font-medium">Grupa</th>
@@ -264,6 +271,32 @@ export function LeadsTable({ leads, groups, secret }: LeadsTableProps) {
                       <pre className="whitespace-pre-wrap font-sans">
                         {utmLabel}
                       </pre>
+                    ) : (
+                      <span className="text-ink/40">-</span>
+                    )}
+                  </td>
+                  <td className="max-w-[160px] px-6 py-4 text-xs text-ink/70">
+                    {lead.referredByParentName ? (
+                      <div>
+                        <div>Od: {lead.referredByParentName}</div>
+                        {lead.referredById ? (
+                          <div className="font-mono text-[10px] text-ink/40">
+                            {lead.referredById.slice(0, 8)}…
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <span className="text-ink/40">-</span>
+                    )}
+                    {lead.referralCount > 0 ? (
+                      <div className="mt-1 text-olive-800">
+                        Przyprowadził: {lead.referralCount}
+                      </div>
+                    ) : null}
+                  </td>
+                  <td className="px-6 py-4 text-ink/80">
+                    {lead.firstMonthDiscountGrosze > 0 ? (
+                      <Badge>{formatPln(lead.firstMonthDiscountGrosze)}</Badge>
                     ) : (
                       <span className="text-ink/40">-</span>
                     )}

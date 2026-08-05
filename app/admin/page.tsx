@@ -31,6 +31,12 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       orderBy: { createdAt: "desc" },
       include: {
         group: true,
+        referredBy: {
+          select: { id: true, parentName: true },
+        },
+        _count: {
+          select: { referrals: true },
+        },
         payments: {
           where: { type: PaymentType.DEPOSIT },
           orderBy: { createdAt: "desc" },
@@ -61,6 +67,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     utmMedium: lead.utmMedium,
     utmCampaign: lead.utmCampaign,
     utmContent: lead.utmContent,
+    referredByParentName: lead.referredBy?.parentName ?? null,
+    referredById: lead.referredById,
+    referralCount: lead._count.referrals,
+    firstMonthDiscountGrosze: lead.firstMonthDiscountGrosze,
     createdAt: lead.createdAt.toISOString(),
     payments: lead.payments.map((payment) => ({
       token: payment.token,

@@ -107,6 +107,11 @@ model Lead {
   utmMedium          String?
   utmCampaign        String?
   utmContent         String?
+  referredById       String?
+  referredBy         Lead?      @relation("LeadReferrals", fields: [referredById], references: [id], onDelete: SetNull)
+  referrals          Lead[]     @relation("LeadReferrals")
+  referralRewardApplied Boolean @default(false)
+  firstMonthDiscountGrosze Int  @default(0)
   isDeleted          Boolean    @default(false)
   status             LeadStatus @default(UNVERIFIED)
   groupId         String?
@@ -120,6 +125,7 @@ model Lead {
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 
+  @@index([referredById])
   @@schema("matma")
 }
 

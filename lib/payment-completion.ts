@@ -1,9 +1,12 @@
 import { LeadStatus, PaymentStatus } from "@prisma/client";
 
+import { REFERRAL_DISCOUNT_GROSZE } from "@/lib/constants";
 import { sendAdminDepositNotification, sendDepositConfirmationEmail } from "@/lib/emails";
 import { packageLabel } from "@/lib/labels";
 import { sendMetaPurchaseEvent } from "@/lib/meta-capi";
+import { getAppBaseUrl } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
+import { buildReferralUrl } from "@/lib/referral";
 
 export type MarkDepositPaymentPaidResult = {
   didTransition: boolean;
@@ -56,16 +59,52 @@ export async function markDepositPaymentPaid(
       });
     }
 
+    // Zniżka referral: dopiero po udanej zaliczce; atomowo przez updateMany.
+    if (payment.lead.referredById && !payment.lead.referralRewardApplied) {
+      const rewarded = await tx.lead.updateMany({
+        where: {
+          id: payment.leadId,
+          referredById: { not: null },
+          referralRewardApplied: false,
+        },
+        data: {
+          referralRewardApplied: true,
+          firstMonthDiscountGrosze: { increment: REFERRAL_DISCOUNT_GROSZE },
+        },
+      });
+
+      if (rewarded.count === 1 && payment.lead.referredById) {
+        // updateMany: brak referrera / soft-delete nie rollbackuje PAID.
+        await tx.lead.updateMany({
+          where: {
+            id: payment.lead.referredById,
+            isDeleted: false,
+          },
+          data: {
+            firstMonthDiscountGrosze: { increment: REFERRAL_DISCOUNT_GROSZE },
+          },
+        });
+      }
+    }
+
     return { didTransition: true, payment };
   });
 
   if (result.didTransition && result.payment) {
     const { lead } = result.payment;
+    let referralUrl: string | undefined;
+    try {
+      referralUrl = buildReferralUrl(lead.id, getAppBaseUrl());
+    } catch (error) {
+      console.error("buildReferralUrl failed:", error);
+    }
+
     await sendDepositConfirmationEmail({
       to: lead.email,
       parentName: lead.parentName,
       amountGrosze: result.payment.amount,
       packageName: packageLabel(lead.requestedPackage),
+      referralUrl,
     });
     await sendAdminDepositNotification({
       parentName: lead.parentName,

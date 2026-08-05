@@ -302,7 +302,7 @@ export const EMAILS = {
     linkFallback: "Jeśli przycisk nie działa, skopiuj i wklej ten link w przeglądarce:",
   },
   depositConfirmation: {
-    subject: "Potwierdzenie wpłaty zaliczki - Matma do potęgi",
+    subject: "Zaliczka potwierdzona — Matma do potęgi",
     preview: "Dziękujemy za wpłatę zaliczki.",
     greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
     thanks:
@@ -310,11 +310,17 @@ export const EMAILS = {
     confirmed:
       "Potwierdzamy rezerwację miejsca na wybranym poziomie.",
     confirmedNextSteps:
-      "We wrześniu skontaktujemy się z Tobą i zaprosimy na krótki, bezpłatny test poziomujący. Start zajęć planujemy na początek października - dokładny dzień i godzinę ustalimy wspólnie po zebraniu grupy.",
-    confirmedClosing: "Cieszymy się, że dołączasz do nas!",
+      "We wrześniu wyślemy na podany numer telefonu dostępne terminy na test poziomujący oraz zajęcia organizacyjne.",
+    confirmedClosing: "Cieszymy się, że dołączacie do nas!",
     packageLabel: "Poziom zajęć",
     amountLabel: "Wpłacona kwota",
-    closing: "Do zobaczenia na zajęciach!",
+    referralHeading: "Podziel się miejscem ze znajomym",
+    referralBodyLine1:
+      "Zafunduj Sobie i znajomemu 50zł zniżki na pierwszy miesiąc!",
+    referralBodyLine2:
+      "Przekaż znajomemu link poniżej - po rezerwacji oboje otrzymacie zniżkę!",
+    referralLinkLabel: "Twój link polecający",
+    referralCta: "Otwórz link polecający",
   },
   adminNewLead: {
     subject: (parentName: string) => `Nowe zgłoszenie - ${parentName}`,

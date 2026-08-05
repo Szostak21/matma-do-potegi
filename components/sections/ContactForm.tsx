@@ -23,6 +23,7 @@ import {
   ReleaseSubmitLockOnSettle,
   SubmitButton,
 } from "@/components/ui/SubmitButton";
+import { ReferralActiveNotice } from "@/components/ui/ReferralActiveNotice";
 import { TermsAcceptance } from "@/components/ui/TermsAcceptance";
 import { Textarea } from "@/components/ui/Textarea";
 import {
@@ -37,6 +38,10 @@ import {
   trackFormValidationError,
   trackLeadSubmit,
 } from "@/lib/analytics-events";
+import {
+  captureFirstTouchRefFromSearch,
+  readStoredRef,
+} from "@/lib/referral";
 import { scrollUpToFirstInvalidFieldLabel } from "@/lib/scroll";
 import {
   captureFirstTouchUtmFromSearch,
@@ -163,6 +168,7 @@ export function ContactForm() {
   const [trackedClientErrors, setTrackedClientErrors] = useState(clientErrors);
   const [redirecting, setRedirecting] = useState(false);
   const [utm, setUtm] = useState<UtmParams>({});
+  const [referredById, setReferredById] = useState("");
   const fieldValues = draftValues ?? state.values;
   const packageFieldKey =
     fieldValues?.package ?? "package-default";
@@ -276,10 +282,12 @@ export function ContactForm() {
     };
   }, []);
 
-  // First-touch UTM (kampania) — z URL / sessionStorage do hidden fields.
+  // First-touch UTM + referral — z URL / storage do hidden fields.
   useEffect(() => {
     captureFirstTouchUtmFromSearch(window.location.search);
+    captureFirstTouchRefFromSearch(window.location.search);
     setUtm(readStoredUtm());
+    setReferredById(readStoredRef() ?? "");
   }, []);
 
   useEffect(() => {
@@ -417,6 +425,10 @@ export function ContactForm() {
                 name="utmContent"
                 value={utm.utm_content ?? ""}
               />
+              <input type="hidden" name="referredById" value={referredById} />
+              {referredById ? (
+                <ReferralActiveNotice />
+              ) : null}
               <div key={draftEpoch} className="space-y-6">
                 <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">

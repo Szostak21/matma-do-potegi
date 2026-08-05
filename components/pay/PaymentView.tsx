@@ -8,6 +8,7 @@ import { PayButton } from "@/components/pay/PayButton";
 import { ViewContentTracker } from "@/components/pay/ViewContentTracker";
 import { AlternateTermPhoneGate } from "@/components/ui/AlternateTermPhoneGate";
 import { Card } from "@/components/ui/Card";
+import { ReferralActiveNotice } from "@/components/ui/ReferralActiveNotice";
 import { DEPOSIT_PAYMENT } from "@/lib/content";
 import { formatPln } from "@/lib/money";
 import type { PaymentDisplayState } from "@/lib/payments";
@@ -19,6 +20,7 @@ type PaymentViewProps = {
   reserverName: string;
   packageName: string;
   amount: number;
+  hasReferral?: boolean;
 };
 
 function SummaryRow({ label, value }: { label: string; value: string }) {
@@ -71,6 +73,7 @@ export function PaymentView({
   reserverName,
   packageName,
   amount,
+  hasReferral = false,
 }: PaymentViewProps) {
   const isDeposit = paymentType === "DEPOSIT";
 
@@ -150,6 +153,12 @@ export function PaymentView({
         packageName={packageName}
         amount={amount}
       />
+
+      {isDeposit && hasReferral ? (
+        <div className="mt-6">
+          <ReferralActiveNotice />
+        </div>
+      ) : null}
 
       {isDeposit ? (
         <div className="mt-6">

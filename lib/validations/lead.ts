@@ -2,6 +2,7 @@ import { PackageType } from "@prisma/client";
 import { z } from "zod";
 
 import { TERMS } from "@/lib/content";
+import { sanitizeRefId } from "@/lib/referral";
 
 const polishPhoneRegex = /^(\+48\s?)?(\d{3}[\s-]?){2}\d{3}$/;
 
@@ -60,6 +61,11 @@ export const leadFormSchema = z.object({
     .max(200)
     .optional()
     .transform((value) => (value === "" ? undefined : value)),
+  referredById: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => sanitizeRefId(value)),
 });
 
 export type LeadFormValues = z.infer<typeof leadFormSchema>;
@@ -103,5 +109,6 @@ export function formDataToObject(formData: FormData): Record<string, string> {
     utmMedium: String(formData.get("utmMedium") ?? ""),
     utmCampaign: String(formData.get("utmCampaign") ?? ""),
     utmContent: String(formData.get("utmContent") ?? ""),
+    referredById: String(formData.get("referredById") ?? ""),
   };
 }

@@ -114,6 +114,7 @@ export type DepositConfirmationEmailParams = {
   parentName: string;
   amountGrosze: number;
   packageName?: string | null;
+  referralUrl?: string | null;
 };
 
 export async function sendDepositConfirmationEmail(
@@ -126,6 +127,7 @@ export async function sendDepositConfirmationEmail(
       parentName: params.parentName,
       amountFormatted: formatPln(params.amountGrosze),
       packageName: params.packageName,
+      referralUrl: params.referralUrl,
     }),
   });
 }

@@ -42,6 +42,7 @@ export default async function ReservationSummaryPage({
   const packageName = packageLabel(lead.requestedPackage);
   const activePayment = findActiveDepositPayment(lead.payments);
   const latestDeposit = lead.payments[0];
+  const hasReferral = Boolean(lead.referredById);
 
   if (activePayment) {
     const displayState = getPaymentDisplayState(activePayment);
@@ -60,6 +61,7 @@ export default async function ReservationSummaryPage({
             reserverName={lead.parentName}
             packageName={packageName}
             amount={activePayment.amount}
+            hasReferral={hasReferral}
           />
         </Container>
       </main>
@@ -83,6 +85,7 @@ export default async function ReservationSummaryPage({
             reserverName={lead.parentName}
             packageName={packageName}
             amount={latestDeposit.amount}
+            hasReferral={hasReferral}
           />
         </Container>
       </main>
