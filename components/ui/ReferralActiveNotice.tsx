@@ -15,9 +15,7 @@ export function ReferralActiveNotice({ className }: ReferralActiveNoticeProps) {
       role="status"
     >
       <p className="text-sm leading-relaxed text-olive-900">
-        Zniżka z polecenia jest aktywna —{" "}
-        <span className="font-medium">50&nbsp;zł mniej</span> na pierwsze czesne
-        po rezerwacji. Zaliczka bez zmian.
+        Zniżka -50zł na pierwszy miesiąc aktywna!
       </p>
     </div>
   );
