@@ -433,7 +433,9 @@ export function ContactForm() {
               />
               <input type="hidden" name="referredById" value={referredById} />
               {referredById ? (
-                <ReferralActiveNotice />
+                <div className="mb-6">
+                  <ReferralActiveNotice />
+                </div>
               ) : null}
               <div key={draftEpoch} className="space-y-6">
                 <div className="grid gap-6 sm:grid-cols-2">

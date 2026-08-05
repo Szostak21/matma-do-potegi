@@ -44,9 +44,11 @@ export function DepositConfirmationEmail({
             style={{
               color: emailTheme.colors.ink,
               fontFamily: emailTheme.fonts.serif,
-              fontSize: "18px",
+              fontSize: "20px",
               fontWeight: "400",
-              margin: "0 0 12px",
+              letterSpacing: "-0.02em",
+              lineHeight: "28px",
+              margin: "0 0 10px",
             }}
           >
             {copy.referralHeading}

@@ -314,7 +314,7 @@ export const EMAILS = {
     confirmedClosing: "Cieszymy się, że dołączacie do nas!",
     packageLabel: "Poziom zajęć",
     amountLabel: "Wpłacona kwota",
-    referralHeading: "Zaproś znajomego i odbierzcie 50zł!",
+    referralHeading: "Zaproś znajomego i płać mniej!",
     referralBodyLine1:
       "Zafunduj Sobie i znajomemu 50zł zniżki na pierwszy miesiąc!",
     referralBodyLine2:

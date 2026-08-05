@@ -148,17 +148,17 @@ export function PaymentView({
         {DEPOSIT_PAYMENT.reservationHint}
       </p>
 
+      {isDeposit && hasReferral ? (
+        <div className="mt-5 mb-1">
+          <ReferralActiveNotice />
+        </div>
+      ) : null}
+
       <ReservationSummary
         reserverName={reserverName}
         packageName={packageName}
         amount={amount}
       />
-
-      {isDeposit && hasReferral ? (
-        <div className="mt-6">
-          <ReferralActiveNotice />
-        </div>
-      ) : null}
 
       {isDeposit ? (
         <div className="mt-6">
