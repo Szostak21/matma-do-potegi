@@ -27,32 +27,24 @@ export function Navbar() {
     setPortalReady(true);
   }, []);
 
-  // Backdrop click / Escape / resize→desktop: zamykanie.
-  // Body scroll lock: żeby scroll strony pod menu nie „uciekał”.
+  // Escape / resize→desktop zamykają menu.
+  // Lock: tylko overflow (bez position:fixed) — zachowuje scrollY, zero skoku przy zamknięciu.
   useEffect(() => {
     if (!mobileOpen) {
       return;
     }
 
-    const scrollY = window.scrollY;
+    const html = document.documentElement;
     const { body } = document;
     const previous = {
-      overflow: body.style.overflow,
-      position: body.style.position,
-      top: body.style.top,
-      width: body.style.width,
-      paddingRight: body.style.paddingRight,
+      htmlOverflow: html.style.overflow,
+      bodyOverflow: body.style.overflow,
+      overscrollBehavior: html.style.overscrollBehavior,
     };
 
-    const scrollbarGap = window.innerWidth - document.documentElement.clientWidth;
-
+    html.style.overflow = "hidden";
     body.style.overflow = "hidden";
-    body.style.position = "fixed";
-    body.style.top = `-${scrollY}px`;
-    body.style.width = "100%";
-    if (scrollbarGap > 0) {
-      body.style.paddingRight = `${scrollbarGap}px`;
-    }
+    html.style.overscrollBehavior = "none";
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -72,12 +64,9 @@ export function Navbar() {
     return () => {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("resize", onResize);
-      body.style.overflow = previous.overflow;
-      body.style.position = previous.position;
-      body.style.top = previous.top;
-      body.style.width = previous.width;
-      body.style.paddingRight = previous.paddingRight;
-      window.scrollTo(0, scrollY);
+      html.style.overflow = previous.htmlOverflow;
+      body.style.overflow = previous.bodyOverflow;
+      html.style.overscrollBehavior = previous.overscrollBehavior;
     };
   }, [mobileOpen]);
 
