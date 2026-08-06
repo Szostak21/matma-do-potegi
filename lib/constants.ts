@@ -31,7 +31,7 @@ export const PACKAGES = {
   },
   INDYWIDUALNE: {
     name: "Zajęcia Indywidualne",
-    priceHourly: 12000,
+    priceHourly: 18000,
     durationMinutes: 60,
   },
 } as const;

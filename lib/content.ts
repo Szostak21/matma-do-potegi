@@ -120,7 +120,7 @@ export const PRICING = [
     duration: `${PACKAGES.INDYWIDUALNE.durationMinutes} min / lekcja`,
     highlighted: false,
     features: [
-      "120 zł/h u ucznia, 180 zł/h w sali",
+      "180 zł/h u ucznia, 240 zł/h w sali",
       "60 minut zajęć",
       "Elastyczny harmonogram",
       "Idealne do nadrobienia braków",

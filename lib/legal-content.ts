@@ -163,8 +163,8 @@ export const LEGAL = {
               {
                 text: "Wysokość wynagrodzenia za zajęcia indywidualne uzależniona jest od miejsca ich realizacji i wynosi:",
                 subItems: [
-                  `120 zł za godzinę zegarową (60 minut) - w przypadku zajęć z dojazdem Prowadzącego do Ucznia, wyłącznie na terenie miasta Krakowa,`,
-                  `180 zł za godzinę zegarową (60 minut) - w przypadku zajęć odbywających się w sali szkoleniowej Prowadzącego pod adresem: ${SERVICE_ADDRESS}.`,
+                  `180 zł za godzinę zegarową (60 minut) - w przypadku zajęć z dojazdem Prowadzącego do Ucznia, wyłącznie na terenie miasta Krakowa,`,
+                  `240 zł za godzinę zegarową (60 minut) - w przypadku zajęć odbywających się w sali szkoleniowej Prowadzącego pod adresem: ${SERVICE_ADDRESS}.`,
                 ],
               },
               {
