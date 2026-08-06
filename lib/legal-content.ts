@@ -10,13 +10,13 @@ const SERVICE_ADDRESS = "ul. Chocimska 9, 30-057 Kraków";
 // NIP: uzupełnić po przejściu na JDG
 // const COMPANY_NIP = "____________";
 
-const LEGAL_UPDATED_AT = "29 lipca 2026";
+const LEGAL_UPDATED_AT = "6 sierpnia 2026";
 
 export const LEGAL = {
   terms: {
     title: "Regulamin świadczenia usług edukacyjnych Matma do potęgi",
     intro:
-      "Niniejszy regulamin określa zasady korzystania z usług edukacyjnych (korepetycji grupowych oraz indywidualnych) organizowanych przez Matma do potęgi.",
+      "Niniejszy regulamin określa zasady świadczenia usług edukacyjnych (korepetycji grupowych oraz indywidualnych) organizowanych pod marką Matma do potęgi. Przedmiotem umowy jest udział w usłudze edukacyjnej o uzgodnionym zakresie i poziomie, a nie gwarancja prowadzenia zajęć przez konkretną osobę fizyczną.",
     updatedAt: LEGAL_UPDATED_AT,
     sections: [
       {
@@ -27,7 +27,16 @@ export const LEGAL = {
             ordered: true,
             items: [
               {
-                text: "Usługodawcą i Prowadzącym zajęcia jest Paweł Szostak, prowadzący działalność nierejestrowaną, adres e-mail: kontakt@matmadopotegi.pl.",
+                text: "**Usługodawcą** jest Paweł Szostak, prowadzący działalność nierejestrowaną, adres e-mail: kontakt@matmadopotegi.pl (dalej: „Usługodawca”).",
+              },
+              {
+                text: "**Prowadzącym** zajęcia (dalej: „Prowadzący”) może być Usługodawca albo inna wykwalifikowana osoba wyznaczona przez Usługodawcę do realizacji usługi edukacyjnej (w szczególności nauczyciel współpracujący lub zatrudniony).",
+              },
+              {
+                text: "Klient (Kupujący) nabywa udział w usłudze edukacyjnej Matma do potęgi (zajęcia na wskazanym poziomie / w uzgodnionym zakresie), a nie prawo do zajęć wyłącznie z konkretną osobą. Wskazanie osoby prowadzącej ma charakter organizacyjny i nie stanowi elementu istotnego świadczenia w rozumieniu gwarancji personalnej.",
+              },
+              {
+                text: "Usługodawca ma prawo w trakcie semestru zmienić Prowadzącego zajęć (w szczególności z przyczyn zdrowotnych, organizacyjnych, kadrowych lub jakościowych) bez konieczności aneksowania umowy i bez wpływu na wysokość czesnego ani innych opłat. O istotnej zmianie Prowadzącego Usługodawca poinformuje Kupującego w rozsądnym terminie, w szczególności pocztą elektroniczną lub za pośrednictwem dotychczasowego kanału komunikacji grupy.",
               },
               {
                 text: `Zajęcia stacjonarne odbywają się w profesjonalnej sali szkoleniowej (przestrzeń coworkingowa), pod adresem: ${SERVICE_ADDRESS}. Adres do korespondencji: ${CORRESPONDENCE_ADDRESS}.`,
@@ -53,13 +62,13 @@ export const LEGAL = {
                 text: "Warunkiem skutecznej rezerwacji jest opłacenie bezzwrotnej zaliczki (opłaty rezerwacyjnej) za pośrednictwem systemu płatności Stripe.",
               },
               {
-                text: "Link do płatności wygenerowany po wypełnieniu formularza jest ważny przez 30 minut. Po tym czasie rezerwacja wygasa, a miejsce zostaje zwolnione. W szczególnych przypadkach Prowadzący może wygenerować nowy link z 24-godzinnym terminem ważności, o ile w grupie nadal są wolne miejsca.",
+                text: "Link do płatności wygenerowany po wypełnieniu formularza jest ważny przez 30 minut. Po tym czasie rezerwacja wygasa, a miejsce zostaje zwolnione. W szczególnych przypadkach Usługodawca może wygenerować nowy link z 24-godzinnym terminem ważności, o ile w grupie nadal są wolne miejsca.",
               },
               {
                 text: "Zaliczka jest odliczana od opłaty za pierwszy miesiąc zajęć.",
               },
               {
-                text: "Z uwagi na to, że dokładny harmonogram zajęć ustalany jest po rozpoczęciu roku akademickiego, Prowadzący w porozumieniu z Uczniami przedstawia propozycje terminów dla poszczególnych grup w pierwszych tygodniach października. Jeżeli żaden z zaproponowanych terminów nie będzie odpowiadał Uczniowi, wpłacona zaliczka podlega zwrotowi w pełnej wysokości (100%) w terminie 7 dni roboczych, a rezerwacja zostaje anulowana.",
+                text: "Z uwagi na to, że dokładny harmonogram zajęć ustalany jest po rozpoczęciu roku akademickiego, Usługodawca w porozumieniu z Uczniami przedstawia propozycje terminów dla poszczególnych grup w pierwszych tygodniach października. Jeżeli żaden z zaproponowanych terminów nie będzie odpowiadał Uczniowi, wpłacona zaliczka podlega zwrotowi w pełnej wysokości (100%) w terminie 7 dni roboczych, a rezerwacja zostaje anulowana.",
               },
               {
                 text: "Zgodnie z art. 38 ust. 1 pkt 1 ustawy o prawach konsumenta, Użytkownik płacąc zaliczkę wyraża wyraźną zgodę na rozpoczęcie świadczenia usługi przed upływem 14-dniowego terminu na odstąpienie od umowy zawartej na odległość i przyjmuje do wiadomości, że w ten sposób traci prawo do odstąpienia od umowy.",
@@ -72,7 +81,39 @@ export const LEGAL = {
         ],
       },
       {
-        title: "3. Organizacja zajęć, komunikacja i nieobecności",
+        title: "3. Program poleceń",
+        blocks: [
+          {
+            kind: "list",
+            ordered: true,
+            items: [
+              {
+                text: "Usługodawca prowadzi program poleceń polegający na przyznaniu zniżki w wysokości 50 zł (pięćdziesiąt złotych) na pierwsze pełne miesięczne czesne (dalej: „Zniżka z polecenia”), aktywowany poprzez indywidualny link polecający udostępniany po opłaceniu zaliczki.",
+              },
+              {
+                text: "Warunkiem przyznania Zniżki z polecenia jest skuteczne powiązanie zgłoszenia nowej osoby (poleconego) z linkiem polecającym oraz opłacenie przez poleconego zaliczki rezerwacyjnej. Zaliczka nie podlega obniżeniu w ramach programu poleceń.",
+              },
+              {
+                text: "Po spełnieniu warunków, o których mowa powyżej, Zniżka z polecenia przysługuje zarówno poleconemu, jak i osobie polecającej — każdorazowo jako obniżenie należności za **pierwszy pełny miesiąc czesnego**. Zniżka jest jednorazowa względem danego zgłoszenia poleconego (dla poleconego: jeden raz na to zgłoszenie; dla polecającego: 50 zł za każdego skutecznie opłaconego poleconego, z możliwością kumulacji przy kolejnych skutecznych poleceniach).",
+              },
+              {
+                text: "Zniżka z polecenia nie łączy się z innymi promocjami, kodami rabatowymi ani obniżkami o charakterze marketingowym, chyba że Usługodawca wyraźnie postanowi inaczej w warunkach danej akcji.",
+              },
+              {
+                text: "Zniżka z polecenia nie podlega wymianie na gotówkę ani wypłacie w innej formie. W szczególności w przypadku rezygnacji, anulowania rezerwacji lub rozwiązania umowy **przed rozpoczęciem zajęć** Zniżka z polecenia nie jest wypłacana ani „wypłacana częściowo” — niewykorzystana zniżka wygasa.",
+              },
+              {
+                text: "Usługodawca zastrzega sobie prawo do odmowy przyznania lub anulowania Zniżki z polecenia w przypadku nadużycia programu (w szczególności auto-polecenia tymi samymi lub pozornie różnymi danymi kontaktowymi, działań pozornych albo naruszenia Regulaminu).",
+              },
+              {
+                text: "Szczegóły techniczne działania linku polecającego wynikają z funkcjonalności serwisu; w razie rozbieżności pierwszeństwo mają postanowienia niniejszego paragrafu.",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        title: "4. Organizacja zajęć, komunikacja i nieobecności",
         blocks: [
           {
             kind: "list",
@@ -110,14 +151,14 @@ export const LEGAL = {
         ],
       },
       {
-        title: "4. Zajęcia indywidualne",
+        title: "5. Zajęcia indywidualne",
         blocks: [
           {
             kind: "list",
             ordered: true,
             items: [
               {
-                text: "Niezależnie od zajęć grupowych Prowadzący oferuje odpłatne zajęcia indywidualne (w formule 1:1), realizowane na podstawie indywidualnych ustaleń co do terminu oraz miejsca ich prowadzenia.",
+                text: "Niezależnie od zajęć grupowych Usługodawca oferuje odpłatne zajęcia indywidualne (w formule 1:1), realizowane na podstawie indywidualnych ustaleń co do terminu oraz miejsca ich prowadzenia. Usługodawca może powierzyć prowadzenie zajęć indywidualnych wyznaczonemu Prowadzącemu.",
               },
               {
                 text: "Wysokość wynagrodzenia za zajęcia indywidualne uzależniona jest od miejsca ich realizacji i wynosi:",
@@ -143,7 +184,7 @@ export const LEGAL = {
         ],
       },
       {
-        title: "5. Ferie, dni wolne i elastyczność harmonogramu",
+        title: "6. Ferie, dni wolne i elastyczność harmonogramu",
         blocks: [
           {
             kind: "list",
@@ -165,7 +206,7 @@ export const LEGAL = {
         ],
       },
       {
-        title: "6. Odwołanie lub spóźnienie z winy Prowadzącego i zdarzenia losowe",
+        title: "7. Odwołanie lub spóźnienie z winy Prowadzącego i zdarzenia losowe",
         blocks: [
           {
             kind: "list",
@@ -182,7 +223,7 @@ export const LEGAL = {
         ],
       },
       {
-        title: "7. Rezygnacja z zajęć (rozwiązanie umowy)",
+        title: "8. Rezygnacja z zajęć (rozwiązanie umowy)",
         blocks: [
           {
             kind: "list",
@@ -198,14 +239,14 @@ export const LEGAL = {
                 text: "Chęć rezygnacji należy zgłosić w formie dokumentowej – wysyłając wiadomość e-mail na adres: kontakt@matmadopotegi.pl.",
               },
               {
-                text: "Prowadzący zastrzega sobie prawo do skreślenia Ucznia z listy uczestników w trybie natychmiastowym w przypadku rażącego łamania zasad kultury osobistej lub zalegania z płatnościami za czesne powyżej 14 dni.",
+                text: "Usługodawca zastrzega sobie prawo do skreślenia Ucznia z listy uczestników w trybie natychmiastowym w przypadku rażącego łamania zasad kultury osobistej lub zalegania z płatnościami za czesne powyżej 14 dni.",
               },
             ],
           },
         ],
       },
       {
-        title: "8. Postanowienia końcowe",
+        title: "9. Postanowienia końcowe",
         blocks: [
           {
             kind: "list",
@@ -265,7 +306,7 @@ export const LEGAL = {
                 text: "**Dane kontaktowe i identyfikacyjne Kupującego:** imię, nazwisko, adres e-mail, numer telefonu (w celu zawarcia i realizacji umowy, obsługi płatności oraz komunikacji).",
               },
               {
-                text: "**Dane ucznia i szczegóły edukacyjne:** wybrana grupa, imię ucznia, obecna ocena z matematyki, oczekiwany wynik (w celu odpowiedniego dostosowania poziomu zajęć i optymalizacji procesu nauczania).",
+                text: "**Dane dotyczące poziomu i organizacji nauki:** wybrany poziom / pakiet zajęć, klasa szkolna (jeśli podana) oraz ewentualne uwagi z formularza (w celu organizacji grupy i realizacji usługi edukacyjnej). W toku realizacji usługi Usługodawca może przetwarzać także dane niezbędne do prowadzenia zajęć przekazane później przez Kupującego (np. imię Ucznia), w zakresie niezbędnym do świadczenia usługi.",
               },
               {
                 text: "**Dane techniczne, analityczne i marketingowe:** adres IP, informacje o przeglądarce, aktywność na stronie oraz dane zbierane przez Google Analytics 4, Microsoft Clarity i narzędzia Meta (Meta Pixel oraz Meta Conversions API) - np. odwiedzone podstrony, źródło ruchu, zdarzenia konwersji (Lead, InitiateCheckout, Purchase), nagrania sesji, heatmapy kliknięć. W ramach Meta Conversions API mogą być przekazywane także zahashowane identyfikatory podane w formularzu (adres e-mail, numer telefonu, imię i nazwisko) oraz identyfikatory cookies Meta (`_fbp`, `_fbc`). Hashowanie nie oznacza anonimizacji w rozumieniu RODO. Przetwarzanie w tych celach następuje wyłącznie po wyrażeniu zgody w banerze cookies.",
@@ -306,7 +347,7 @@ export const LEGAL = {
         blocks: [
           {
             kind: "paragraph",
-            text: "Aby zapewnić sprawne działanie serwisu, korzystamy z zaufanych dostawców usług, którzy przetwarzają dane w naszym imieniu:",
+            text: "Aby zapewnić sprawne działanie serwisu oraz prawidłową realizację usługi edukacyjnej, korzystamy z zaufanych dostawców usług oraz możemy powierzać lub udostępniać dane osobom współpracującym przy prowadzeniu zajęć, w zakresie niezbędnym do wykonania umowy:",
           },
           {
             kind: "list",
@@ -332,6 +373,9 @@ export const LEGAL = {
               },
               {
                 text: "**Meta Platforms Ireland Limited (Meta Pixel oraz Meta Conversions API)** – narzędzia analityczne i marketingowe służące do mierzenia skuteczności kampanii reklamowych Meta (Facebook, Instagram), analizy konwersji, tworzenia grup odbiorców oraz kierowania spersonalizowanych reklam. Dane mogą być przekazywane zarówno przez skrypt w przeglądarce (Meta Pixel), jak i przez bezpieczne wywołania serwerowe (Meta Conversions API). Uruchomienie następuje wyłącznie po wyrażeniu zgody w banerze cookies na tej stronie; wybór „Tylko niezbędne” oznacza brak Pixela i brak Conversions API.",
+              },
+              {
+                text: "**Nauczyciele i inne osoby współpracujące przy realizacji usługi edukacyjnej** — osoby fizyczne lub podmioty, z którymi Usługodawca (Administrator) zawiera umowy współpracy / świadczenia usług oraz — w zakresie wymaganym przepisami — umowy powierzenia przetwarzania danych osobowych (art. 28 RODO) albo którym Administrator udziela upoważnienia do przetwarzania danych. Zakres danych obejmuje w szczególności dane niezbędne do prowadzenia zajęć i kontaktu organizacyjnego (np. imię i nazwisko Kupującego lub Ucznia, klasa / poziom grupy, dane kontaktowe Kupującego w zakresie potrzebnym do realizacji zajęć). Dane są udostępniane wyłącznie w celu prawidłowej realizacji usługi edukacyjnej i nie są wykorzystywane przez te osoby do własnych celów marketingowych.",
               },
             ],
           },
