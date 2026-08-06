@@ -28,23 +28,34 @@ export function Navbar() {
   }, []);
 
   // Escape / resize→desktop zamykają menu.
-  // Lock: tylko overflow (bez position:fixed) — zachowuje scrollY, zero skoku przy zamknięciu.
+  // Lock przez position:fixed (overflow:hidden psuje sticky navbar po zjechaniu).
+  // Restore scrollu zawsze z behavior:auto — html ma scroll-smooth.
   useEffect(() => {
     if (!mobileOpen) {
       return;
     }
 
+    const scrollY = window.scrollY;
     const html = document.documentElement;
     const { body } = document;
     const previous = {
-      htmlOverflow: html.style.overflow,
       bodyOverflow: body.style.overflow,
-      overscrollBehavior: html.style.overscrollBehavior,
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyWidth: body.style.width,
+      bodyPaddingRight: body.style.paddingRight,
+      htmlScrollBehavior: html.style.scrollBehavior,
     };
 
-    html.style.overflow = "hidden";
+    const scrollbarGap = window.innerWidth - document.documentElement.clientWidth;
+
     body.style.overflow = "hidden";
-    html.style.overscrollBehavior = "none";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+    if (scrollbarGap > 0) {
+      body.style.paddingRight = `${scrollbarGap}px`;
+    }
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -64,9 +75,15 @@ export function Navbar() {
     return () => {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("resize", onResize);
-      html.style.overflow = previous.htmlOverflow;
+
+      html.style.scrollBehavior = "auto";
       body.style.overflow = previous.bodyOverflow;
-      html.style.overscrollBehavior = previous.overscrollBehavior;
+      body.style.position = previous.bodyPosition;
+      body.style.top = previous.bodyTop;
+      body.style.width = previous.bodyWidth;
+      body.style.paddingRight = previous.bodyPaddingRight;
+      window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      html.style.scrollBehavior = previous.htmlScrollBehavior;
     };
   }, [mobileOpen]);
 
