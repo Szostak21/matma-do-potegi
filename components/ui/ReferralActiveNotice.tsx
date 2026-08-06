@@ -15,18 +15,15 @@ export function ReferralActiveNotice({ className }: ReferralActiveNoticeProps) {
     >
       <div
         className={cn(
-          "rounded-[1.75rem] bg-olive-100 px-5 py-2.5",
+          "rounded-[1.75rem] bg-olive-100 px-5 py-3",
           "shadow-[0_1px_2px_rgb(0_0_0/0.04),0_6px_18px_rgb(75_80_54/0.08)]",
           "ring-1 ring-olive-200/60",
         )}
       >
-        <p className="flex items-baseline justify-center gap-2 text-olive-900">
-          <span className="font-serif text-[1.2rem] leading-none tracking-tight">
-            −50&nbsp;zł
-          </span>
-          <span className="font-sans text-[0.8125rem] font-medium leading-none tracking-wide text-olive-700/90">
-            zniżka aktywna
-          </span>
+        <p className="text-center font-serif text-[1.05rem] leading-snug tracking-tight text-olive-900">
+          zniżka z polecenia aktywna:
+          <br />
+          −50zł na pierwszy miesiąc
         </p>
       </div>
       <span

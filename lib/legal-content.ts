@@ -306,7 +306,13 @@ export const LEGAL = {
                 text: "**Dane kontaktowe i identyfikacyjne Kupującego:** imię, nazwisko, adres e-mail, numer telefonu (w celu zawarcia i realizacji umowy, obsługi płatności oraz komunikacji).",
               },
               {
-                text: "**Dane dotyczące poziomu i organizacji nauki:** wybrany poziom / pakiet zajęć, klasa szkolna (jeśli podana) oraz ewentualne uwagi z formularza (w celu organizacji grupy i realizacji usługi edukacyjnej). W toku realizacji usługi Usługodawca może przetwarzać także dane niezbędne do prowadzenia zajęć przekazane później przez Kupującego (np. imię Ucznia), w zakresie niezbędnym do świadczenia usługi.",
+                text: "**Dane dotyczące poziomu i organizacji nauki:** wybrany poziom / pakiet zajęć, klasa szkolna oraz ewentualne uwagi z formularza (w celu organizacji grupy i realizacji usługi edukacyjnej). W toku realizacji usługi Usługodawca (Administrator) może przetwarzać także dane niezbędne do prowadzenia zajęć przekazane później przez Kupującego (np. imię Ucznia), w zakresie niezbędnym do świadczenia usługi — w tym udostępniane Prowadzącemu zajęć.",
+              },
+              {
+                text: "**Dane programu poleceń:** identyfikator powiązania z osobą polecającą (np. parametr linku polecającego zapisany w przeglądarce i przekazany przy zgłoszeniu) oraz informacja o przysługującej zniżce na pierwsze czesne — w celu realizacji programu poleceń opisanego w Regulaminie (art. 6 ust. 1 lit. b RODO).",
+              },
+              {
+                text: "**Dane atrybucji / UTM:** parametry źródła ruchu (np. utm_source, utm_medium, utm_campaign, utm_content), jeśli obecne w adresie URL przy pierwszej wizycie — w celu analizy skuteczności działań marketingowych i organizacji sprzedaży (art. 6 ust. 1 lit. f RODO).",
               },
               {
                 text: "**Dane techniczne, analityczne i marketingowe:** adres IP, informacje o przeglądarce, aktywność na stronie oraz dane zbierane przez Google Analytics 4, Microsoft Clarity i narzędzia Meta (Meta Pixel oraz Meta Conversions API) - np. odwiedzone podstrony, źródło ruchu, zdarzenia konwersji (Lead, InitiateCheckout, Purchase), nagrania sesji, heatmapy kliknięć. W ramach Meta Conversions API mogą być przekazywane także zahashowane identyfikatory podane w formularzu (adres e-mail, numer telefonu, imię i nazwisko) oraz identyfikatory cookies Meta (`_fbp`, `_fbc`). Hashowanie nie oznacza anonimizacji w rozumieniu RODO. Przetwarzanie w tych celach następuje wyłącznie po wyrażeniu zgody w banerze cookies.",
@@ -327,13 +333,13 @@ export const LEGAL = {
             ordered: false,
             items: [
               {
-                text: "**art. 6 ust. 1 lit. b RODO:** wykonanie umowy (rezerwacja miejsca, realizacja zajęć).",
+                text: "**art. 6 ust. 1 lit. b RODO:** wykonanie umowy (rezerwacja miejsca, realizacja zajęć, program poleceń i rozliczenie zniżki na pierwsze czesne).",
               },
               {
                 text: "**art. 6 ust. 1 lit. c RODO:** obowiązek prawny (ewidencja sprzedaży, cele podatkowe).",
               },
               {
-                text: "**art. 6 ust. 1 lit. f RODO:** prawnie uzasadniony interes (dochodzenie roszczeń, bezpieczeństwo serwisu).",
+                text: "**art. 6 ust. 1 lit. f RODO:** prawnie uzasadniony interes (dochodzenie roszczeń, bezpieczeństwo serwisu, atrybucja źródeł ruchu / UTM, organizacja sprzedaży).",
               },
               {
                 text: "**art. 6 ust. 1 lit. a RODO:** Twoja dobrowolna zgoda (pliki cookies analityczne Google Analytics 4 i Microsoft Clarity oraz narzędzia marketingowe Meta: Meta Pixel i Meta Conversions API, w tym zaawansowane dopasowywanie konwersji).",
