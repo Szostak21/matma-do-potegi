@@ -57,7 +57,7 @@ export function TuitionPanel({
   );
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-lg space-y-6 md:max-w-none">
       <form
         action={createAction}
         className="rounded-3xl bg-white/80 p-5 shadow-soft ring-1 ring-ink/5"
@@ -69,7 +69,7 @@ export function TuitionPanel({
           własną kwotę w groszach.
         </p>
         <input type="hidden" name="secret" value={secret} />
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <label className="block text-sm">
             <span className="mb-1 block text-xs text-ink/45">Lead</span>
             <select

@@ -6,7 +6,6 @@ import { AdminTabsNav } from "@/components/admin/AdminTabsNav";
 import { LeadCard } from "@/components/admin/LeadCard";
 import { PackagePoolSummary } from "@/components/admin/PackagePoolSummary";
 import { TuitionPanel } from "@/components/admin/TuitionPanel";
-import { Container } from "@/components/ui/Container";
 import {
   filterLeadsForTab,
   parseAdminTab,
@@ -141,20 +140,21 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   );
 
   return (
-    <main className="min-h-full flex-1 select-text bg-oatmeal py-8 sm:py-12">
-      <Container>
-        <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
-          <div>
+    <main className="min-h-full flex-1 select-text overflow-x-hidden bg-oatmeal py-6 sm:py-10">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-5 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0 text-center sm:text-left">
             <p className="text-xs font-medium uppercase tracking-widest text-olive-700">
               Panel administratora
             </p>
             <h1 className="mt-2 font-serif text-3xl text-ink">Operacje</h1>
-            <p className="mt-2 max-w-xl text-sm text-ink/60">
-              Lejek, zaliczki, aktywni, indywidualne, czesne i grupy — bez
-              narzędzi deweloperskich.
+            <p className="mx-auto mt-2 max-w-xl text-sm text-ink/60 sm:mx-0">
+              Lejek, zaliczki, aktywni, indywidualne, czesne i grupy.
             </p>
           </div>
-          <AddLeadModal secret={secret ?? ""} />
+          <div className="flex justify-center sm:justify-end">
+            <AddLeadModal secret={secret ?? ""} />
+          </div>
         </div>
 
         <div className="mb-6">
@@ -168,11 +168,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         {tab === "groups" ? (
           <div className="space-y-6">
             <PackagePoolSummary availability={packageAvailability} />
-            <ul className="grid gap-3 sm:grid-cols-2">
+            <ul className="mx-auto grid w-full max-w-lg grid-cols-1 gap-3 sm:max-w-none sm:grid-cols-2">
               {groups.map((group) => (
                 <li
                   key={group.id}
-                  className="rounded-3xl bg-white/80 p-5 shadow-soft ring-1 ring-ink/5"
+                  className="min-w-0 rounded-3xl bg-white/80 p-5 shadow-soft ring-1 ring-ink/5"
                 >
                   <p className="font-serif text-lg text-ink">{group.name}</p>
                   <p className="mt-1 text-sm text-ink/60">
@@ -199,7 +199,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               Brak zgłoszeń w tej sekcji.
             </p>
           ) : (
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="mx-auto grid w-full max-w-lg grid-cols-1 gap-4 md:max-w-none md:grid-cols-2">
               {visibleLeads.map((lead) => (
                 <LeadCard
                   key={lead.id}
@@ -212,7 +212,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </div>
           )
         ) : null}
-      </Container>
+      </div>
     </main>
   );
 }

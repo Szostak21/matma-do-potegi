@@ -76,7 +76,7 @@ export function LeadCard({
   );
 
   return (
-    <article className="rounded-3xl bg-white/80 p-5 shadow-soft ring-1 ring-ink/5">
+    <article className="min-w-0 w-full overflow-hidden rounded-3xl bg-white/80 p-4 shadow-soft ring-1 ring-ink/5 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="font-serif text-xl text-ink">{lead.parentName}</h3>
