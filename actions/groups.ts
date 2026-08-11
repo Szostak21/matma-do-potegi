@@ -12,7 +12,6 @@ export type AssignGroupState = {
 };
 
 const ASSIGNABLE_STATUSES: LeadStatus[] = [
-  LeadStatus.UNVERIFIED,
   LeadStatus.PENDING_DEPOSIT,
   LeadStatus.PAID_DEPOSIT,
   LeadStatus.ACTIVE,

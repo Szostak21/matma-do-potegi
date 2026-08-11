@@ -160,6 +160,18 @@ export function AddLeadModal({ secret }: AddLeadModalProps) {
                 </Select>
               </div>
 
+              <label className="flex items-start gap-2 text-sm text-ink/80">
+                <input
+                  type="checkbox"
+                  name="skipDeposit"
+                  className="mt-1"
+                />
+                <span>
+                  Bez zaliczki (np. indywidualne) — status od razu{" "}
+                  <em>Aktywny</em>
+                </span>
+              </label>
+
               {state.status === "error" && state.message ? (
                 <p className="text-sm text-red-600" role="alert">
                   {state.message}

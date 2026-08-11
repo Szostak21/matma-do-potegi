@@ -1,31 +1,32 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { LeadStatus } from "@prisma/client";
+import {
+  LeadStatus,
+  PackageType,
+  PaymentStatus,
+  PaymentType,
+  TuitionPaymentMethod,
+  TuitionPeriodStatus,
+} from "@prisma/client";
 
 import { createDepositPaymentForLead } from "@/actions/payments";
 import { assertAdminSecret } from "@/lib/auth";
 import { PACKAGE_POOL_FULL_MESSAGE } from "@/lib/content";
 import { addHours, PHONE_PAYMENT_EXPIRY_HOURS } from "@/lib/dates";
 import { sendPaymentLinkEmail } from "@/lib/emails";
-import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
+import { DEPOSIT_AMOUNT_GROSZE, PACKAGES } from "@/lib/constants";
 import { packageLabel } from "@/lib/labels";
 import {
   assertPackageHasCapacity,
   PackagePoolFullError,
 } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
-import { resetDatabaseToSeedState } from "@/lib/seed";
 import {
   manualLeadFormDataToObject,
   manualLeadSchema,
 } from "@/lib/validations/manual-lead";
 import { normalizePhone } from "@/lib/validations/lead";
-
-export type ResetDatabaseState = {
-  status: "idle" | "success" | "error";
-  message?: string;
-};
 
 export type CreateManualLeadState = {
   status: "idle" | "success" | "error";
@@ -34,7 +35,7 @@ export type CreateManualLeadState = {
   leadId?: string;
 };
 
-export type SoftDeleteLeadState = {
+export type UpdateLeadStatusState = {
   status: "idle" | "success" | "error";
   message?: string;
 };
@@ -44,42 +45,17 @@ export type UpdatePlacementNotesState = {
   message?: string;
 };
 
-export async function resetDatabase(
-  _prevState: ResetDatabaseState,
-  formData: FormData,
-): Promise<ResetDatabaseState> {
-  const secret = formData.get("secret")?.toString();
+export type ToggleSkipDepositState = {
+  status: "idle" | "success" | "error";
+  message?: string;
+};
 
-  try {
-    assertAdminSecret(secret);
-  } catch {
-    return { status: "error", message: "Brak uprawnień." };
-  }
+export type TuitionPeriodActionState = {
+  status: "idle" | "success" | "error";
+  message?: string;
+};
 
-  const confirmed = formData.get("confirm")?.toString();
-
-  if (confirmed !== "RESET") {
-    return {
-      status: "error",
-      message: "Potwierdzenie nieprawidłowe. Wpisz RESET w polu potwierdzenia.",
-    };
-  }
-
-  try {
-    await resetDatabaseToSeedState(prisma);
-    revalidatePath("/admin");
-
-    return {
-      status: "success",
-      message: "Baza została zresetowana do stanu po seedzie.",
-    };
-  } catch {
-    return {
-      status: "error",
-      message: "Nie udało się zresetować bazy. Spróbuj ponownie.",
-    };
-  }
-}
+const ALL_LEAD_STATUSES = Object.values(LeadStatus);
 
 export async function createManualLead(
   _prevState: CreateManualLeadState,
@@ -105,9 +81,10 @@ export async function createManualLead(
   }
 
   const data = parsed.data;
+  const skipDeposit = formData.get("skipDeposit") === "on";
 
   try {
-    if (data.paymentMode === "cash") {
+    if (data.paymentMode === "cash" || skipDeposit) {
       const lead = await prisma.$transaction(async (tx) => {
         await assertPackageHasCapacity(data.package, tx);
 
@@ -118,7 +95,8 @@ export async function createManualLead(
             email: data.email,
             requestedPackage: data.package,
             notes: data.notes,
-            status: LeadStatus.PAID_DEPOSIT,
+            skipDeposit,
+            status: skipDeposit ? LeadStatus.ACTIVE : LeadStatus.PAID_DEPOSIT,
           },
         });
       });
@@ -128,7 +106,9 @@ export async function createManualLead(
       return {
         status: "success",
         leadId: lead.id,
-        message: "Uczeń dodany jako opłacony gotówką.",
+        message: skipDeposit
+          ? "Uczeń dodany (bez zaliczki)."
+          : "Uczeń dodany jako opłacony gotówką.",
       };
     }
 
@@ -142,6 +122,7 @@ export async function createManualLead(
           email: data.email,
           requestedPackage: data.package,
           notes: data.notes,
+          status: LeadStatus.PENDING_DEPOSIT,
         },
       });
     });
@@ -188,15 +169,20 @@ export async function createManualLead(
   }
 }
 
-export async function softDeleteLead(
-  _prevState: SoftDeleteLeadState,
+export async function updateLeadStatus(
+  _prevState: UpdateLeadStatusState,
   formData: FormData,
-): Promise<SoftDeleteLeadState> {
+): Promise<UpdateLeadStatusState> {
   const leadId = formData.get("leadId");
   const secret = formData.get("secret")?.toString();
+  const nextStatus = formData.get("status")?.toString();
 
   if (!leadId || typeof leadId !== "string") {
     return { status: "error", message: "Brak identyfikatora zgłoszenia." };
+  }
+
+  if (!nextStatus || !ALL_LEAD_STATUSES.includes(nextStatus as LeadStatus)) {
+    return { status: "error", message: "Nieprawidłowy status." };
   }
 
   try {
@@ -206,16 +192,32 @@ export async function softDeleteLead(
   }
 
   try {
-    const lead = await prisma.lead.findUnique({
-      where: { id: leadId },
-    });
-
-    if (!lead || lead.isDeleted) {
-      return { status: "error", message: "Nie znaleziono zgłoszenia." };
-    }
+    const status = nextStatus as LeadStatus;
+    const exitStatuses: LeadStatus[] = [
+      LeadStatus.CANCELLED,
+      LeadStatus.RESIGNED,
+      LeadStatus.REFUNDED,
+    ];
+    const occupyingStatuses: LeadStatus[] = [
+      LeadStatus.PENDING_DEPOSIT,
+      LeadStatus.PAID_DEPOSIT,
+      LeadStatus.ACTIVE,
+    ];
 
     await prisma.$transaction(async (tx) => {
-      if (lead.groupId) {
+      const lead = await tx.lead.findUnique({ where: { id: leadId } });
+
+      if (!lead) {
+        throw new Error("LEAD_NOT_FOUND");
+      }
+
+      const leavingOccupancy =
+        occupyingStatuses.includes(lead.status) &&
+        exitStatuses.includes(status);
+
+      const leavingSeat = leavingOccupancy && Boolean(lead.groupId);
+
+      if (leavingSeat && lead.groupId) {
         const group = await tx.group.findUnique({
           where: { id: lead.groupId },
         });
@@ -228,13 +230,31 @@ export async function softDeleteLead(
         }
       }
 
+      if (leavingOccupancy) {
+        await tx.payment.updateMany({
+          where: {
+            leadId,
+            type: PaymentType.DEPOSIT,
+            status: PaymentStatus.PENDING,
+          },
+          data: { status: PaymentStatus.EXPIRED },
+        });
+      }
+
       await tx.lead.update({
         where: { id: leadId },
         data: {
-          isDeleted: true,
-          status: LeadStatus.CANCELLED,
-          groupId: null,
-          activePaymentId: null,
+          status,
+          resignedAt:
+            status === LeadStatus.RESIGNED
+              ? (lead.resignedAt ?? new Date())
+              : null,
+          ...(leavingOccupancy
+            ? {
+                groupId: null,
+                activePaymentId: null,
+              }
+            : {}),
         },
       });
     });
@@ -243,13 +263,14 @@ export async function softDeleteLead(
 
     return {
       status: "success",
-      message: "Zgłoszenie zostało usunięte. Miejsce w puli zostało zwolnione.",
+      message: "Status został zmieniony.",
     };
-  } catch {
-    return {
-      status: "error",
-      message: "Nie udało się usunąć zgłoszenia.",
-    };
+  } catch (error) {
+    if (error instanceof Error && error.message === "LEAD_NOT_FOUND") {
+      return { status: "error", message: "Nie znaleziono zgłoszenia." };
+    }
+
+    return { status: "error", message: "Nie udało się zmienić statusu." };
   }
 }
 
@@ -276,7 +297,7 @@ export async function updatePlacementTestNotes(
       where: { id: leadId },
     });
 
-    if (!lead || lead.isDeleted) {
+    if (!lead) {
       return { status: "error", message: "Nie znaleziono zgłoszenia." };
     }
 
@@ -299,4 +320,228 @@ export async function updatePlacementTestNotes(
       message: "Nie udało się zapisać notatek.",
     };
   }
+}
+
+export async function toggleSkipDeposit(
+  _prevState: ToggleSkipDepositState,
+  formData: FormData,
+): Promise<ToggleSkipDepositState> {
+  const leadId = formData.get("leadId");
+  const secret = formData.get("secret")?.toString();
+  const skipDeposit = formData.get("skipDeposit") === "true";
+
+  if (!leadId || typeof leadId !== "string") {
+    return { status: "error", message: "Brak identyfikatora zgłoszenia." };
+  }
+
+  try {
+    assertAdminSecret(secret);
+  } catch {
+    return { status: "error", message: "Brak uprawnień." };
+  }
+
+  try {
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: { skipDeposit },
+    });
+
+    revalidatePath("/admin");
+
+    return {
+      status: "success",
+      message: skipDeposit
+        ? "Oznaczono: bez zaliczki."
+        : "Wyłączono flagę bez zaliczki.",
+    };
+  } catch {
+    return { status: "error", message: "Nie udało się zaktualizować flagi." };
+  }
+}
+
+function defaultTuitionAmountGrosze(
+  pkg: PackageType | null | undefined,
+  firstMonthDiscountGrosze: number,
+  applyDepositCredit: boolean,
+  isFirstBillableMonth: boolean,
+): number {
+  if (!pkg || pkg === PackageType.INDYWIDUALNE) {
+    return 0;
+  }
+
+  const base =
+    pkg === PackageType.MATURA_ROZSZERZONA
+      ? PACKAGES.MATURA_ROZSZERZONA.priceMonthly
+      : PACKAGES.MATURA_PODSTAWOWA.priceMonthly;
+
+  if (!isFirstBillableMonth) {
+    return base;
+  }
+
+  let due = base - firstMonthDiscountGrosze;
+  if (applyDepositCredit) {
+    due -= DEPOSIT_AMOUNT_GROSZE;
+  }
+
+  return Math.max(0, due);
+}
+
+function sameUtcMonth(a: Date, b: Date): boolean {
+  return (
+    a.getUTCFullYear() === b.getUTCFullYear() &&
+    a.getUTCMonth() === b.getUTCMonth()
+  );
+}
+
+export async function createTuitionPeriod(
+  _prevState: TuitionPeriodActionState,
+  formData: FormData,
+): Promise<TuitionPeriodActionState> {
+  const leadId = formData.get("leadId");
+  const secret = formData.get("secret")?.toString();
+  const periodMonthRaw = formData.get("periodMonth")?.toString();
+  const amountRaw = formData.get("amountDueGrosze")?.toString();
+
+  if (!leadId || typeof leadId !== "string") {
+    return { status: "error", message: "Brak identyfikatora zgłoszenia." };
+  }
+
+  if (!periodMonthRaw) {
+    return { status: "error", message: "Podaj miesiąc (YYYY-MM)." };
+  }
+
+  try {
+    assertAdminSecret(secret);
+  } catch {
+    return { status: "error", message: "Brak uprawnień." };
+  }
+
+  try {
+    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    if (!lead) {
+      return { status: "error", message: "Nie znaleziono zgłoszenia." };
+    }
+
+    const [year, month] = periodMonthRaw.split("-").map(Number);
+    if (!year || !month || month < 1 || month > 12) {
+      return { status: "error", message: "Nieprawidłowy miesiąc." };
+    }
+
+    const periodMonth = new Date(Date.UTC(year, month - 1, 1));
+
+    const [existingPeriods, paidDeposit] = await Promise.all([
+      prisma.tuitionPeriod.count({ where: { leadId } }),
+      prisma.payment.findFirst({
+        where: {
+          leadId,
+          type: PaymentType.DEPOSIT,
+          status: PaymentStatus.PAID,
+        },
+        select: { id: true },
+      }),
+    ]);
+
+    const isFirstBillableMonth = lead.tuitionStartMonth
+      ? sameUtcMonth(lead.tuitionStartMonth, periodMonth)
+      : existingPeriods === 0;
+
+    const applyDeposit =
+      isFirstBillableMonth &&
+      !lead.skipDeposit &&
+      Boolean(paidDeposit || lead.firstMonthPaid);
+
+    const amountDueGrosze = amountRaw
+      ? Number.parseInt(amountRaw, 10)
+      : defaultTuitionAmountGrosze(
+          lead.requestedPackage,
+          lead.firstMonthDiscountGrosze,
+          applyDeposit,
+          isFirstBillableMonth,
+        );
+
+    if (!Number.isFinite(amountDueGrosze) || amountDueGrosze < 0) {
+      return { status: "error", message: "Nieprawidłowa kwota." };
+    }
+
+    await prisma.tuitionPeriod.create({
+      data: {
+        leadId,
+        periodMonth,
+        amountDueGrosze,
+        status: TuitionPeriodStatus.DUE,
+        transferTitle: `MDP ${year}-${String(month).padStart(2, "0")} ${lead.id.slice(0, 8)}`,
+      },
+    });
+
+    revalidatePath("/admin");
+
+    return { status: "success", message: "Okres czesnego utworzony." };
+  } catch {
+    return {
+      status: "error",
+      message: "Nie udało się utworzyć okresu (może już istnieje).",
+    };
+  }
+}
+
+export async function markTuitionPeriodPaid(
+  _prevState: TuitionPeriodActionState,
+  formData: FormData,
+): Promise<TuitionPeriodActionState> {
+  const periodId = formData.get("periodId");
+  const secret = formData.get("secret")?.toString();
+  const methodRaw = formData.get("paymentMethod")?.toString() ?? "CASH";
+
+  if (!periodId || typeof periodId !== "string") {
+    return { status: "error", message: "Brak identyfikatora okresu." };
+  }
+
+  try {
+    assertAdminSecret(secret);
+  } catch {
+    return { status: "error", message: "Brak uprawnień." };
+  }
+
+  const paymentMethod = Object.values(TuitionPaymentMethod).includes(
+    methodRaw as TuitionPaymentMethod,
+  )
+    ? (methodRaw as TuitionPaymentMethod)
+    : TuitionPaymentMethod.CASH;
+
+  try {
+    const period = await prisma.tuitionPeriod.findUnique({
+      where: { id: periodId },
+    });
+
+    if (!period) {
+      return { status: "error", message: "Nie znaleziono okresu." };
+    }
+
+    await prisma.tuitionPeriod.update({
+      where: { id: periodId },
+      data: {
+        status: TuitionPeriodStatus.PAID,
+        amountPaidGrosze: period.amountDueGrosze,
+        paidAt: new Date(),
+        paymentMethod,
+      },
+    });
+
+    revalidatePath("/admin");
+
+    return { status: "success", message: "Oznaczono jako opłacone." };
+  } catch {
+    return { status: "error", message: "Nie udało się oznaczyć wpłaty." };
+  }
+}
+
+/** @deprecated Usunięte z UI — zostaje tylko na wypadek starych referencji. */
+export async function softDeleteLead(): Promise<{
+  status: "error";
+  message: string;
+}> {
+  return {
+    status: "error",
+    message: "Soft-delete wyłączony. Zmień status leada (np. RESIGNED / CANCELLED).",
+  };
 }

@@ -10,12 +10,12 @@ datasource db {
 }
 
 enum LeadStatus {
-  UNVERIFIED
   PENDING_DEPOSIT
   PAID_DEPOSIT
   ACTIVE
-  SUSPENDED
   CANCELLED
+  RESIGNED
+  REFUNDED
 
   @@schema("matma")
 }
@@ -51,6 +51,24 @@ enum UserRole {
   OWNER
   TEACHER
   STUDENT
+
+  @@schema("matma")
+}
+
+enum TuitionPeriodStatus {
+  DUE
+  PAID
+  PARTIAL
+  WAIVED
+
+  @@schema("matma")
+}
+
+enum TuitionPaymentMethod {
+  TRANSFER
+  CASH
+  STRIPE
+  OTHER
 
   @@schema("matma")
 }
@@ -95,56 +113,83 @@ model Group {
 }
 
 model Lead {
-  id              String     @id @default(cuid())
-  parentName      String
-  phoneNumber     String
-  email           String
-  requestedPackage   PackageType?
-  schoolClass        String?    @map("currentGrade")
-  notes              String?
-  placementTestNotes String?
-  utmSource          String?
-  utmMedium          String?
-  utmCampaign        String?
-  utmContent         String?
-  referredById       String?
-  referredBy         Lead?      @relation("LeadReferrals", fields: [referredById], references: [id], onDelete: SetNull)
-  referrals          Lead[]     @relation("LeadReferrals")
-  referralRewardApplied Boolean @default(false)
-  firstMonthDiscountGrosze Int  @default(0)
-  isDeleted          Boolean    @default(false)
-  status             LeadStatus @default(UNVERIFIED)
-  groupId         String?
-  group           Group?     @relation(fields: [groupId], references: [id])
-  balanceCredit   Int        @default(0)
-  firstMonthPaid  Boolean    @default(false)
-  activePaymentId String?
-  userId          String?
-  user            User?      @relation(fields: [userId], references: [id])
-  payments        Payment[]
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  id                     String       @id @default(cuid())
+  parentName             String
+  phoneNumber            String
+  email                  String
+  requestedPackage       PackageType?
+  schoolClass            String?      @map("currentGrade")
+  notes                  String?
+  placementTestNotes     String?
+  utmSource              String?
+  utmMedium              String?
+  utmCampaign            String?
+  utmContent             String?
+  referredById           String?
+  referredBy             Lead?        @relation("LeadReferrals", fields: [referredById], references: [id], onDelete: SetNull)
+  referrals              Lead[]       @relation("LeadReferrals")
+  referralRewardApplied  Boolean      @default(false)
+  firstMonthDiscountGrosze Int        @default(0)
+  isDeleted              Boolean      @default(false)
+  skipDeposit            Boolean      @default(false)
+  resignedAt             DateTime?
+  tuitionStartMonth      DateTime?    @db.Date
+  status                 LeadStatus   @default(PENDING_DEPOSIT)
+  groupId                String?
+  group                  Group?       @relation(fields: [groupId], references: [id])
+  balanceCredit          Int          @default(0)
+  firstMonthPaid         Boolean      @default(false)
+  activePaymentId        String?
+  userId                 String?
+  user                   User?        @relation(fields: [userId], references: [id])
+  payments               Payment[]
+  tuitionPeriods         TuitionPeriod[]
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
 
   @@index([referredById])
+  @@index([status])
+  @@index([requestedPackage])
   @@schema("matma")
 }
 
 model Payment {
-  id            String        @id @default(cuid())
-  token         String        @unique @default(cuid())
-  leadId        String
-  lead          Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  type          PaymentType
-  status        PaymentStatus @default(PENDING)
-  amount        Int
-  billingPeriod DateTime?     @db.Date
-  expiresAt     DateTime?
-  paidAt        DateTime?
+  id               String        @id @default(cuid())
+  token            String        @unique @default(cuid())
+  leadId           String
+  lead             Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type             PaymentType
+  status           PaymentStatus @default(PENDING)
+  amount           Int
+  billingPeriod    DateTime?     @db.Date
+  expiresAt        DateTime?
+  paidAt           DateTime?
   stripeSessionId  String?       @unique
   stripeSessionUrl String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   @@unique([leadId, billingPeriod, type])
+  @@schema("matma")
+}
+
+model TuitionPeriod {
+  id               String                @id @default(cuid())
+  leadId           String
+  lead             Lead                  @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  /// Pierwszy dzień miesiąca rozliczeniowego (np. 2026-10-01)
+  periodMonth      DateTime              @db.Date
+  amountDueGrosze  Int
+  amountPaidGrosze Int                   @default(0)
+  status           TuitionPeriodStatus   @default(DUE)
+  paidAt           DateTime?
+  paymentMethod    TuitionPaymentMethod?
+  transferTitle    String?
+  notes            String?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  @@unique([leadId, periodMonth])
+  @@index([status, periodMonth])
   @@schema("matma")
 }

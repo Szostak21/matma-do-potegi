@@ -178,6 +178,10 @@ export async function createDepositPaymentForLead(
       return { status: "error", message: "Nie znaleziono leada." };
     }
 
+    if (lead.isDeleted) {
+      return { status: "error", message: "Nie znaleziono leada." };
+    }
+
     const activePending = lead.payments.find(
       (payment) => !isPaymentExpired(payment),
     );
@@ -202,7 +206,7 @@ export async function createDepositPaymentForLead(
       };
     }
 
-    if (lead.status !== "UNVERIFIED" && lead.status !== "PENDING_DEPOSIT") {
+    if (lead.status !== "PENDING_DEPOSIT") {
       return {
         status: "error",
         message: "Lead nie kwalifikuje się do generowania linku.",
@@ -276,6 +280,10 @@ async function renewDepositPaymentLinkForLead(
       });
 
       if (!lead) {
+        throw new RenewPaymentError("NOT_FOUND");
+      }
+
+      if (lead.isDeleted) {
         throw new RenewPaymentError("NOT_FOUND");
       }
 
@@ -499,6 +507,8 @@ export async function generateDepositPayment(
       });
     }
   }
+
+  revalidatePath("/admin");
 
   return {
     status: "success",
