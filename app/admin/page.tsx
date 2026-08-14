@@ -64,6 +64,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             select: {
               id: true,
               parentName: true,
+              studentName: true,
               phoneNumber: true,
               requestedPackage: true,
             },
@@ -76,6 +77,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const rows: AdminLeadRow[] = leads.map((lead) => ({
     id: lead.id,
     parentName: lead.parentName,
+    studentName: lead.studentName,
     schoolClass: lead.schoolClass,
     email: lead.email,
     phoneNumber: lead.phoneNumber,
@@ -103,6 +105,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     id: period.id,
     leadId: period.leadId,
     parentName: period.lead.parentName,
+    studentName: period.lead.studentName,
     phoneNumber: period.lead.phoneNumber,
     packageType: period.lead.requestedPackage,
     periodMonth: period.periodMonth.toISOString(),
@@ -149,7 +152,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </p>
             <h1 className="mt-2 font-serif text-3xl text-ink">Operacje</h1>
             <p className="mx-auto mt-2 max-w-xl text-sm text-ink/60 sm:mx-0">
-              Lejek, zaliczki, aktywni, indywidualne, czesne i grupy.
+              Leady, zaliczki, aktywni, indywidualne, czesne i grupy.
             </p>
           </div>
           <div className="flex justify-center sm:justify-end">

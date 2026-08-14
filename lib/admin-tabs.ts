@@ -15,8 +15,8 @@ export type AdminTabId =
   | "groups";
 
 export const ADMIN_TABS: Array<{ id: AdminTabId; label: string }> = [
-  { id: "funnel", label: "Lejek" },
-  { id: "deposit", label: "Zaliczka OK" },
+  { id: "funnel", label: "Leady" },
+  { id: "deposit", label: "Zaliczki" },
   { id: "active", label: "Aktywni" },
   { id: "individual", label: "Indywidualne" },
   { id: "tuition", label: "Czesne" },
@@ -35,6 +35,7 @@ export function parseAdminTab(value: string | undefined): AdminTabId {
 export type AdminLeadRow = {
   id: string;
   parentName: string;
+  studentName: string | null;
   schoolClass: string | null;
   email: string;
   phoneNumber: string;
@@ -62,6 +63,7 @@ export type AdminTuitionRow = {
   id: string;
   leadId: string;
   parentName: string;
+  studentName: string | null;
   phoneNumber: string;
   packageType: PackageType | null;
   periodMonth: string;
@@ -104,4 +106,12 @@ export function filterLeadsForTab(
     default:
       return [];
   }
+}
+
+export function leadDisplayName(lead: {
+  studentName: string | null;
+  parentName: string;
+}): string {
+  const studentName = lead.studentName?.trim();
+  return studentName ? studentName : lead.parentName;
 }

@@ -7,7 +7,11 @@ import {
   markTuitionPeriodPaid,
   type TuitionPeriodActionState,
 } from "@/actions/admin";
-import type { AdminLeadRow, AdminTuitionRow } from "@/lib/admin-tabs";
+import {
+  leadDisplayName,
+  type AdminLeadRow,
+  type AdminTuitionRow,
+} from "@/lib/admin-tabs";
 import { packageLabel, TUITION_STATUS_LABELS } from "@/lib/labels";
 import { formatPln } from "@/lib/money";
 import { Button } from "@/components/ui/Button";
@@ -83,7 +87,9 @@ export function TuitionPanel({
               </option>
               {eligibleLeads.map((lead) => (
                 <option key={lead.id} value={lead.id}>
-                  {lead.parentName} · {packageLabel(lead.requestedPackage)}
+                  {lead.studentName?.trim()
+                    ? `${leadDisplayName(lead)} · ${lead.parentName} · ${packageLabel(lead.requestedPackage)}`
+                    : `${lead.parentName} · ${packageLabel(lead.requestedPackage)}`}
                 </option>
               ))}
             </select>
@@ -165,8 +171,13 @@ export function TuitionPanel({
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <p className="font-serif text-lg text-ink">
-                    {period.parentName}
+                    {leadDisplayName(period)}
                   </p>
+                  {period.studentName?.trim() ? (
+                    <p className="text-sm text-ink/60">
+                      Rodzic: {period.parentName}
+                    </p>
+                  ) : null}
                   <p className="text-sm text-ink/60">
                     {formatPeriod(period.periodMonth)} ·{" "}
                     {packageLabel(period.packageType)}

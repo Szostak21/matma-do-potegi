@@ -115,6 +115,7 @@ model Group {
 model Lead {
   id                     String       @id @default(cuid())
   parentName             String
+  studentName            String?
   phoneNumber            String
   email                  String
   requestedPackage       PackageType?

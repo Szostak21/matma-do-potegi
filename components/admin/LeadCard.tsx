@@ -12,6 +12,7 @@ import { GeneratePaymentButton } from "@/components/admin/GeneratePaymentButton"
 import { LeadStatusSelect } from "@/components/admin/LeadStatusSelect";
 import { PlacementNotesEditor } from "@/components/admin/PlacementNotesEditor";
 import { ResendPaymentLink24hButton } from "@/components/admin/ResendPaymentLink24hButton";
+import { StudentNameEditor } from "@/components/admin/StudentNameEditor";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import type { AdminLeadRow } from "@/lib/admin-tabs";
@@ -78,13 +79,17 @@ export function LeadCard({
   return (
     <article className="min-w-0 w-full overflow-hidden rounded-3xl bg-white/80 p-4 shadow-soft ring-1 ring-ink/5 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h3 className="font-serif text-xl text-ink">{lead.parentName}</h3>
+        <StudentNameEditor
+          leadId={lead.id}
+          secret={secret}
+          parentName={lead.parentName}
+          studentName={lead.studentName}
+        >
           <p className="mt-1 text-sm text-ink/60">
             {packageLabel(lead.requestedPackage)}
             {lead.schoolClass ? ` · kl. ${lead.schoolClass}` : ""}
           </p>
-        </div>
+        </StudentNameEditor>
         <Badge>{LEAD_STATUS_LABELS[lead.status]}</Badge>
       </div>
 

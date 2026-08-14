@@ -45,6 +45,11 @@ export type UpdatePlacementNotesState = {
   message?: string;
 };
 
+export type UpdateStudentNameState = {
+  status: "idle" | "success" | "error";
+  message?: string;
+};
+
 export type ToggleSkipDepositState = {
   status: "idle" | "success" | "error";
   message?: string;
@@ -318,6 +323,61 @@ export async function updatePlacementTestNotes(
     return {
       status: "error",
       message: "Nie udało się zapisać notatek.",
+    };
+  }
+}
+
+const STUDENT_NAME_MAX_LENGTH = 80;
+
+export async function updateStudentName(
+  _prevState: UpdateStudentNameState,
+  formData: FormData,
+): Promise<UpdateStudentNameState> {
+  const leadId = formData.get("leadId");
+  const secret = formData.get("secret")?.toString();
+  const rawName = formData.get("studentName");
+
+  if (!leadId || typeof leadId !== "string") {
+    return { status: "error", message: "Brak identyfikatora zgłoszenia." };
+  }
+
+  try {
+    assertAdminSecret(secret);
+  } catch {
+    return { status: "error", message: "Brak uprawnień." };
+  }
+
+  const trimmed = typeof rawName === "string" ? rawName.trim() : "";
+
+  if (trimmed.length > STUDENT_NAME_MAX_LENGTH) {
+    return { status: "error", message: "Imię jest zbyt długie." };
+  }
+
+  try {
+    const lead = await prisma.lead.findUnique({
+      where: { id: leadId },
+    });
+
+    if (!lead) {
+      return { status: "error", message: "Nie znaleziono zgłoszenia." };
+    }
+
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: { studentName: trimmed === "" ? null : trimmed },
+    });
+
+    revalidatePath("/admin");
+
+    return {
+      status: "success",
+      message:
+        trimmed === "" ? "Imię ucznia usunięte." : "Imię ucznia zapisane.",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Nie udało się zapisać imienia ucznia.",
     };
   }
 }
