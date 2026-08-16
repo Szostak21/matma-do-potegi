@@ -88,20 +88,20 @@ export function CookieBanner() {
           </Link>
         </p>
 
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            onClick={() => handleChoice("denied")}
-            className="inline-flex w-full items-center justify-center rounded-full border border-ink/15 px-5 py-2.5 text-sm font-medium text-ink transition hover:bg-ink/5 sm:w-auto"
-          >
-            Tylko niezbędne
-          </button>
+        <div className="mt-6 flex flex-col items-stretch gap-2.5">
           <button
             type="button"
             onClick={() => handleChoice("granted")}
-            className="inline-flex w-full flex-1 items-center justify-center rounded-full bg-olive-700 px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-olive-800"
+            className="inline-flex w-full items-center justify-center rounded-full bg-olive-700 px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-olive-800 sm:py-3"
           >
             Akceptuj wszystkie
+          </button>
+          <button
+            type="button"
+            onClick={() => handleChoice("denied")}
+            className="mx-auto px-2 py-1.5 text-sm font-normal text-ink/40 transition hover:text-ink/60"
+          >
+            Tylko niezbędne
           </button>
         </div>
       </div>
