@@ -8,10 +8,19 @@ import { Navbar } from "@/components/sections/Navbar";
 import { Pricing } from "@/components/sections/Pricing";
 import { Reviews } from "@/components/sections/Reviews";
 import { Teacher } from "@/components/sections/Teacher";
+import { websiteJsonLd } from "@/lib/seo";
 
 export default function Home() {
+  const jsonLd = websiteJsonLd();
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <HashScrollOnLoad />
       <Navbar />
       <main className="flex-1">
