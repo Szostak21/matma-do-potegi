@@ -22,6 +22,7 @@ import {
   findActiveDepositPayment,
   getActiveDepositCheckoutUrl,
 } from "@/lib/payments";
+import { formatTrafficSourceLabel } from "@/lib/utm";
 
 const skipDepositInitial: ToggleSkipDepositState = { status: "idle" };
 
@@ -75,6 +76,7 @@ export function LeadCard({
     toggleSkipDeposit,
     skipDepositInitial,
   );
+  const trafficSource = formatTrafficSourceLabel(lead);
 
   return (
     <article className="min-w-0 w-full overflow-hidden rounded-3xl bg-white/80 p-4 shadow-soft ring-1 ring-ink/5 sm:p-5">
@@ -138,6 +140,12 @@ export function LeadCard({
           </div>
         ) : null}
       </dl>
+
+      {trafficSource ? (
+        <p className="mt-3 text-[11px] leading-snug text-ink/35">
+          Źródło: {trafficSource}
+        </p>
+      ) : null}
 
       {lead.notes ? (
         <p className="mt-3 rounded-2xl bg-oatmeal/80 px-3 py-2 text-sm text-ink/70">

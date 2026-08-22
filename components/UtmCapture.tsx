@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { captureFirstTouchUtmFromSearch } from "@/lib/utm";
 
 /**
- * First-touch UTM z URL (kampanie Meta) → sessionStorage.
+ * First-touch UTM / kliknięcia Ads z URL → sessionStorage.
  * Działa na każdej trasie, żeby złapać landing z query params.
  */
 export function UtmCapture() {

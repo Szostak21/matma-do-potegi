@@ -50,6 +50,10 @@ export type AdminLeadRow = {
   referredByParentName: string | null;
   referralCount: number;
   firstMonthDiscountGrosze: number;
+  utmSource: string | null;
+  utmMedium: string | null;
+  utmCampaign: string | null;
+  utmContent: string | null;
   createdAt: string;
   payments: Array<{
     token: string;

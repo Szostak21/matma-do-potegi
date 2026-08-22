@@ -92,6 +92,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     referredByParentName: lead.referredBy?.parentName ?? null,
     referralCount: lead._count.referrals,
     firstMonthDiscountGrosze: lead.firstMonthDiscountGrosze,
+    utmSource: lead.utmSource,
+    utmMedium: lead.utmMedium,
+    utmCampaign: lead.utmCampaign,
+    utmContent: lead.utmContent,
     createdAt: lead.createdAt.toISOString(),
     payments: lead.payments.map((payment) => ({
       token: payment.token,

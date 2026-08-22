@@ -106,24 +106,33 @@ export function trackFormValidationError({ fields }: { fields: string[] }) {
   });
 }
 
-export function trackLeadSubmit({
+export async function trackLeadSubmit({
   packageType,
   eventId,
 }: {
   packageType: string;
   /** Ten sam eventId co w zdarzeniu serwerowym CAPI — dla deduplikacji. */
   eventId?: string;
-}) {
-  trackEvent(
-    "generate_lead",
+}): Promise<void> {
+  if (!hasAnalyticsConsent()) {
+    return;
+  }
+
+  const params = {
+    package_type: packageType,
+    form_name: "lead_signup",
+  };
+
+  trackMetaStandardEvent(
     "Lead",
-    {
-      package_type: packageType,
-      form_name: "lead_signup",
-    },
-    "standard",
+    params,
     eventId ? { eventID: eventId } : undefined,
   );
+
+  // Czekamy na GA4, zanim ContactForm zrobi router.push — inaczej
+  // Google Ads (import generate_lead) może zgubić konwersję.
+  await trackGaEventWithCallback("generate_lead", params, 800);
+  await sleep(150);
 }
 
 /**

@@ -25,6 +25,7 @@ import { PackagePoolFullError, assertPackageHasCapacity } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
 import { resolveValidReferrerId } from "@/lib/referral-server";
 import { generatePaymentToken } from "@/lib/tokens";
+import { formatTrafficSourceLabel } from "@/lib/utm";
 import {
   formDataToObject,
   leadFormSchema,
@@ -128,6 +129,13 @@ export async function submitLead(
       phone: data.phone,
       email: data.email,
       packageName: packageLabel(data.package),
+      schoolClass: data.schoolClass,
+      trafficSource: formatTrafficSourceLabel({
+        utmSource: data.utmSource ?? null,
+        utmMedium: data.utmMedium ?? null,
+        utmCampaign: data.utmCampaign ?? null,
+        utmContent: data.utmContent ?? null,
+      }),
     };
     after(() => {
       void sendAdminLeadNotification(adminNotification).catch((error) => {

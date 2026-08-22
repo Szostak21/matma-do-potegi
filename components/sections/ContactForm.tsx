@@ -173,6 +173,7 @@ export function ContactForm() {
   const packageFieldKey =
     fieldValues?.package ?? "package-default";
   const formStartTracked = useRef(false);
+  const leadTrackedRef = useRef(false);
   /** Blokada od pierwszego kliknięcia — zanim useFormStatus.pending zdąży się ustawić. */
   const submitLockedRef = useRef(false);
 
@@ -329,17 +330,32 @@ export function ContactForm() {
   }, []);
 
   useEffect(() => {
-    if (state.status === "success" && state.leadId) {
-      setRedirecting(true);
-      trackLeadSubmit({
-        packageType:
-          state.requestedPackage ??
-          state.values?.package ??
-          selectedPackage,
-        eventId: state.eventId,
-      });
-      router.push(`/rezerwacja/${state.leadId}/podsumowanie`);
+    if (
+      state.status !== "success" ||
+      !state.leadId ||
+      leadTrackedRef.current
+    ) {
+      return;
     }
+
+    leadTrackedRef.current = true;
+    setRedirecting(true);
+
+    const leadId = state.leadId;
+
+    void (async () => {
+      try {
+        await trackLeadSubmit({
+          packageType:
+            state.requestedPackage ??
+            state.values?.package ??
+            selectedPackage,
+          eventId: state.eventId,
+        });
+      } finally {
+        router.push(`/rezerwacja/${leadId}/podsumowanie`);
+      }
+    })();
   }, [
     state.status,
     state.leadId,

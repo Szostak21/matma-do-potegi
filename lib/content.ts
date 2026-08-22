@@ -334,6 +334,8 @@ export const EMAILS = {
     phoneLabel: "Telefon",
     emailLabel: "E-mail",
     packageLabel: "Poziom zajęć",
+    schoolClassLabel: "Klasa",
+    sourceLabel: "Źródło",
   },
   adminDeposit: {
     subject: (parentName: string) => `Opłacona zaliczka - ${parentName}`,

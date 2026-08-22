@@ -137,12 +137,30 @@ export type AdminLeadNotificationParams = {
   phone: string;
   email: string;
   packageName: string;
+  schoolClass?: string | null;
+  trafficSource?: string | null;
 };
 
 export async function sendAdminLeadNotification(
   params: AdminLeadNotificationParams,
 ): Promise<{ ok: boolean }> {
   const copy = EMAILS.adminNewLead;
+  const rows: { label: string; value: string }[] = [
+    { label: copy.parentLabel, value: params.parentName },
+    { label: copy.phoneLabel, value: params.phone },
+    { label: copy.emailLabel, value: params.email },
+    { label: copy.packageLabel, value: params.packageName },
+  ];
+
+  const schoolClass = params.schoolClass?.trim();
+  if (schoolClass) {
+    rows.push({ label: copy.schoolClassLabel, value: schoolClass });
+  }
+
+  const trafficSource = params.trafficSource?.trim();
+  if (trafficSource) {
+    rows.push({ label: copy.sourceLabel, value: trafficSource });
+  }
 
   return sendEmail({
     to: ADMIN_NOTIFICATION_RECIPIENTS,
@@ -152,12 +170,7 @@ export async function sendAdminLeadNotification(
       preview: copy.preview,
       heading: copy.heading,
       intro: copy.intro,
-      rows: [
-        { label: copy.parentLabel, value: params.parentName },
-        { label: copy.phoneLabel, value: params.phone },
-        { label: copy.emailLabel, value: params.email },
-        { label: copy.packageLabel, value: params.packageName },
-      ],
+      rows,
     }),
   });
 }
