@@ -102,7 +102,12 @@ export function filterLeadsForTab(
           lead.status === "ACTIVE",
       );
     case "individual":
-      return leads.filter((lead) => lead.requestedPackage === "INDYWIDUALNE");
+      return leads.filter(
+        (lead) =>
+          lead.requestedPackage === "INDYWIDUALNE" &&
+          lead.status !== "RESIGNED" &&
+          lead.status !== "REFUNDED",
+      );
     case "resigned":
       return leads.filter(
         (lead) => lead.status === "RESIGNED" || lead.status === "REFUNDED",

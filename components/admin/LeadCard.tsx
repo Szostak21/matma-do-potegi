@@ -133,7 +133,7 @@ export function LeadCard({
             <dd>{lead.referredByParentName}</dd>
           </div>
         ) : null}
-        {lead.skipDeposit ? (
+        {lead.skipDeposit && lead.requestedPackage !== "INDYWIDUALNE" ? (
           <div>
             <dt className="text-xs text-ink/45">Zaliczka</dt>
             <dd>Pominięta</dd>
@@ -187,17 +187,13 @@ export function LeadCard({
           </div>
         ) : null}
 
-        {lead.requestedPackage === "INDYWIDUALNE" || lead.skipDeposit ? (
+        {lead.requestedPackage !== "INDYWIDUALNE" && lead.skipDeposit ? (
           <form action={skipAction} className="space-y-1">
             <input type="hidden" name="secret" value={secret} />
             <input type="hidden" name="leadId" value={lead.id} />
-            <input
-              type="hidden"
-              name="skipDeposit"
-              value={lead.skipDeposit ? "false" : "true"}
-            />
+            <input type="hidden" name="skipDeposit" value="false" />
             <Button type="submit" variant="secondary" className="w-full text-xs">
-              {lead.skipDeposit ? "Wymagaj zaliczki" : "Bez zaliczki"}
+              Wymagaj zaliczki
             </Button>
             {skipState.message ? (
               <p
