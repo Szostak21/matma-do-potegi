@@ -7,7 +7,7 @@ import { Hero } from "@/components/sections/Hero";
 import { Navbar } from "@/components/sections/Navbar";
 import { Pricing } from "@/components/sections/Pricing";
 import { Reviews } from "@/components/sections/Reviews";
-import { Teacher } from "@/components/sections/Teacher";
+import { Teachers } from "@/components/sections/Teachers";
 import { websiteJsonLd } from "@/lib/seo";
 
 export default function Home() {
@@ -26,7 +26,7 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <About />
-        <Teacher />
+        <Teachers />
         <Pricing />
         <Reviews />
         <Faq />

@@ -11,6 +11,7 @@ export const IMAGE_ASSETS = {
   },
   teacher: {
     portrait: "/images/teacher/portrait.jpg",
+    marta: "/images/teacher/marta.jpg",
   },
 } as const;
 

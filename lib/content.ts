@@ -1,5 +1,6 @@
 import type { PackageType } from "@prisma/client";
 
+import { IMAGE_ASSETS } from "@/lib/assets";
 import { PACKAGES } from "@/lib/constants";
 import { formatPln } from "@/lib/money";
 
@@ -8,7 +9,7 @@ export const CONTACT_PHONE_TEL = CONTACT_PHONE.replace(/\s/g, "");
 
 export const NAV_LINKS = [
   { href: "/#o-nas", label: "O nas" },
-  { href: "/#nauczyciel", label: "Nauczyciel" },
+  { href: "/#nauczyciele", label: "Nauczyciele" },
   { href: "/#oferta", label: "Oferta" },
   { href: "/#opinie", label: "Opinie" },
   { href: "/#faq", label: "FAQ" },
@@ -57,17 +58,38 @@ export const FEATURES = [
   },
 ] as const;
 
-export const TEACHER = {
-  name: "Poznaj nauczyciela",
-  title: "Paweł Szostak",
-  description:
-    "Wierzę, że matura to nie loteria - to proces, który można zaplanować i przejść spokojnie. Doskonale wiem, jak to zrobić, ponieważ sam napisałem maturę z matematyki (podstawową i rozszerzoną) na równe 100%. Od lat z sukcesami tłumaczę ten przedmiot innym, zaczynając od przygotowywania znajomych i rodziny. Na moich zajęciach stawiam na cierpliwość. Zamiast podawać gotowe wzory i rozwiązania na tacy, wolę zadawać odpowiednie pytania i delikatnie naprowadzać. Dzięki temu uczniowie samodzielnie dochodzą do prawidłowych odpowiedzi, co najlepiej utrwala wiadomości i buduje pewność siebie przed egzaminem.",
-  experience: [
-    "Wynik 100% z matury podstawowej i rozszerzonej",
-    "Wieloletnie doświadczenie i sprawdzone metody tłumaczenia",
-    "Praca wyłącznie na wyselekcjonowanych zadaniach i arkuszach CKE",
-  ],
+export const TEACHERS_SECTION = {
+  eyebrow: "Nauczyciele",
+  title: "Poznaj nasz zespół",
+  description: "Uczymy z indywidualnym podejściem, bez szkolnego stresu.",
 } as const;
+
+export const TEACHERS = [
+  {
+    name: "Paweł Szostak",
+    role: "Właściciel oraz student Informatyki i Systemów Inteligentnych",
+    focus: ["Maturę Rozszerzoną", "Zajęcia indywidualne"],
+    image: IMAGE_ASSETS.teacher.portrait,
+    description:
+      "Matura to nie loteria, lecz proces, który można zaplanować i przejść spokojnie. Sam napisałem podstawę i rozszerzenie na 100%, a na zajęciach zamiast podawać gotowce, naprowadzam pytaniami, dzięki czemu uczniowie sami dochodzą do rozwiązań i budują pewność siebie.",
+    experience: [
+      "Wynik 100% z matury podstawowej i rozszerzonej",
+      "Wieloletnie doświadczenie i sprawdzone metody",
+    ],
+  },
+  {
+    name: "Marta Krajewska",
+    role: "Studentka matematyki ze specjalizacją nauczycielską",
+    focus: ["Egzamin Ósmoklasisty", "Maturę Podstawową"],
+    image: IMAGE_ASSETS.teacher.marta,
+    description:
+      "Buduję bezpieczną przestrzeń, w której każdy uczy się we własnym tempie. Trudne zagadnienia tłumaczę prostym, intuicyjnym językiem, a spokój i empatia z ratownictwa pomagają mi wspierać młodzież w przełamywaniu barier i budowaniu trwałego poczucia pewności siebie.",
+    experience: [
+      "Indywidualne podejście i przyjazna atmosfera",
+      "Doświadczenie dydaktyczne w pracy z młodzieżą",
+    ],
+  },
+] as const;
 
 export const PRICING = [
   {
