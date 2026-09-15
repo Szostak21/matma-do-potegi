@@ -1,7 +1,19 @@
-import { LeadStatus, PackageType, PaymentStatus } from "@prisma/client";
+import {
+  LeadStatus,
+  PackageType,
+  PaymentStatus,
+  TuitionPaymentMethod,
+  TuitionPeriodStatus,
+} from "@prisma/client";
 
+import { leadDisplayName } from "@/lib/admin-tabs";
 import { REFERRAL_DISCOUNT_GROSZE } from "@/lib/constants";
-import { sendAdminDepositNotification, sendDepositConfirmationEmail } from "@/lib/emails";
+import { formatBillingMonth } from "@/lib/dates";
+import {
+  sendAdminDepositNotification,
+  sendAdminTuitionNotification,
+  sendDepositConfirmationEmail,
+} from "@/lib/emails";
 import { packageLabel } from "@/lib/labels";
 import { sendMetaPurchaseEvent } from "@/lib/meta-capi";
 import { getAppBaseUrl } from "@/lib/payments";
@@ -127,7 +139,7 @@ async function sendPaidSideEffects(
   }
 }
 
-export async function markDepositPaymentPaid(
+async function completeDepositPayment(
   paymentId: string,
   metaContext?: PaidMetaContext,
 ): Promise<MarkDepositPaymentPaidResult> {
@@ -194,4 +206,106 @@ export async function markDepositPaymentPaid(
   }
 
   return { didTransition: result.didTransition };
+}
+
+/**
+ * Domknięcie czesnego: status leada zostaje nietknięty (płatność miesięczna nie
+ * zmienia etapu klienta), zamykamy wyłącznie `TuitionPeriod`.
+ */
+async function completeTuitionPayment(
+  paymentId: string,
+): Promise<MarkDepositPaymentPaidResult> {
+  const result = await prisma.$transaction(async (tx) => {
+    const payment = await tx.payment.findUnique({
+      where: { id: paymentId },
+      include: {
+        lead: true,
+        tuitionPeriod: true,
+      },
+    });
+
+    if (!payment || payment.status === PaymentStatus.PAID) {
+      return { didTransition: false, notification: null };
+    }
+
+    const paidAt = new Date();
+
+    await tx.payment.update({
+      where: { id: payment.id },
+      data: { status: PaymentStatus.PAID, paidAt },
+    });
+
+    const period = payment.tuitionPeriod;
+
+    if (!period) {
+      return { didTransition: true, notification: null };
+    }
+
+    const amountPaidGrosze = period.amountPaidGrosze + payment.amount;
+    const isSettled = amountPaidGrosze >= period.amountDueGrosze;
+
+    await tx.tuitionPeriod.update({
+      where: { id: period.id },
+      data: {
+        amountPaidGrosze,
+        status: isSettled
+          ? TuitionPeriodStatus.PAID
+          : TuitionPeriodStatus.PARTIAL,
+        paidAt: isSettled ? paidAt : period.paidAt,
+        paymentMethod: TuitionPaymentMethod.STRIPE,
+      },
+    });
+
+    return {
+      didTransition: true,
+      notification: {
+        displayName: leadDisplayName(payment.lead),
+        parentName: payment.lead.parentName,
+        packageName: packageLabel(payment.lead.requestedPackage),
+        monthLabel: formatBillingMonth(period.periodMonth),
+        amountGrosze: payment.amount,
+        leadId: payment.leadId,
+      },
+    };
+  });
+
+  if (result.notification) {
+    try {
+      await sendAdminTuitionNotification(result.notification);
+    } catch (error) {
+      console.error("sendAdminTuitionNotification failed:", error);
+    }
+  }
+
+  return { didTransition: result.didTransition };
+}
+
+/**
+ * Jedyne wejście do domykania płatności (webhook, powrót z bramki, symulacja).
+ * Rozgałęzia po typie, żeby ścieżki zaliczki i czesnego nie mieszały się nawzajem.
+ */
+export async function markPaymentPaid(
+  paymentId: string,
+  metaContext?: PaidMetaContext,
+): Promise<MarkDepositPaymentPaidResult> {
+  const payment = await prisma.payment.findUnique({
+    where: { id: paymentId },
+    select: { type: true },
+  });
+
+  if (!payment) {
+    return { didTransition: false };
+  }
+
+  return payment.type === "DEPOSIT"
+    ? completeDepositPayment(paymentId, metaContext)
+    : completeTuitionPayment(paymentId);
+}
+
+/** Zachowane dla ścieżki zaliczki — deleguje do dyspozytora. */
+export async function markDepositPaymentPaid(
+  paymentId: string,
+  metaContext?: PaidMetaContext,
+): Promise<MarkDepositPaymentPaidResult> {
+  return markPaymentPaid(paymentId, metaContext);
 }

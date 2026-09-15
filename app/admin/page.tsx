@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { PackageType, PaymentType } from "@prisma/client";
+import { MessageChannel, PaymentType } from "@prisma/client";
 
 import { AddLeadModal } from "@/components/admin/AddLeadModal";
 import { AdminTabsNav } from "@/components/admin/AdminTabsNav";
@@ -7,28 +7,41 @@ import type { AdminGroupOption } from "@/components/admin/AssignGroupControl";
 import { DepositSortToggle } from "@/components/admin/DepositSortToggle";
 import { LeadCard } from "@/components/admin/LeadCard";
 import { PackagePoolSummary } from "@/components/admin/PackagePoolSummary";
-import { TuitionPanel } from "@/components/admin/TuitionPanel";
+import { PaymentsPanel } from "@/components/admin/PaymentsPanel";
 import {
   filterLeadsForTab,
   groupDepositLeadsByLevel,
   parseAdminTab,
   parseDepositSort,
   sortLeadsForDepositTab,
+  type AdminBillingRow,
   type AdminLeadRow,
+  type AdminMessageTemplate,
   type AdminTabId,
-  type AdminTuitionRow,
 } from "@/lib/admin-tabs";
 import { verifyAdminSecret } from "@/lib/auth";
+import { parseMonthInputValue, toMonthInputValue } from "@/lib/dates";
 import { runLazyValidation } from "@/lib/groups";
 import { getAllPackagesAvailability } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
+import { listBillingRows, resolveBillingMonth } from "@/lib/tuition/service";
 
 type AdminPageProps = {
-  searchParams: Promise<{ secret?: string; tab?: string; sort?: string }>;
+  searchParams: Promise<{
+    secret?: string;
+    tab?: string;
+    sort?: string;
+    month?: string;
+  }>;
 };
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
-  const { secret, tab: tabParam, sort: sortParam } = await searchParams;
+  const {
+    secret,
+    tab: tabParam,
+    sort: sortParam,
+    month: monthParam,
+  } = await searchParams;
 
   if (!verifyAdminSecret(secret)) {
     notFound();
@@ -39,7 +52,13 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const tab = parseAdminTab(tabParam);
   const depositSort = parseDepositSort(sortParam);
 
-  const [leads, groups, packageAvailability, tuitionPeriods] =
+  // Domyślnie: do 20. bieżący miesiąc, od 21. następny (wysyłka z wyprzedzeniem).
+  const billingMonth =
+    (monthParam ? parseMonthInputValue(monthParam) : null) ??
+    resolveBillingMonth();
+  const isPaymentsTab = tab === "payments";
+
+  const [leads, groups, packageAvailability, billingRows, messageTemplates] =
     await Promise.all([
       prisma.lead.findMany({
         where: { isDeleted: false },
@@ -63,21 +82,15 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         orderBy: { scheduleSlot: "asc" },
       }),
       getAllPackagesAvailability(),
-      prisma.tuitionPeriod.findMany({
-        orderBy: [{ periodMonth: "desc" }, { createdAt: "desc" }],
-        include: {
-          lead: {
-            select: {
-              id: true,
-              parentName: true,
-              studentName: true,
-              phoneNumber: true,
-              requestedPackage: true,
-            },
-          },
-        },
-        take: 100,
-      }),
+      isPaymentsTab
+        ? listBillingRows(billingMonth)
+        : Promise.resolve<AdminBillingRow[]>([]),
+      isPaymentsTab
+        ? prisma.messageTemplate.findMany({
+            where: { channel: MessageChannel.SMS },
+            orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          })
+        : Promise.resolve([]),
     ]);
 
   const rows: AdminLeadRow[] = leads.map((lead) => ({
@@ -98,6 +111,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     referredByParentName: lead.referredBy?.parentName ?? null,
     referralCount: lead._count.referrals,
     firstMonthDiscountGrosze: lead.firstMonthDiscountGrosze,
+    standingDiscountGrosze: lead.standingDiscountGrosze,
     utmSource: lead.utmSource,
     utmMedium: lead.utmMedium,
     utmCampaign: lead.utmCampaign,
@@ -107,24 +121,18 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       token: payment.token,
       status: payment.status,
       expiresAt: payment.expiresAt?.toISOString() ?? null,
-      stripeSessionUrl: payment.stripeSessionUrl,
+      providerCheckoutUrl: payment.providerCheckoutUrl,
     })),
   }));
 
-  const tuitionRows: AdminTuitionRow[] = tuitionPeriods.map((period) => ({
-    id: period.id,
-    leadId: period.leadId,
-    parentName: period.lead.parentName,
-    studentName: period.lead.studentName,
-    phoneNumber: period.lead.phoneNumber,
-    packageType: period.lead.requestedPackage,
-    periodMonth: period.periodMonth.toISOString(),
-    amountDueGrosze: period.amountDueGrosze,
-    amountPaidGrosze: period.amountPaidGrosze,
-    status: period.status,
-    paymentMethod: period.paymentMethod,
-    transferTitle: period.transferTitle,
-  }));
+  const templates: AdminMessageTemplate[] = messageTemplates.map(
+    (template) => ({
+      id: template.id,
+      name: template.name,
+      body: template.body,
+      isDefault: template.isDefault,
+    }),
+  );
 
   const groupOptions = groups.map((group) => ({
     id: group.id,
@@ -140,7 +148,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     deposit: filterLeadsForTab(rows, "deposit").length,
     active: filterLeadsForTab(rows, "active").length,
     individual: filterLeadsForTab(rows, "individual").length,
-    tuition: tuitionRows.length,
+    // Ci sami klienci, których serwis czesnego uznaje za rozliczanych.
+    payments: rows.filter(
+      (lead) => lead.status === "PAID_DEPOSIT" || lead.status === "ACTIVE",
+    ).length,
     resigned: filterLeadsForTab(rows, "resigned").length,
     groups: groups.length,
   };
@@ -150,11 +161,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     tab === "deposit"
       ? sortLeadsForDepositTab(filteredLeads, depositSort)
       : filteredLeads;
-  const tuitionEligible = rows.filter(
-    (lead) =>
-      lead.requestedPackage !== PackageType.INDYWIDUALNE &&
-      (lead.status === "PAID_DEPOSIT" || lead.status === "ACTIVE"),
-  );
 
   return (
     <main className="min-h-full flex-1 select-text overflow-x-hidden bg-oatmeal py-6 sm:py-10">
@@ -166,7 +172,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </p>
             <h1 className="mt-2 font-serif text-3xl text-ink">Operacje</h1>
             <p className="mx-auto mt-2 max-w-xl text-sm text-ink/60 sm:mx-0">
-              Leady, zaliczki, aktywni, indywidualne, czesne i grupy.
+              Leady, zaliczki, aktywni, indywidualne, płatności i grupy.
             </p>
           </div>
           <div className="flex justify-center sm:justify-end">
@@ -202,15 +208,16 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </div>
         ) : null}
 
-        {tab === "tuition" ? (
-          <TuitionPanel
+        {isPaymentsTab ? (
+          <PaymentsPanel
             secret={secret ?? ""}
-            periods={tuitionRows}
-            eligibleLeads={tuitionEligible}
+            month={toMonthInputValue(billingMonth)}
+            rows={billingRows}
+            templates={templates}
           />
         ) : null}
 
-        {tab !== "groups" && tab !== "tuition" ? (
+        {tab !== "groups" && !isPaymentsTab ? (
           <>
             {tab === "deposit" && visibleLeads.length > 0 ? (
               <DepositSortToggle

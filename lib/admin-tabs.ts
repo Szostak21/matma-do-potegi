@@ -10,7 +10,7 @@ export type AdminTabId =
   | "deposit"
   | "active"
   | "individual"
-  | "tuition"
+  | "payments"
   | "resigned"
   | "groups";
 
@@ -19,12 +19,17 @@ export const ADMIN_TABS: Array<{ id: AdminTabId; label: string }> = [
   { id: "deposit", label: "Zaliczki" },
   { id: "active", label: "Aktywni" },
   { id: "individual", label: "Indywidualne" },
-  { id: "tuition", label: "Czesne" },
+  { id: "payments", label: "Płatności" },
   { id: "resigned", label: "Rezygnacje" },
   { id: "groups", label: "Grupy" },
 ];
 
 export function parseAdminTab(value: string | undefined): AdminTabId {
+  // Zapisane linki do starej zakładki "Czesne" prowadzą teraz do Płatności.
+  if (value === "tuition") {
+    return "payments";
+  }
+
   if (value && ADMIN_TABS.some((tab) => tab.id === value)) {
     return value as AdminTabId;
   }
@@ -136,6 +141,7 @@ export type AdminLeadRow = {
   referredByParentName: string | null;
   referralCount: number;
   firstMonthDiscountGrosze: number;
+  standingDiscountGrosze: number;
   utmSource: string | null;
   utmMedium: string | null;
   utmCampaign: string | null;
@@ -145,24 +151,58 @@ export type AdminLeadRow = {
     token: string;
     status: "PENDING" | "PAID" | "EXPIRED" | "CANCELLED";
     expiresAt: string | null;
-    stripeSessionUrl: string | null;
+    providerCheckoutUrl: string | null;
   }>;
 };
 
-export type AdminTuitionRow = {
-  id: string;
+/**
+ * Wiersz panelu Płatności. Typ mieszka tutaj (a nie w `lib/tuition/service.ts`),
+ * bo `service` jest `server-only`, a panel to komponent kliencki.
+ */
+export type AdminBillingRow = {
   leadId: string;
+  /** `null` = wiersz wirtualny, okres jeszcze nie istnieje w bazie. */
+  periodId: string | null;
   parentName: string;
   studentName: string | null;
+  displayName: string;
   phoneNumber: string;
   packageType: PackageType | null;
-  periodMonth: string;
+  baseAmountGrosze: number;
+  discountGrosze: number;
   amountDueGrosze: number;
   amountPaidGrosze: number;
   status: TuitionPeriodStatus;
   paymentMethod: TuitionPaymentMethod | null;
+  messageSentAt: string | null;
   transferTitle: string | null;
+  payUrl: string | null;
+  isFirstBillableMonth: boolean;
 };
+
+export type AdminMessageTemplate = {
+  id: string;
+  name: string;
+  body: string;
+  isDefault: boolean;
+};
+
+/** Kolejność kolumn w panelu Płatności — ta sama, co w sortowaniu zaliczek. */
+export const BILLING_COLUMNS: Array<{ key: PackageType; label: string }> = [
+  { key: "OSMOKLASISTA", label: "E8" },
+  { key: "MATURA_PODSTAWOWA", label: "Podstawa" },
+  { key: "MATURA_ROZSZERZONA", label: "Rozszerzenie" },
+  { key: "INDYWIDUALNE", label: "Indywidualne" },
+];
+
+export function groupBillingRowsByPackage(
+  rows: AdminBillingRow[],
+): Array<{ key: PackageType; label: string; rows: AdminBillingRow[] }> {
+  return BILLING_COLUMNS.map((column) => ({
+    ...column,
+    rows: rows.filter((row) => row.packageType === column.key),
+  }));
+}
 
 export function filterLeadsForTab(
   leads: AdminLeadRow[],

@@ -38,6 +38,20 @@ enum PaymentType {
   @@schema("matma")
 }
 
+enum PaymentProvider {
+  STRIPE
+  TPAY
+
+  @@schema("matma")
+}
+
+enum MessageChannel {
+  SMS
+  EMAIL
+
+  @@schema("matma")
+}
+
 enum PackageType {
   MATURA_ROZSZERZONA
   MATURA_PODSTAWOWA
@@ -131,6 +145,8 @@ model Lead {
   referrals              Lead[]       @relation("LeadReferrals")
   referralRewardApplied  Boolean      @default(false)
   firstMonthDiscountGrosze Int        @default(0)
+  /// Stała zniżka stosowana w każdym miesiącu czesnego (grosze).
+  standingDiscountGrosze Int          @default(0)
   isDeleted              Boolean      @default(false)
   skipDeposit            Boolean      @default(false)
   resignedAt             DateTime?
@@ -155,22 +171,28 @@ model Lead {
 }
 
 model Payment {
-  id               String        @id @default(cuid())
-  token            String        @unique @default(cuid())
-  leadId           String
-  lead             Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  type             PaymentType
-  status           PaymentStatus @default(PENDING)
-  amount           Int
-  billingPeriod    DateTime?     @db.Date
-  expiresAt        DateTime?
-  paidAt           DateTime?
-  stripeSessionId  String?       @unique
-  stripeSessionUrl String?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  id                  String          @id @default(cuid())
+  token               String          @unique @default(cuid())
+  /// Krótki kod do linku wysyłanego SMS-em (/p/<shortCode>).
+  shortCode           String?         @unique
+  leadId              String
+  lead                Lead            @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type                PaymentType
+  status              PaymentStatus   @default(PENDING)
+  provider            PaymentProvider @default(STRIPE)
+  amount              Int
+  billingPeriod       DateTime?       @db.Date
+  expiresAt           DateTime?
+  paidAt              DateTime?
+  providerSessionId   String?         @unique
+  providerCheckoutUrl String?
+  tuitionPeriodId     String?
+  tuitionPeriod       TuitionPeriod?  @relation(fields: [tuitionPeriodId], references: [id], onDelete: SetNull)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
 
   @@unique([leadId, billingPeriod, type])
+  @@index([tuitionPeriodId])
   @@schema("matma")
 }
 
@@ -180,6 +202,10 @@ model TuitionPeriod {
   lead             Lead                  @relation(fields: [leadId], references: [id], onDelete: Cascade)
   /// Pierwszy dzień miesiąca rozliczeniowego (np. 2026-10-01)
   periodMonth      DateTime              @db.Date
+  /// Kwota z cennika (snapshot), edytowalna w panelu Płatności.
+  baseAmountGrosze Int
+  /// Wartość dodatnia = zniżka, ujemna = dopłata. amountDueGrosze = base - discount.
+  discountGrosze   Int                   @default(0)
   amountDueGrosze  Int
   amountPaidGrosze Int                   @default(0)
   status           TuitionPeriodStatus   @default(DUE)
@@ -187,10 +213,27 @@ model TuitionPeriod {
   paymentMethod    TuitionPaymentMethod?
   transferTitle    String?
   notes            String?
+  /// Znacznik "Wysłane" dla trybu manualnego (przełączany z panelu).
+  messageSentAt    DateTime?
+  payments         Payment[]
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
 
   @@unique([leadId, periodMonth])
   @@index([status, periodMonth])
+  @@schema("matma")
+}
+
+model MessageTemplate {
+  id        String         @id @default(cuid())
+  name      String
+  channel   MessageChannel @default(SMS)
+  body      String
+  isDefault Boolean        @default(false)
+  sortOrder Int            @default(0)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([channel, sortOrder])
   @@schema("matma")
 }

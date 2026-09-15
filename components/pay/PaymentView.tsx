@@ -9,7 +9,7 @@ import { ViewContentTracker } from "@/components/pay/ViewContentTracker";
 import { AlternateTermPhoneGate } from "@/components/ui/AlternateTermPhoneGate";
 import { Card } from "@/components/ui/Card";
 import { ReferralActiveNotice } from "@/components/ui/ReferralActiveNotice";
-import { DEPOSIT_PAYMENT } from "@/lib/content";
+import { DEPOSIT_PAYMENT, TUITION_PAYMENT } from "@/lib/content";
 import { formatPln } from "@/lib/money";
 import type { PaymentDisplayState } from "@/lib/payments";
 
@@ -21,6 +21,8 @@ type PaymentViewProps = {
   packageName: string;
   amount: number;
   hasReferral?: boolean;
+  /** Miesiąc rozliczeniowy — pokazywany tylko dla czesnego. */
+  monthLabel?: string;
 };
 
 function SummaryRow({ label, value }: { label: string; value: string }) {
@@ -28,31 +30,6 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
     <div className="flex items-start justify-between gap-4 border-b border-ink/10 py-3 last:border-b-0">
       <span className="text-sm text-ink/60">{label}</span>
       <span className="text-right text-sm font-medium text-ink">{value}</span>
-    </div>
-  );
-}
-
-function ReservationSummary({
-  reserverName,
-  packageName,
-  amount,
-}: {
-  reserverName: string;
-  packageName: string;
-  amount: number;
-}) {
-  return (
-    <div className="mt-6 rounded-2xl bg-oatmeal/80 p-5 ring-1 ring-ink/5 text-left">
-      <SummaryRow
-        label={DEPOSIT_PAYMENT.summaryReserver}
-        value={reserverName}
-      />
-      <SummaryRow
-        label={DEPOSIT_PAYMENT.summaryPackage}
-        value={packageName}
-      />
-      <SummaryRow label="Rodzaj" value={DEPOSIT_PAYMENT.summaryType} />
-      <SummaryRow label="Kwota" value={formatPln(amount)} />
     </div>
   );
 }
@@ -74,8 +51,22 @@ export function PaymentView({
   packageName,
   amount,
   hasReferral = false,
+  monthLabel,
 }: PaymentViewProps) {
   const isDeposit = paymentType === "DEPOSIT";
+  const copy = isDeposit ? DEPOSIT_PAYMENT : TUITION_PAYMENT;
+
+  const summary = (
+    <div className="mt-6 rounded-2xl bg-oatmeal/80 p-5 ring-1 ring-ink/5 text-left">
+      <SummaryRow label={copy.summaryReserver} value={reserverName} />
+      <SummaryRow label={copy.summaryPackage} value={packageName} />
+      {!isDeposit && monthLabel ? (
+        <SummaryRow label={TUITION_PAYMENT.summaryMonth} value={monthLabel} />
+      ) : null}
+      <SummaryRow label="Rodzaj" value={copy.summaryType} />
+      <SummaryRow label="Kwota" value={formatPln(amount)} />
+    </div>
+  );
 
   if (displayState === "paid") {
     return (
@@ -85,16 +76,12 @@ export function PaymentView({
           aria-hidden="true"
         />
         <h1 className="mt-4 font-serif text-3xl text-ink">
-          {DEPOSIT_PAYMENT.successTitle}
+          {copy.successTitle}
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-ink/70">
-          {DEPOSIT_PAYMENT.paidMessage}
+          {copy.paidMessage}
         </p>
-        <ReservationSummary
-          reserverName={reserverName}
-          packageName={packageName}
-          amount={amount}
-        />
+        {summary}
       </Card>
     );
   }
@@ -107,10 +94,10 @@ export function PaymentView({
           aria-hidden="true"
         />
         <h1 className="mt-4 font-serif text-3xl text-ink">
-          {DEPOSIT_PAYMENT.expiredTitle}
+          {copy.expiredTitle}
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-ink/70">
-          {DEPOSIT_PAYMENT.expiredMessage}
+          {copy.expiredMessage}
         </p>
         {isDeposit ? <DepositExtras /> : null}
       </Card>
@@ -125,10 +112,10 @@ export function PaymentView({
           aria-hidden="true"
         />
         <h1 className="mt-4 font-serif text-3xl text-ink">
-          {DEPOSIT_PAYMENT.invalidTitle}
+          {copy.invalidTitle}
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-ink/70">
-          {DEPOSIT_PAYMENT.invalidMessage}
+          {copy.invalidMessage}
         </p>
         {isDeposit ? <DepositExtras /> : null}
       </Card>
@@ -137,16 +124,17 @@ export function PaymentView({
 
   return (
     <Card>
-      <ViewContentTracker packageName={packageName} value={amount} />
+      {/* ViewContent to zdarzenie reklamowe — dotyczy tylko ścieżki zaliczki. */}
+      {isDeposit ? (
+        <ViewContentTracker packageName={packageName} value={amount} />
+      ) : null}
       <p className="text-xs font-medium uppercase tracking-widest text-olive-700">
         Matma do potęgi
       </p>
       <h1 className="mt-2 font-serif text-3xl text-ink">
-        {DEPOSIT_PAYMENT.reservationTitle}
+        {copy.reservationTitle}
       </h1>
-      <p className="mt-2 text-sm text-ink/60">
-        {DEPOSIT_PAYMENT.reservationHint}
-      </p>
+      <p className="mt-2 text-sm text-ink/60">{copy.reservationHint}</p>
 
       {isDeposit && hasReferral ? (
         <div className="mt-5 mb-1">
@@ -154,11 +142,7 @@ export function PaymentView({
         </div>
       ) : null}
 
-      <ReservationSummary
-        reserverName={reserverName}
-        packageName={packageName}
-        amount={amount}
-      />
+      {summary}
 
       {isDeposit ? (
         <div className="mt-6">
@@ -167,7 +151,13 @@ export function PaymentView({
       ) : null}
 
       <div className="mt-6">
-        <PayButton token={token} />
+        <PayButton
+          token={token}
+          label={
+            isDeposit ? DEPOSIT_PAYMENT.payButtonLabel : "Zapłać teraz"
+          }
+          analytics={isDeposit ? { valueGrosze: amount } : undefined}
+        />
       </div>
 
       {isDeposit ? (

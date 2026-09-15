@@ -8,8 +8,10 @@ import { PurchaseTracker } from "@/components/pay/PurchaseTracker";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
-import { confirmDepositPaymentByToken } from "@/lib/checkout";
-import { DEPOSIT_PAYMENT } from "@/lib/content";
+import { confirmPaymentByToken } from "@/lib/checkout";
+import { DEPOSIT_PAYMENT, TUITION_PAYMENT } from "@/lib/content";
+import { leadDisplayName } from "@/lib/admin-tabs";
+import { formatBillingMonth } from "@/lib/dates";
 import { getPaymentDisplayState } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
 
@@ -30,11 +32,11 @@ export default async function PaySuccessPage({ searchParams }: PaySuccessPagePro
     notFound();
   }
 
-  await confirmDepositPaymentByToken(token);
+  await confirmPaymentByToken(token);
 
   const payment = await prisma.payment.findUnique({
     where: { token },
-    include: { lead: true },
+    include: { lead: true, tuitionPeriod: true },
   });
 
   if (!payment) {
@@ -43,11 +45,14 @@ export default async function PaySuccessPage({ searchParams }: PaySuccessPagePro
 
   const displayState = getPaymentDisplayState(payment);
   const isPaid = displayState === "paid";
+  const isDeposit = payment.type === "DEPOSIT";
+  const copy = isDeposit ? DEPOSIT_PAYMENT : TUITION_PAYMENT;
 
   return (
     <main className="flex min-h-full flex-1 items-center bg-oatmeal py-12">
       <PaymentStatusRefresher isPaid={isPaid} />
-      {isPaid ? (
+      {/* Purchase raportujemy do Meta tylko dla zaliczki. */}
+      {isPaid && isDeposit ? (
         <PurchaseTracker token={token} amountGrosze={payment.amount} />
       ) : null}
       <Container className="w-full max-w-lg">
@@ -64,22 +69,26 @@ export default async function PaySuccessPage({ searchParams }: PaySuccessPagePro
             />
           )}
           <h1 className="mt-4 font-serif text-3xl text-ink">
-            {isPaid
-              ? DEPOSIT_PAYMENT.successTitle
-              : DEPOSIT_PAYMENT.successProcessingTitle}
+            {isPaid ? copy.successTitle : copy.successProcessingTitle}
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-ink/70">
-            {isPaid
-              ? DEPOSIT_PAYMENT.successMessage
-              : DEPOSIT_PAYMENT.successProcessingMessage}
+            {isPaid ? copy.successMessage : copy.successProcessingMessage}
           </p>
           <PaymentSummary
-            reserverName={payment.lead.parentName}
+            paymentType={payment.type}
+            reserverName={
+              isDeposit ? payment.lead.parentName : leadDisplayName(payment.lead)
+            }
             requestedPackage={payment.lead.requestedPackage}
             amount={payment.amount}
+            monthLabel={
+              payment.tuitionPeriod
+                ? formatBillingMonth(payment.tuitionPeriod.periodMonth)
+                : undefined
+            }
           />
           <Button href="/" variant="secondary" className="mt-8">
-            {DEPOSIT_PAYMENT.backHome}
+            {copy.backHome}
           </Button>
         </Card>
       </Container>

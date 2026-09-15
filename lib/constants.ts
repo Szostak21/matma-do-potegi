@@ -35,3 +35,19 @@ export const PACKAGES = {
     durationMinutes: 60,
   },
 } as const;
+
+/**
+ * Miesięczna stawka czesnego z cennika. Zajęcia indywidualne rozliczamy per godzina,
+ * więc nie mają stawki miesięcznej — kwotę wpisuje się ręcznie.
+ */
+export function packageMonthlyPriceGrosze(
+  packageType: PackageType | null | undefined,
+): number {
+  if (!packageType || packageType === "INDYWIDUALNE") {
+    return 0;
+  }
+
+  const pkg = PACKAGES[packageType];
+
+  return "priceMonthly" in pkg ? pkg.priceMonthly : 0;
+}

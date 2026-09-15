@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 
-import { markDepositPaymentPaid } from "@/lib/payment-completion";
+import { markPaymentPaid } from "@/lib/payment-completion";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 
@@ -16,23 +16,23 @@ async function handleCheckoutSessionCompleted(
   }
 
   const paymentId = session.metadata?.paymentId;
-  const stripeSessionId = session.id;
+  const providerSessionId = session.id;
 
   const payment = paymentId
     ? await prisma.payment.findUnique({ where: { id: paymentId } })
     : await prisma.payment.findFirst({
-        where: { stripeSessionId },
+        where: { providerSessionId },
       });
 
   if (!payment) {
     console.warn("Stripe webhook: payment not found", {
       paymentId,
-      stripeSessionId,
+      providerSessionId,
     });
     return;
   }
 
-  await markDepositPaymentPaid(payment.id, {
+  await markPaymentPaid(payment.id, {
     consentGranted: session.metadata?.mktConsent === "granted",
     fbp: session.metadata?.fbp ?? null,
     fbc: session.metadata?.fbc ?? null,

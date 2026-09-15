@@ -8,6 +8,8 @@ export function Checkbox({ className, ...props }: CheckboxProps) {
   return (
     <input
       type="checkbox"
+      // Bez tego Chrome przywraca zaznaczenie po odświeżeniu i rozjeżdża hydratację.
+      autoComplete="off"
       className={cn(
         "size-4 shrink-0 rounded-md border border-ink/20 bg-white text-olive-700 accent-olive-700 transition focus:outline-none focus:ring-2 focus:ring-olive-500/20",
         className,

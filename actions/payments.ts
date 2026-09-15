@@ -8,7 +8,7 @@ import { LeadStatus, PaymentStatus, PaymentType } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
 
 import { assertAdminSecret } from "@/lib/auth";
-import { createDepositCheckoutSession } from "@/lib/checkout";
+import { createCheckoutSession } from "@/lib/checkout";
 import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
 import { addHours, PHONE_PAYMENT_EXPIRY_HOURS } from "@/lib/dates";
 import { sendPaymentLinkEmail } from "@/lib/emails";
@@ -18,7 +18,7 @@ import {
   assertPackageHasCapacity,
   PackagePoolFullError,
 } from "@/lib/packages";
-import { isPaymentExpired } from "@/lib/payments";
+import { isPaymentExpired, isTuitionPeriodSettled } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
 import { generatePaymentToken } from "@/lib/tokens";
 
@@ -29,7 +29,7 @@ export type DepositPaymentResult = {
   message?: string;
 };
 
-export type StartDepositCheckoutState = {
+export type StartCheckoutState = {
   status: "idle" | "success" | "error";
   url?: string;
   message?: string;
@@ -98,8 +98,8 @@ async function upsertRenewalPayment(
       data: {
         status: PaymentStatus.PENDING,
         expiresAt,
-        stripeSessionId: null,
-        stripeSessionUrl: null,
+        providerSessionId: null,
+        providerCheckoutUrl: null,
       },
     });
 
@@ -194,7 +194,7 @@ export async function createDepositPaymentForLead(
         };
       }
 
-      const checkout = await createDepositCheckoutSession(activePending.id);
+      const checkout = await createCheckoutSession(activePending.id);
       if (checkout.status === "error") {
         return { status: "error", message: checkout.message };
       }
@@ -244,7 +244,7 @@ export async function createDepositPaymentForLead(
       };
     }
 
-    const checkout = await createDepositCheckoutSession(payment.id);
+    const checkout = await createCheckoutSession(payment.id);
     if (checkout.status === "error") {
       return { status: "error", message: checkout.message };
     }
@@ -349,7 +349,7 @@ async function renewDepositPaymentLinkForLead(
       throw new RenewPaymentError("INVALID_STATUS");
     });
 
-    const checkout = await createDepositCheckoutSession(txResult.paymentId, {
+    const checkout = await createCheckoutSession(txResult.paymentId, {
       forceNew: true,
     });
 
@@ -516,10 +516,14 @@ export async function generateDepositPayment(
   };
 }
 
-export async function startDepositCheckout(
-  _prevState: StartDepositCheckoutState,
+/**
+ * Start płatności z linku klienta — wspólny dla zaliczki (`/rezerwacja/.../podsumowanie`)
+ * i czesnego (`/p/<shortCode>`). Zdarzenia Meta dotyczą tylko zaliczki.
+ */
+export async function startCheckout(
+  _prevState: StartCheckoutState,
   formData: FormData,
-): Promise<StartDepositCheckoutState> {
+): Promise<StartCheckoutState> {
   const token = formData.get("token")?.toString();
 
   if (!token) {
@@ -529,7 +533,7 @@ export async function startDepositCheckout(
   try {
     const payment = await prisma.payment.findUnique({
       where: { token },
-      include: { lead: true },
+      include: { lead: true, tuitionPeriod: true },
     });
 
     if (!payment) {
@@ -543,13 +547,24 @@ export async function startDepositCheckout(
       };
     }
 
-    const checkout = await createDepositCheckoutSession(payment.id);
+    if (payment.tuitionPeriod && isTuitionPeriodSettled(payment.tuitionPeriod)) {
+      return {
+        status: "error",
+        message: "Ta płatność została już rozliczona.",
+      };
+    }
+
+    const checkout = await createCheckoutSession(payment.id);
 
     if (checkout.status === "error" || !checkout.url) {
       return {
         status: "error",
         message: checkout.message ?? "Nie udało się rozpocząć płatności.",
       };
+    }
+
+    if (payment.type !== PaymentType.DEPOSIT) {
+      return { status: "success", url: checkout.url };
     }
 
     // Serwerowe InitiateCheckout (CAPI) — dedup z Pixelem po wspólnym eventId.

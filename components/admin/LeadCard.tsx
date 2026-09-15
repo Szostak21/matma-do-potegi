@@ -12,10 +12,12 @@ import { GeneratePaymentButton } from "@/components/admin/GeneratePaymentButton"
 import { LeadStatusSelect } from "@/components/admin/LeadStatusSelect";
 import { PlacementNotesEditor } from "@/components/admin/PlacementNotesEditor";
 import { ResendPaymentLink24hButton } from "@/components/admin/ResendPaymentLink24hButton";
+import { StandingDiscountEditor } from "@/components/admin/StandingDiscountEditor";
 import { StudentNameEditor } from "@/components/admin/StudentNameEditor";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import type { AdminLeadRow } from "@/lib/admin-tabs";
+import { packageMonthlyPriceGrosze } from "@/lib/constants";
 import { LEAD_STATUS_LABELS, packageLabel } from "@/lib/labels";
 import { formatPln } from "@/lib/money";
 import {
@@ -77,6 +79,7 @@ export function LeadCard({
     skipDepositInitial,
   );
   const trafficSource = formatTrafficSourceLabel(lead);
+  const isBilled = lead.status === "PAID_DEPOSIT" || lead.status === "ACTIVE";
 
   return (
     <article className="min-w-0 w-full overflow-hidden rounded-3xl bg-white/80 p-4 shadow-soft ring-1 ring-ink/5 sm:p-5">
@@ -170,6 +173,18 @@ export function LeadCard({
             currentGroupId={lead.groupId}
             requestedPackage={lead.requestedPackage}
             groups={groups}
+          />
+        ) : null}
+
+        {isBilled ? (
+          <StandingDiscountEditor
+            key={`${lead.id}-standing-${lead.standingDiscountGrosze}`}
+            leadId={lead.id}
+            secret={secret}
+            standingDiscountGrosze={lead.standingDiscountGrosze}
+            monthlyPriceGrosze={packageMonthlyPriceGrosze(
+              lead.requestedPackage,
+            )}
           />
         ) : null}
 

@@ -1,4 +1,8 @@
-import type { Payment, PaymentStatus } from "@prisma/client";
+import type {
+  Payment,
+  PaymentStatus,
+  TuitionPeriodStatus,
+} from "@prisma/client";
 
 export type PaymentDisplayState =
   | "paid"
@@ -7,6 +11,13 @@ export type PaymentDisplayState =
   | "cancelled";
 
 type PaymentLike = Pick<Payment, "status" | "expiresAt">;
+
+/** Okres rozliczony (opłacony albo umorzony) — link do niego nie ma już sensu. */
+export function isTuitionPeriodSettled(period: {
+  status: TuitionPeriodStatus;
+}): boolean {
+  return period.status === "PAID" || period.status === "WAIVED";
+}
 
 export function isPaymentExpired(payment: PaymentLike): boolean {
   if (payment.status !== "PENDING") {
@@ -56,11 +67,16 @@ export function buildCancelUrl(): string {
   return getAppBaseUrl();
 }
 
+/** Krótki link wysyłany klientom SMS-em. */
+export function buildShortPaymentUrl(shortCode: string): string {
+  return `${getAppBaseUrl()}/p/${shortCode}`;
+}
+
 export function findActiveDepositPayment<
   T extends PaymentLike & {
     token: string;
     status: PaymentStatus;
-    stripeSessionUrl?: string | null;
+    providerCheckoutUrl?: string | null;
   },
 >(payments: T[]): T | undefined {
   return payments.find(
@@ -72,12 +88,12 @@ export function findActiveDepositPayment<
 export function getActiveDepositCheckoutUrl<
   T extends PaymentLike & {
     status: PaymentStatus;
-    stripeSessionUrl?: string | null;
+    providerCheckoutUrl?: string | null;
   },
 >(payment: T | undefined): string | undefined {
   if (!payment || isPaymentExpired(payment)) {
     return undefined;
   }
 
-  return payment.stripeSessionUrl ?? undefined;
+  return payment.providerCheckoutUrl ?? undefined;
 }

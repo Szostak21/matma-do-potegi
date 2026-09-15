@@ -1,4 +1,4 @@
-import { PackageType } from "@prisma/client";
+import { MessageChannel, PackageType } from "@prisma/client";
 
 import { DEPOSIT_AMOUNT_GROSZE, PACKAGES } from "@/lib/constants";
 import type { PrismaClient } from "@prisma/client";
@@ -54,6 +54,31 @@ const SEED_GROUPS = [
   },
 ] as const;
 
+/** Szablony SMS na start — edytowalne z panelu Płatności. */
+const SEED_MESSAGE_TEMPLATES = [
+  {
+    id: "seed-template-tuition-standard",
+    name: "Czesne — standard",
+    body: "Dzień dobry! Czesne za {miesiac} dla {imie} wynosi {kwota}. Płatność: {link} Termin: {termin}. Matma do potęgi",
+    isDefault: true,
+    sortOrder: 0,
+  },
+  {
+    id: "seed-template-tuition-first-month",
+    name: "Czesne — pierwszy miesiąc ze zniżką",
+    body: "Dzień dobry! Czesne za {miesiac} dla {imie} to {kwota} (uwzględniliśmy już zaliczkę i zniżki). Płatność: {link} Matma do potęgi",
+    isDefault: false,
+    sortOrder: 1,
+  },
+  {
+    id: "seed-template-tuition-reminder",
+    name: "Czesne — przypomnienie",
+    body: "Dzień dobry! Przypominamy o czesnym za {miesiac} dla {imie} — {kwota}. Płatność: {link} Dziękujemy! Matma do potęgi",
+    isDefault: false,
+    sortOrder: 2,
+  },
+] as const;
+
 function getPriceMonthly(packageType: PackageType): number {
   switch (packageType) {
     case PackageType.MATURA_ROZSZERZONA:
@@ -104,6 +129,22 @@ export async function runSeed(prisma: PrismaClient): Promise<void> {
       },
     });
   }
+
+  for (const template of SEED_MESSAGE_TEMPLATES) {
+    // Tylko `create` — nie nadpisujemy treści, którą właściciel dostosował w panelu.
+    await prisma.messageTemplate.upsert({
+      where: { id: template.id },
+      update: {},
+      create: {
+        id: template.id,
+        name: template.name,
+        channel: MessageChannel.SMS,
+        body: template.body,
+        isDefault: template.isDefault,
+        sortOrder: template.sortOrder,
+      },
+    });
+  }
 }
 
 export async function resetDatabaseToSeedState(
@@ -111,6 +152,8 @@ export async function resetDatabaseToSeedState(
 ): Promise<void> {
   await prisma.$transaction([
     prisma.payment.deleteMany(),
+    prisma.tuitionPeriod.deleteMany(),
+    prisma.messageTemplate.deleteMany(),
     prisma.lead.deleteMany(),
     prisma.group.deleteMany(),
     prisma.user.deleteMany(),

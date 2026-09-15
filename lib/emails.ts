@@ -203,3 +203,36 @@ export async function sendAdminDepositNotification(
     }),
   });
 }
+
+export type AdminTuitionNotificationParams = {
+  displayName: string;
+  parentName: string;
+  packageName: string;
+  monthLabel: string;
+  amountGrosze: number;
+  leadId: string;
+};
+
+export async function sendAdminTuitionNotification(
+  params: AdminTuitionNotificationParams,
+): Promise<{ ok: boolean }> {
+  const copy = EMAILS.adminTuition;
+
+  return sendEmail({
+    to: ADMIN_NOTIFICATION_RECIPIENTS,
+    subject: copy.subject(params.displayName),
+    react: createElement(AdminNotificationEmail, {
+      preview: copy.preview,
+      heading: copy.heading,
+      intro: copy.intro,
+      rows: [
+        { label: copy.studentLabel, value: params.displayName },
+        { label: copy.parentLabel, value: params.parentName },
+        { label: copy.packageLabel, value: params.packageName },
+        { label: copy.monthLabel, value: params.monthLabel },
+        { label: copy.amountLabel, value: formatPln(params.amountGrosze) },
+        { label: copy.leadIdLabel, value: params.leadId },
+      ],
+    }),
+  });
+}

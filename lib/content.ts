@@ -262,6 +262,31 @@ export const DEPOSIT_PAYMENT = {
   backHome: "Wróć na stronę główną",
 } as const;
 
+/** Teksty strony płatności czesnego (`/p/<shortCode>`) — odpowiednik DEPOSIT_PAYMENT. */
+export const TUITION_PAYMENT = {
+  reservationTitle: "Płatność za zajęcia",
+  reservationHint:
+    "Poniżej znajdziesz podsumowanie czesnego. Płatność jest bezpieczna i obsługiwana przez operatora płatności.",
+  summaryReserver: "Uczeń",
+  summaryPackage: "Poziom zajęć",
+  summaryType: "Czesne",
+  summaryMonth: "Miesiąc",
+  successTitle: "Płatność zakończona",
+  successProcessingTitle: "Przetwarzamy wpłatę",
+  successMessage: "Czesne zostało opłacone. Dziękujemy!",
+  successProcessingMessage:
+    "Otrzymaliśmy informację o płatności. Za chwilę potwierdzimy wpłatę w systemie.",
+  backHome: "Wróć na stronę główną",
+  paidMessage:
+    "Czesne zostało opłacone. Dziękujemy! Ten link nie wymaga już żadnych działań.",
+  expiredTitle: "Link nieaktywny",
+  expiredMessage:
+    "Ten link płatności nie jest już aktywny. Skontaktuj się z nami, aby otrzymać nowy.",
+  invalidTitle: "Płatność nieważna",
+  invalidMessage:
+    "Ta płatność została anulowana. Skontaktuj się z nami po pomoc.",
+} as const;
+
 export const ALTERNATE_TERM_CONTACT = {
   title: "Szukasz innego terminu? Zadzwoń do nas!",
   phone: CONTACT_PHONE,
@@ -366,6 +391,18 @@ export const EMAILS = {
     intro: "Lead właśnie opłacił zaliczkę.",
     parentLabel: "Rodzic",
     packageLabel: "Poziom zajęć",
+    amountLabel: "Kwota",
+    leadIdLabel: "ID leada",
+  },
+  adminTuition: {
+    subject: (displayName: string) => `Opłacone czesne - ${displayName}`,
+    preview: "Klient opłacił czesne z linku.",
+    heading: "Opłacone czesne",
+    intro: "Wpłata czesnego została zaksięgowana w systemie.",
+    studentLabel: "Uczeń",
+    parentLabel: "Rodzic",
+    packageLabel: "Poziom zajęć",
+    monthLabel: "Miesiąc",
     amountLabel: "Kwota",
     leadIdLabel: "ID leada",
   },
