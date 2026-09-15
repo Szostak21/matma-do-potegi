@@ -10,10 +10,12 @@
     "email:dev": "email dev --dir emails",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:push": "prisma db push",
+    "db:deploy": "tsx scripts/prisma-cli.ts migrate deploy",
+    "db:migrate": "tsx scripts/prisma-cli.ts migrate deploy",
+    "db:migrate:create": "tsx scripts/prisma-cli.ts migrate dev --create-only",
+    "db:push": "tsx scripts/prisma-cli.ts db push",
     "db:studio": "prisma studio",
-    "db:seed": "prisma db seed"
+    "db:seed": "tsx prisma/seed.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
