@@ -3,12 +3,17 @@ import { PackageType, PaymentType } from "@prisma/client";
 
 import { AddLeadModal } from "@/components/admin/AddLeadModal";
 import { AdminTabsNav } from "@/components/admin/AdminTabsNav";
+import type { AdminGroupOption } from "@/components/admin/AssignGroupControl";
+import { DepositSortToggle } from "@/components/admin/DepositSortToggle";
 import { LeadCard } from "@/components/admin/LeadCard";
 import { PackagePoolSummary } from "@/components/admin/PackagePoolSummary";
 import { TuitionPanel } from "@/components/admin/TuitionPanel";
 import {
   filterLeadsForTab,
+  groupDepositLeadsByLevel,
   parseAdminTab,
+  parseDepositSort,
+  sortLeadsForDepositTab,
   type AdminLeadRow,
   type AdminTabId,
   type AdminTuitionRow,
@@ -19,11 +24,11 @@ import { getAllPackagesAvailability } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
 
 type AdminPageProps = {
-  searchParams: Promise<{ secret?: string; tab?: string }>;
+  searchParams: Promise<{ secret?: string; tab?: string; sort?: string }>;
 };
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
-  const { secret, tab: tabParam } = await searchParams;
+  const { secret, tab: tabParam, sort: sortParam } = await searchParams;
 
   if (!verifyAdminSecret(secret)) {
     notFound();
@@ -32,6 +37,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   await runLazyValidation();
 
   const tab = parseAdminTab(tabParam);
+  const depositSort = parseDepositSort(sortParam);
 
   const [leads, groups, packageAvailability, tuitionPeriods] =
     await Promise.all([
@@ -139,7 +145,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     groups: groups.length,
   };
 
-  const visibleLeads = filterLeadsForTab(rows, tab);
+  const filteredLeads = filterLeadsForTab(rows, tab);
+  const visibleLeads =
+    tab === "deposit"
+      ? sortLeadsForDepositTab(filteredLeads, depositSort)
+      : filteredLeads;
   const tuitionEligible = rows.filter(
     (lead) =>
       lead.requestedPackage !== PackageType.INDYWIDUALNE &&
@@ -201,25 +211,75 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         ) : null}
 
         {tab !== "groups" && tab !== "tuition" ? (
-          visibleLeads.length === 0 ? (
-            <p className="rounded-3xl bg-white/60 px-5 py-8 text-center text-sm text-ink/60 ring-1 ring-ink/5">
-              Brak zgłoszeń w tej sekcji.
-            </p>
-          ) : (
-            <div className="mx-auto grid w-full max-w-lg grid-cols-1 gap-4 md:max-w-none md:grid-cols-2">
-              {visibleLeads.map((lead) => (
-                <LeadCard
-                  key={lead.id}
-                  lead={lead}
-                  groups={groupOptions}
-                  secret={secret ?? ""}
-                  showGroupAssign={tab !== "individual"}
-                />
-              ))}
-            </div>
-          )
+          <>
+            {tab === "deposit" && visibleLeads.length > 0 ? (
+              <DepositSortToggle
+                secret={secret ?? ""}
+                activeSort={depositSort}
+              />
+            ) : null}
+            {visibleLeads.length === 0 ? (
+              <p className="rounded-3xl bg-white/60 px-5 py-8 text-center text-sm text-ink/60 ring-1 ring-ink/5">
+                Brak zgłoszeń w tej sekcji.
+              </p>
+            ) : tab === "deposit" && depositSort === "level" ? (
+              <div className="space-y-8">
+                {groupDepositLeadsByLevel(visibleLeads).map((group) => (
+                  <section key={group.key} className="space-y-3">
+                    <div className="flex items-baseline gap-2 px-1">
+                      <h2 className="text-xs font-medium uppercase tracking-widest text-olive-700">
+                        {group.label}
+                      </h2>
+                      <span className="text-xs tabular-nums text-ink/40">
+                        {group.leads.length}
+                      </span>
+                    </div>
+                    <LeadCardsGrid
+                      leads={group.leads}
+                      groups={groupOptions}
+                      secret={secret ?? ""}
+                      showGroupAssign
+                    />
+                  </section>
+                ))}
+              </div>
+            ) : (
+              <LeadCardsGrid
+                leads={visibleLeads}
+                groups={groupOptions}
+                secret={secret ?? ""}
+                showGroupAssign={tab !== "individual"}
+              />
+            )}
+          </>
         ) : null}
       </div>
     </main>
+  );
+}
+
+function LeadCardsGrid({
+  leads,
+  groups,
+  secret,
+  showGroupAssign,
+}: {
+  leads: AdminLeadRow[];
+  groups: AdminGroupOption[];
+  secret: string;
+  showGroupAssign: boolean;
+}) {
+  return (
+    <div className="mx-auto grid w-full max-w-lg grid-cols-1 gap-4 md:max-w-none md:grid-cols-2">
+      {leads.map((lead) => (
+        <LeadCard
+          key={lead.id}
+          lead={lead}
+          groups={groups}
+          secret={secret}
+          showGroupAssign={showGroupAssign}
+        />
+      ))}
+    </div>
   );
 }

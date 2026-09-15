@@ -32,6 +32,92 @@ export function parseAdminTab(value: string | undefined): AdminTabId {
   return "funnel";
 }
 
+export type DepositSort = "date" | "level";
+
+export function parseDepositSort(value: string | undefined): DepositSort {
+  return value === "level" ? "level" : "date";
+}
+
+const DEPOSIT_LEVEL_RANK: Record<PackageType, number> = {
+  OSMOKLASISTA: 0,
+  MATURA_PODSTAWOWA: 1,
+  MATURA_ROZSZERZONA: 2,
+  INDYWIDUALNE: 3,
+};
+
+export const DEPOSIT_LEVEL_HEADINGS: Record<PackageType, string> = {
+  OSMOKLASISTA: "E8",
+  MATURA_PODSTAWOWA: "Podstawa",
+  MATURA_ROZSZERZONA: "Rozszerzenie",
+  INDYWIDUALNE: "Indywidualne",
+};
+
+function packageLevelRank(pkg: PackageType | null): number {
+  if (!pkg) {
+    return 99;
+  }
+  return DEPOSIT_LEVEL_RANK[pkg] ?? 99;
+}
+
+function compareLeadsByDateDesc(a: AdminLeadRow, b: AdminLeadRow): number {
+  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+}
+
+export function sortLeadsForDepositTab(
+  leads: AdminLeadRow[],
+  sort: DepositSort,
+): AdminLeadRow[] {
+  const copy = [...leads];
+  if (sort === "date") {
+    return copy.sort(compareLeadsByDateDesc);
+  }
+
+  return copy.sort((a, b) => {
+    const rankDiff =
+      packageLevelRank(a.requestedPackage) -
+      packageLevelRank(b.requestedPackage);
+    if (rankDiff !== 0) {
+      return rankDiff;
+    }
+    return compareLeadsByDateDesc(a, b);
+  });
+}
+
+export function groupDepositLeadsByLevel(
+  leads: AdminLeadRow[],
+): Array<{ key: string; label: string; leads: AdminLeadRow[] }> {
+  const buckets = new Map<string, AdminLeadRow[]>();
+
+  for (const lead of leads) {
+    const key = lead.requestedPackage ?? "UNKNOWN";
+    const existing = buckets.get(key);
+    if (existing) {
+      existing.push(lead);
+    } else {
+      buckets.set(key, [lead]);
+    }
+  }
+
+  return [...buckets.entries()]
+    .map(([key, groupLeads]) => ({
+      key,
+      label:
+        key in DEPOSIT_LEVEL_HEADINGS
+          ? DEPOSIT_LEVEL_HEADINGS[key as PackageType]
+          : "Inne",
+      leads: groupLeads,
+      rank: packageLevelRank(
+        key === "UNKNOWN" ? null : (key as PackageType),
+      ),
+    }))
+    .sort((a, b) => a.rank - b.rank)
+    .map(({ key, label, leads: groupLeads }) => ({
+      key,
+      label,
+      leads: groupLeads,
+    }));
+}
+
 export type AdminLeadRow = {
   id: string;
   parentName: string;
