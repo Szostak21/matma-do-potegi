@@ -2,6 +2,7 @@ import {
   LeadStatus,
   PackageType,
   PaymentStatus,
+  type Prisma,
   TuitionPaymentMethod,
   TuitionPeriodStatus,
 } from "@prisma/client";
@@ -139,11 +140,30 @@ async function sendPaidSideEffects(
   }
 }
 
+/**
+ * Warunkowe przejście PENDING → PAID. Webhook i powrót klienta z bramki
+ * przychodzą często równocześnie; UPDATE z warunkiem na status blokuje wiersz,
+ * więc wygrywa dokładnie jedno wywołanie, a drugie widzi count = 0.
+ */
+async function claimPayment(
+  tx: Prisma.TransactionClient,
+  paymentId: string,
+): Promise<boolean> {
+  const { count } = await tx.payment.updateMany({
+    where: { id: paymentId, status: { not: PaymentStatus.PAID } },
+    data: { status: PaymentStatus.PAID, paidAt: new Date() },
+  });
+
+  return count === 1;
+}
+
 async function completeDepositPayment(
   paymentId: string,
   metaContext?: PaidMetaContext,
 ): Promise<MarkDepositPaymentPaidResult> {
   const result = await prisma.$transaction(async (tx) => {
+    const claimed = await claimPayment(tx, paymentId);
+
     const payment = await tx.payment.findUnique({
       where: { id: paymentId },
       include: {
@@ -155,7 +175,7 @@ async function completeDepositPayment(
       return { didTransition: false, payment: null };
     }
 
-    if (payment.status === PaymentStatus.PAID) {
+    if (!claimed) {
       // Już opłacone — zwróć leadId do ewentualnego backfillu zniżki.
       return {
         didTransition: false,
@@ -163,14 +183,6 @@ async function completeDepositPayment(
         leadIdForReferral: payment.leadId,
       };
     }
-
-    await tx.payment.update({
-      where: { id: payment.id },
-      data: {
-        status: PaymentStatus.PAID,
-        paidAt: new Date(),
-      },
-    });
 
     if (payment.lead.status !== LeadStatus.PAID_DEPOSIT) {
       await tx.lead.update({
@@ -216,43 +228,37 @@ async function completeTuitionPayment(
   paymentId: string,
 ): Promise<MarkDepositPaymentPaidResult> {
   const result = await prisma.$transaction(async (tx) => {
-    const payment = await tx.payment.findUnique({
-      where: { id: paymentId },
-      include: {
-        lead: true,
-        tuitionPeriod: true,
-      },
-    });
-
-    if (!payment || payment.status === PaymentStatus.PAID) {
+    if (!(await claimPayment(tx, paymentId))) {
       return { didTransition: false, notification: null };
     }
 
-    const paidAt = new Date();
-
-    await tx.payment.update({
-      where: { id: payment.id },
-      data: { status: PaymentStatus.PAID, paidAt },
+    const payment = await tx.payment.findUniqueOrThrow({
+      where: { id: paymentId },
+      include: { lead: true },
     });
 
-    const period = payment.tuitionPeriod;
-
-    if (!period) {
+    if (!payment.tuitionPeriodId) {
       return { didTransition: true, notification: null };
     }
 
-    const amountPaidGrosze = period.amountPaidGrosze + payment.amount;
-    const isSettled = amountPaidGrosze >= period.amountDueGrosze;
+    // Increment w bazie, nie odczyt + zapis: dwie wpłaty na ten sam okres sumują się.
+    const period = await tx.tuitionPeriod.update({
+      where: { id: payment.tuitionPeriodId },
+      data: {
+        amountPaidGrosze: { increment: payment.amount },
+        paymentMethod: TuitionPaymentMethod.STRIPE,
+      },
+    });
+
+    const isSettled = period.amountPaidGrosze >= period.amountDueGrosze;
 
     await tx.tuitionPeriod.update({
       where: { id: period.id },
       data: {
-        amountPaidGrosze,
         status: isSettled
           ? TuitionPeriodStatus.PAID
           : TuitionPeriodStatus.PARTIAL,
-        paidAt: isSettled ? paidAt : period.paidAt,
-        paymentMethod: TuitionPaymentMethod.STRIPE,
+        paidAt: isSettled ? (payment.paidAt ?? new Date()) : period.paidAt,
       },
     });
 

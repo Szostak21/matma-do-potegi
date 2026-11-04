@@ -67,10 +67,24 @@ export class PackagePoolFullError extends Error {
   }
 }
 
+/**
+ * Blokada trzymana do końca transakcji: równoległe zapisy do tego samego pakietu
+ * liczą wolne miejsca po kolei, więc dwa nie zajmą jednocześnie ostatniego.
+ */
+async function lockPackagePool(
+  packageType: PackageType,
+  tx: TransactionClient,
+): Promise<void> {
+  const key = `package-pool:${packageType}`;
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${key}))`;
+}
+
+/** Wywołuj wewnątrz transakcji, która potem tworzy lub aktywuje leada. */
 export async function assertPackageHasCapacity(
   packageType: PackageType,
-  tx: TransactionClient = prisma,
+  tx: TransactionClient,
 ): Promise<void> {
+  await lockPackagePool(packageType, tx);
   const { available } = await getPackageAvailability(packageType, tx);
 
   if (available <= 0) {

@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:integration": "vitest run lib/concurrency.integration.test.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "email:dev": "email dev --dir emails",
