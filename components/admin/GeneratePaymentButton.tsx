@@ -14,7 +14,6 @@ const initialState: GeneratePaymentState = { status: "idle" };
 
 type GeneratePaymentButtonProps = {
   leadId: string;
-  secret: string;
 };
 
 function SubmitLabel() {
@@ -32,10 +31,7 @@ function SubmitLabel() {
   return <>Generuj link płatności</>;
 }
 
-export function GeneratePaymentButton({
-  leadId,
-  secret,
-}: GeneratePaymentButtonProps) {
+export function GeneratePaymentButton({ leadId }: GeneratePaymentButtonProps) {
   const [state, formAction] = useActionState(
     generateDepositPayment,
     initialState,
@@ -45,7 +41,6 @@ export function GeneratePaymentButton({
     <div className="space-y-2">
       <form action={formAction} className="inline">
         <input type="hidden" name="leadId" value={leadId} />
-        <input type="hidden" name="secret" value={secret} />
         <Button type="submit" variant="secondary" className="text-xs">
           <SubmitLabel />
         </Button>

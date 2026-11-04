@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { LeadStatus, PaymentStatus, PaymentType } from "@prisma/client";
 
 import { createDepositPaymentForLead } from "@/actions/payments";
-import { assertAdminSecret } from "@/lib/auth";
+import { assertAdminSession } from "@/lib/admin-session";
 import { PACKAGE_POOL_FULL_MESSAGE } from "@/lib/content";
 import { addHours, PHONE_PAYMENT_EXPIRY_HOURS } from "@/lib/dates";
 import { sendPaymentLinkEmail } from "@/lib/emails";
@@ -45,21 +45,14 @@ export type ToggleSkipDepositState = {
   message?: string;
 };
 
-export type TuitionPeriodActionState = {
-  status: "idle" | "success" | "error";
-  message?: string;
-};
-
 const ALL_LEAD_STATUSES = Object.values(LeadStatus);
 
 export async function createManualLead(
   _prevState: CreateManualLeadState,
   formData: FormData,
 ): Promise<CreateManualLeadState> {
-  const secret = formData.get("secret")?.toString();
-
   try {
-    assertAdminSecret(secret);
+    await assertAdminSession();
   } catch {
     return { status: "error", message: "Brak uprawnień." };
   }
@@ -169,7 +162,6 @@ export async function updateLeadStatus(
   formData: FormData,
 ): Promise<UpdateLeadStatusState> {
   const leadId = formData.get("leadId");
-  const secret = formData.get("secret")?.toString();
   const nextStatus = formData.get("status")?.toString();
 
   if (!leadId || typeof leadId !== "string") {
@@ -181,7 +173,7 @@ export async function updateLeadStatus(
   }
 
   try {
-    assertAdminSecret(secret);
+    await assertAdminSession();
   } catch {
     return { status: "error", message: "Brak uprawnień." };
   }
@@ -274,7 +266,6 @@ export async function updatePlacementTestNotes(
   formData: FormData,
 ): Promise<UpdatePlacementNotesState> {
   const leadId = formData.get("leadId");
-  const secret = formData.get("secret")?.toString();
   const placementTestNotes = formData.get("placementTestNotes");
 
   if (!leadId || typeof leadId !== "string") {
@@ -282,7 +273,7 @@ export async function updatePlacementTestNotes(
   }
 
   try {
-    assertAdminSecret(secret);
+    await assertAdminSession();
   } catch {
     return { status: "error", message: "Brak uprawnień." };
   }
@@ -324,7 +315,6 @@ export async function updateStudentName(
   formData: FormData,
 ): Promise<UpdateStudentNameState> {
   const leadId = formData.get("leadId");
-  const secret = formData.get("secret")?.toString();
   const rawName = formData.get("studentName");
 
   if (!leadId || typeof leadId !== "string") {
@@ -332,7 +322,7 @@ export async function updateStudentName(
   }
 
   try {
-    assertAdminSecret(secret);
+    await assertAdminSession();
   } catch {
     return { status: "error", message: "Brak uprawnień." };
   }
@@ -377,7 +367,6 @@ export async function toggleSkipDeposit(
   formData: FormData,
 ): Promise<ToggleSkipDepositState> {
   const leadId = formData.get("leadId");
-  const secret = formData.get("secret")?.toString();
   const skipDeposit = formData.get("skipDeposit") === "true";
 
   if (!leadId || typeof leadId !== "string") {
@@ -385,7 +374,7 @@ export async function toggleSkipDeposit(
   }
 
   try {
-    assertAdminSecret(secret);
+    await assertAdminSession();
   } catch {
     return { status: "error", message: "Brak uprawnień." };
   }
@@ -407,16 +396,4 @@ export async function toggleSkipDeposit(
   } catch {
     return { status: "error", message: "Nie udało się zaktualizować flagi." };
   }
-}
-
-/** @deprecated Usunięte z UI — zostaje tylko na wypadek starych referencji. */
-export async function softDeleteLead(): Promise<{
-  status: "error";
-  message: string;
-}> {
-  return {
-    status: "error",
-    message:
-      "Soft-delete wyłączony. Zmień status leada (np. RESIGNED / CANCELLED).",
-  };
 }

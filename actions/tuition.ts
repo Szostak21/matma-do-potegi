@@ -7,7 +7,7 @@ import {
   TuitionPeriodStatus,
 } from "@prisma/client";
 
-import { assertAdminSecret } from "@/lib/auth";
+import { assertAdminSession } from "@/lib/admin-session";
 import { formatTuitionDueDate, parseMonthInputValue } from "@/lib/dates";
 import { packageLabel } from "@/lib/labels";
 import { getMessageSender } from "@/lib/messages/channel";
@@ -39,9 +39,9 @@ export type TuitionActionResult = {
 
 class UnauthorizedError extends Error {}
 
-function authorize(secret: string): void {
+async function authorize(): Promise<void> {
   try {
-    assertAdminSecret(secret);
+    await assertAdminSession();
   } catch {
     throw new UnauthorizedError("Brak uprawnień.");
   }
@@ -84,7 +84,6 @@ function pluralizeClients(count: number): string {
 }
 
 export type UpdateBillingRowInput = {
-  secret: string;
   leadId: string;
   /** Format `YYYY-MM`. */
   month: string;
@@ -97,7 +96,7 @@ export async function updateBillingRow(
   input: UpdateBillingRowInput,
 ): Promise<TuitionActionResult> {
   try {
-    authorize(input.secret);
+    await authorize();
 
     const month = requireMonth(input.month);
     const baseAmountGrosze = requireAmount(input.baseAmountGrosze, "Kwota");
@@ -124,7 +123,6 @@ export async function updateBillingRow(
 }
 
 export type BulkSetBaseAmountInput = {
-  secret: string;
   month: string;
   leadIds: string[];
   baseAmountGrosze: number;
@@ -135,7 +133,7 @@ export async function bulkSetBaseAmount(
   input: BulkSetBaseAmountInput,
 ): Promise<TuitionActionResult> {
   try {
-    authorize(input.secret);
+    await authorize();
 
     const month = requireMonth(input.month);
     const baseAmountGrosze = requireAmount(input.baseAmountGrosze, "Kwota");
@@ -203,7 +201,6 @@ export type GenerateMessagesResult =
   | { status: "error"; message: string };
 
 export type GeneratePaymentMessagesInput = {
-  secret: string;
   month: string;
   leadIds: string[];
   templateBody: string;
@@ -217,7 +214,7 @@ export async function generatePaymentMessages(
   input: GeneratePaymentMessagesInput,
 ): Promise<GenerateMessagesResult> {
   try {
-    authorize(input.secret);
+    await authorize();
 
     const month = requireMonth(input.month);
     const templateBody = input.templateBody.trim();
@@ -335,7 +332,6 @@ export async function generatePaymentMessages(
 }
 
 export type ToggleMessageSentInput = {
-  secret: string;
   periodId: string;
   sent: boolean;
 };
@@ -344,7 +340,7 @@ export async function toggleMessageSent(
   input: ToggleMessageSentInput,
 ): Promise<TuitionActionResult> {
   try {
-    authorize(input.secret);
+    await authorize();
     await setMessageSent(input.periodId, input.sent);
     revalidatePath("/admin");
 
@@ -358,7 +354,6 @@ export async function toggleMessageSent(
 }
 
 export type MarkPeriodPaidInput = {
-  secret: string;
   periodId: string;
   /** `WAIVED` jako metoda oznacza umorzenie okresu. */
   method: TuitionPaymentMethod | "WAIVED";
@@ -368,7 +363,7 @@ export async function markPeriodPaid(
   input: MarkPeriodPaidInput,
 ): Promise<TuitionActionResult> {
   try {
-    authorize(input.secret);
+    await authorize();
 
     if (input.method === "WAIVED") {
       await markPeriodWaived(input.periodId);
@@ -389,7 +384,6 @@ export async function markPeriodPaid(
 }
 
 export type SaveMessageTemplateInput = {
-  secret: string;
   /** Brak `id` = nowy szablon. */
   id?: string;
   name: string;
@@ -400,7 +394,7 @@ export async function saveMessageTemplate(
   input: SaveMessageTemplateInput,
 ): Promise<TuitionActionResult> {
   try {
-    authorize(input.secret);
+    await authorize();
 
     const name = input.name.trim();
     const body = input.body.trim();
@@ -453,7 +447,6 @@ export async function saveMessageTemplate(
 }
 
 export type DeleteMessageTemplateInput = {
-  secret: string;
   id: string;
 };
 
@@ -461,7 +454,7 @@ export async function deleteMessageTemplate(
   input: DeleteMessageTemplateInput,
 ): Promise<TuitionActionResult> {
   try {
-    authorize(input.secret);
+    await authorize();
 
     await prisma.messageTemplate.delete({ where: { id: input.id } });
     revalidatePath("/admin");
@@ -476,7 +469,6 @@ export async function deleteMessageTemplate(
 }
 
 export type UpdateStandingDiscountInput = {
-  secret: string;
   leadId: string;
   standingDiscountGrosze: number;
 };
@@ -486,7 +478,7 @@ export async function updateStandingDiscount(
   input: UpdateStandingDiscountInput,
 ): Promise<TuitionActionResult> {
   try {
-    authorize(input.secret);
+    await authorize();
 
     const standingDiscountGrosze = requireAmount(
       input.standingDiscountGrosze,

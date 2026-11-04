@@ -1,8 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState, type ReactNode } from "react";
+import { useActionState, useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
@@ -16,7 +15,6 @@ const initialState: UpdateStudentNameState = { status: "idle" };
 
 type StudentNameEditorProps = {
   leadId: string;
-  secret: string;
   parentName: string;
   studentName: string | null;
   children?: ReactNode;
@@ -39,21 +37,16 @@ function SubmitLabel() {
 
 export function StudentNameEditor({
   leadId,
-  secret,
   parentName,
   studentName,
   children,
 }: StudentNameEditorProps) {
-  const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [state, formAction] = useActionState(updateStudentName, initialState);
 
-  useEffect(() => {
-    if (state.status === "success") {
-      setEditing(false);
-      router.refresh();
-    }
-  }, [state, router]);
+  if (state.status === "success" && editing) {
+    setEditing(false);
+  }
 
   const hasStudentName = Boolean(studentName?.trim());
 
@@ -62,7 +55,6 @@ export function StudentNameEditor({
       <div className="min-w-0 flex-1">
         <form action={formAction} className="space-y-2">
           <input type="hidden" name="leadId" value={leadId} />
-          <input type="hidden" name="secret" value={secret} />
           <label className="block">
             <span className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-ink/45">
               Imię ucznia

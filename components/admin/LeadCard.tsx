@@ -31,7 +31,6 @@ const skipDepositInitial: ToggleSkipDepositState = { status: "idle" };
 type LeadCardProps = {
   lead: AdminLeadRow;
   groups: AdminGroupOption[];
-  secret: string;
   showGroupAssign?: boolean;
 };
 
@@ -66,7 +65,6 @@ function CopyLinkButton({ url }: { url: string }) {
 export function LeadCard({
   lead,
   groups,
-  secret,
   showGroupAssign = true,
 }: LeadCardProps) {
   const activePayment = findActiveDepositPayment(
@@ -91,7 +89,6 @@ export function LeadCard({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <StudentNameEditor
           leadId={lead.id}
-          secret={secret}
           parentName={lead.parentName}
           studentName={lead.studentName}
         >
@@ -168,7 +165,6 @@ export function LeadCard({
         <LeadStatusSelect
           key={`${lead.id}-${lead.status}`}
           leadId={lead.id}
-          secret={secret}
           currentStatus={lead.status}
         />
 
@@ -177,7 +173,6 @@ export function LeadCard({
           <AssignGroupControl
             key={`${lead.id}-group-${lead.groupId ?? "none"}`}
             leadId={lead.id}
-            secret={secret}
             currentGroupId={lead.groupId}
             requestedPackage={lead.requestedPackage}
             groups={groups}
@@ -188,7 +183,6 @@ export function LeadCard({
           <StandingDiscountEditor
             key={`${lead.id}-standing-${lead.standingDiscountGrosze}`}
             leadId={lead.id}
-            secret={secret}
             standingDiscountGrosze={lead.standingDiscountGrosze}
             monthlyPriceGrosze={packageMonthlyPriceGrosze(
               lead.requestedPackage,
@@ -202,17 +196,16 @@ export function LeadCard({
               <CopyLinkButton url={checkoutUrl} />
             ) : null}
             {canGenerateLink ? (
-              <GeneratePaymentButton leadId={lead.id} secret={secret} />
+              <GeneratePaymentButton leadId={lead.id} />
             ) : null}
             {canRenewLink ? (
-              <ResendPaymentLink24hButton leadId={lead.id} secret={secret} />
+              <ResendPaymentLink24hButton leadId={lead.id} />
             ) : null}
           </div>
         ) : null}
 
         {lead.requestedPackage !== "INDYWIDUALNE" && lead.skipDeposit ? (
           <form action={skipAction} className="space-y-1">
-            <input type="hidden" name="secret" value={secret} />
             <input type="hidden" name="leadId" value={lead.id} />
             <input type="hidden" name="skipDeposit" value="false" />
             <Button
@@ -235,7 +228,6 @@ export function LeadCard({
         <PlacementNotesEditor
           key={`${lead.id}-notes`}
           leadId={lead.id}
-          secret={secret}
           defaultValue={lead.placementTestNotes}
         />
       </div>

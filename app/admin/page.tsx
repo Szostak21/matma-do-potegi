@@ -1,7 +1,8 @@
-import { notFound } from "next/navigation";
 import { MessageChannel, PaymentType } from "@prisma/client";
 
 import { AddLeadModal } from "@/components/admin/AddLeadModal";
+import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
+import { AdminLogoutButton } from "@/components/admin/AdminLogoutButton";
 import { AdminTabsNav } from "@/components/admin/AdminTabsNav";
 import type { AdminGroupOption } from "@/components/admin/AssignGroupControl";
 import { DepositSortToggle } from "@/components/admin/DepositSortToggle";
@@ -19,7 +20,7 @@ import {
   type AdminMessageTemplate,
   type AdminTabId,
 } from "@/lib/admin-tabs";
-import { verifyAdminSecret } from "@/lib/auth";
+import { hasAdminSession } from "@/lib/admin-session";
 import { parseMonthInputValue, toMonthInputValue } from "@/lib/dates";
 import { runLazyValidation } from "@/lib/groups";
 import { getAllPackagesAvailability } from "@/lib/packages";
@@ -28,7 +29,6 @@ import { listBillingRows, resolveBillingMonth } from "@/lib/tuition/service";
 
 type AdminPageProps = {
   searchParams: Promise<{
-    secret?: string;
     tab?: string;
     sort?: string;
     month?: string;
@@ -37,14 +37,13 @@ type AdminPageProps = {
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const {
-    secret,
     tab: tabParam,
     sort: sortParam,
     month: monthParam,
   } = await searchParams;
 
-  if (!verifyAdminSecret(secret)) {
-    notFound();
+  if (!(await hasAdminSession())) {
+    return <AdminLoginForm />;
   }
 
   await runLazyValidation();
@@ -175,13 +174,14 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               Leady, zaliczki, aktywni, indywidualne, płatności i grupy.
             </p>
           </div>
-          <div className="flex justify-center sm:justify-end">
-            <AddLeadModal secret={secret ?? ""} />
+          <div className="flex items-center justify-center gap-4 sm:justify-end">
+            <AdminLogoutButton />
+            <AddLeadModal />
           </div>
         </div>
 
         <div className="mb-6">
-          <AdminTabsNav secret={secret ?? ""} activeTab={tab} counts={counts} />
+          <AdminTabsNav activeTab={tab} counts={counts} />
         </div>
 
         {tab === "groups" ? (
@@ -206,7 +206,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
         {isPaymentsTab ? (
           <PaymentsPanel
-            secret={secret ?? ""}
             month={toMonthInputValue(billingMonth)}
             rows={billingRows}
             templates={templates}
@@ -216,10 +215,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         {tab !== "groups" && !isPaymentsTab ? (
           <>
             {tab === "deposit" && visibleLeads.length > 0 ? (
-              <DepositSortToggle
-                secret={secret ?? ""}
-                activeSort={depositSort}
-              />
+              <DepositSortToggle activeSort={depositSort} />
             ) : null}
             {visibleLeads.length === 0 ? (
               <p className="rounded-3xl bg-white/60 px-5 py-8 text-center text-sm text-ink/60 ring-1 ring-ink/5">
@@ -240,7 +236,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     <LeadCardsGrid
                       leads={group.leads}
                       groups={groupOptions}
-                      secret={secret ?? ""}
                       showGroupAssign
                     />
                   </section>
@@ -250,7 +245,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               <LeadCardsGrid
                 leads={visibleLeads}
                 groups={groupOptions}
-                secret={secret ?? ""}
                 showGroupAssign={tab !== "individual"}
               />
             )}
@@ -264,12 +258,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 function LeadCardsGrid({
   leads,
   groups,
-  secret,
   showGroupAssign,
 }: {
   leads: AdminLeadRow[];
   groups: AdminGroupOption[];
-  secret: string;
   showGroupAssign: boolean;
 }) {
   return (
@@ -279,7 +271,6 @@ function LeadCardsGrid({
           key={lead.id}
           lead={lead}
           groups={groups}
-          secret={secret}
           showGroupAssign={showGroupAssign}
         />
       ))}

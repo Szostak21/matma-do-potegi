@@ -10,13 +10,11 @@ const initialState: UpdateLeadStatusState = { status: "idle" };
 
 type LeadStatusSelectProps = {
   leadId: string;
-  secret: string;
   currentStatus: LeadStatus;
 };
 
 export function LeadStatusSelect({
   leadId,
-  secret,
   currentStatus,
 }: LeadStatusSelectProps) {
   const [state, formAction] = useActionState(updateLeadStatus, initialState);
@@ -46,7 +44,6 @@ export function LeadStatusSelect({
         }
       }}
     >
-      <input type="hidden" name="secret" value={secret} />
       <input type="hidden" name="leadId" value={leadId} />
       <label className="block text-[11px] font-medium uppercase tracking-wide text-ink/45">
         Zmień status

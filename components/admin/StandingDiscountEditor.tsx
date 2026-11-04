@@ -8,7 +8,6 @@ import { formatPln } from "@/lib/money";
 
 type StandingDiscountEditorProps = {
   leadId: string;
-  secret: string;
   standingDiscountGrosze: number;
   monthlyPriceGrosze: number;
 };
@@ -19,7 +18,6 @@ type StandingDiscountEditorProps = {
  */
 export function StandingDiscountEditor({
   leadId,
-  secret,
   standingDiscountGrosze,
   monthlyPriceGrosze,
 }: StandingDiscountEditorProps) {
@@ -41,7 +39,6 @@ export function StandingDiscountEditor({
               setDiscountGrosze(grosze);
               startTransition(async () => {
                 const result = await updateStandingDiscount({
-                  secret,
                   leadId,
                   standingDiscountGrosze: grosze,
                 });

@@ -7,7 +7,7 @@ import { after } from "next/server";
 import { LeadStatus, PaymentStatus, PaymentType } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
 
-import { assertAdminSecret } from "@/lib/auth";
+import { assertAdminSession } from "@/lib/admin-session";
 import { createCheckoutSession } from "@/lib/checkout";
 import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
 import { addHours, PHONE_PAYMENT_EXPIRY_HOURS } from "@/lib/dates";
@@ -398,14 +398,12 @@ export async function renewDepositPaymentLink24h(
   formData: FormData,
 ): Promise<RenewPaymentLinkState> {
   const leadId = formData.get("leadId");
-  const secret = formData.get("secret")?.toString();
-
   if (!leadId || typeof leadId !== "string") {
     return { status: "error", message: "Brak identyfikatora zgłoszenia." };
   }
 
   try {
-    assertAdminSecret(secret);
+    await assertAdminSession();
   } catch {
     return { status: "error", message: "Brak uprawnień." };
   }
@@ -471,14 +469,12 @@ export async function generateDepositPayment(
   formData: FormData,
 ): Promise<GeneratePaymentState> {
   const leadId = formData.get("leadId");
-  const secret = formData.get("secret")?.toString();
-
   if (!leadId || typeof leadId !== "string") {
     return { status: "error", message: "Brak identyfikatora leada." };
   }
 
   try {
-    assertAdminSecret(secret);
+    await assertAdminSession();
   } catch {
     return { status: "error", message: "Brak uprawnień." };
   }

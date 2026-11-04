@@ -27,7 +27,6 @@ import { formatBillingMonth, parseMonthInputValue } from "@/lib/dates";
 import { formatPln } from "@/lib/money";
 
 type PaymentsPanelProps = {
-  secret: string;
   /** Format `YYYY-MM` — źródłem prawdy jest URL, żeby dane szły z serwera. */
   month: string;
   rows: AdminBillingRow[];
@@ -49,12 +48,7 @@ function selectionStorageKey(month: string): string {
   return `matma-payments-selection-${month}`;
 }
 
-export function PaymentsPanel({
-  secret,
-  month,
-  rows,
-  templates,
-}: PaymentsPanelProps) {
+export function PaymentsPanel({ month, rows, templates }: PaymentsPanelProps) {
   const router = useRouter();
 
   const defaultTemplateBody =
@@ -152,7 +146,6 @@ export function PaymentsPanel({
     (row: AdminBillingRow, grosze: number) => {
       withRowPending(row.leadId, () =>
         updateBillingRow({
-          secret,
           leadId: row.leadId,
           month,
           baseAmountGrosze: grosze,
@@ -160,14 +153,13 @@ export function PaymentsPanel({
         }),
       );
     },
-    [month, secret, withRowPending],
+    [month, withRowPending],
   );
 
   const handleChangeDiscount = useCallback(
     (row: AdminBillingRow, grosze: number) => {
       withRowPending(row.leadId, () =>
         updateBillingRow({
-          secret,
           leadId: row.leadId,
           month,
           baseAmountGrosze: row.baseAmountGrosze,
@@ -175,7 +167,7 @@ export function PaymentsPanel({
         }),
       );
     },
-    [month, secret, withRowPending],
+    [month, withRowPending],
   );
 
   function handleToggleSelect(leadId: string) {
@@ -223,7 +215,6 @@ export function PaymentsPanel({
     }
 
     const params = new URLSearchParams({
-      secret,
       tab: "payments",
       month: value,
     });
@@ -239,7 +230,6 @@ export function PaymentsPanel({
 
     startGenerating(async () => {
       const result = await bulkSetBaseAmount({
-        secret,
         month,
         leadIds: selectedRows.map((row) => row.leadId),
         baseAmountGrosze: defaultAmountGrosze,
@@ -258,7 +248,6 @@ export function PaymentsPanel({
 
     startGenerating(async () => {
       const result = await generatePaymentMessages({
-        secret,
         month,
         leadIds: selectedRows.map((row) => row.leadId),
         templateBody: body,
@@ -320,7 +309,6 @@ export function PaymentsPanel({
       </div>
 
       <MessageComposer
-        secret={secret}
         templates={templates}
         body={body}
         onChangeBody={setBody}
@@ -371,11 +359,7 @@ export function PaymentsPanel({
         />
       )}
 
-      <GeneratedMessages
-        secret={secret}
-        messages={messages}
-        skipped={skipped}
-      />
+      <GeneratedMessages messages={messages} skipped={skipped} />
 
       {/* Pasek akcji: na mobile przyklejony do dołu, na desktopie w toku strony. */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ink/10 bg-cream/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur lg:static lg:rounded-3xl lg:border lg:border-ink/5 lg:bg-white/70 lg:px-5 lg:py-4 lg:pb-4 lg:backdrop-blur-none">

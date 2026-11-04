@@ -15,7 +15,6 @@ const initialState: RenewPaymentLinkState = { status: "idle" };
 
 type ResendPaymentLink24hButtonProps = {
   leadId: string;
-  secret: string;
 };
 
 function SubmitLabel() {
@@ -35,7 +34,6 @@ function SubmitLabel() {
 
 export function ResendPaymentLink24hButton({
   leadId,
-  secret,
 }: ResendPaymentLink24hButtonProps) {
   const router = useRouter();
   const [state, formAction] = useActionState(
@@ -53,7 +51,6 @@ export function ResendPaymentLink24hButton({
     <div className="space-y-2">
       <form action={formAction} className="inline">
         <input type="hidden" name="leadId" value={leadId} />
-        <input type="hidden" name="secret" value={secret} />
         <Button type="submit" variant="primary" className="text-xs">
           <SubmitLabel />
         </Button>

@@ -7,7 +7,6 @@ import type { DepositSort } from "@/lib/admin-tabs";
 import { cn } from "@/lib/cn";
 
 type DepositSortToggleProps = {
-  secret: string;
   activeSort: DepositSort;
 };
 
@@ -20,9 +19,8 @@ const OPTIONS: Array<{
   { id: "level", label: "Poziom", Icon: Layers },
 ];
 
-function hrefForSort(secret: string, sort: DepositSort): string {
+function hrefForSort(sort: DepositSort): string {
   const params = new URLSearchParams({
-    secret,
     tab: "deposit",
   });
   if (sort === "level") {
@@ -31,10 +29,7 @@ function hrefForSort(secret: string, sort: DepositSort): string {
   return `/admin?${params.toString()}`;
 }
 
-export function DepositSortToggle({
-  secret,
-  activeSort,
-}: DepositSortToggleProps) {
+export function DepositSortToggle({ activeSort }: DepositSortToggleProps) {
   const router = useRouter();
 
   return (
@@ -57,7 +52,7 @@ export function DepositSortToggle({
               type="button"
               aria-pressed={isActive}
               onClick={() =>
-                router.replace(hrefForSort(secret, option.id), {
+                router.replace(hrefForSort(option.id), {
                   scroll: false,
                 })
               }

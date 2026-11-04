@@ -13,7 +13,6 @@ import { cn } from "@/lib/cn";
 import { formatPln } from "@/lib/money";
 
 type GeneratedMessagesProps = {
-  secret: string;
   messages: GeneratedMessage[];
   skipped: Array<{ displayName: string; reason: string }>;
 };
@@ -50,13 +49,7 @@ function CopyButton({
   );
 }
 
-function MessageCard({
-  secret,
-  message,
-}: {
-  secret: string;
-  message: GeneratedMessage;
-}) {
+function MessageCard({ message }: { message: GeneratedMessage }) {
   const [isSent, setIsSent] = useState(Boolean(message.messageSentAt));
   const [settledLabel, setSettledLabel] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -116,7 +109,6 @@ function MessageCard({
             setIsSent(nextSent);
             runAction(() =>
               toggleMessageSent({
-                secret,
                 periodId: message.periodId,
                 sent: nextSent,
               }),
@@ -134,7 +126,6 @@ function MessageCard({
             setSettledLabel("Gotówka");
             runAction(() =>
               markPeriodPaid({
-                secret,
                 periodId: message.periodId,
                 method: "CASH",
               }),
@@ -152,7 +143,6 @@ function MessageCard({
             setSettledLabel("Przelew");
             runAction(() =>
               markPeriodPaid({
-                secret,
                 periodId: message.periodId,
                 method: "TRANSFER",
               }),
@@ -173,7 +163,6 @@ function MessageCard({
 }
 
 export function GeneratedMessages({
-  secret,
   messages,
   skipped,
 }: GeneratedMessagesProps) {
@@ -215,11 +204,7 @@ export function GeneratedMessages({
       {messages.length > 0 ? (
         <ul className="mt-3 grid gap-2.5 lg:grid-cols-2">
           {messages.map((message) => (
-            <MessageCard
-              key={message.leadId}
-              secret={secret}
-              message={message}
-            />
+            <MessageCard key={message.leadId} message={message} />
           ))}
         </ul>
       ) : null}

@@ -21,7 +21,6 @@ export type AdminGroupOption = {
 
 type AssignGroupControlProps = {
   leadId: string;
-  secret: string;
   currentGroupId: string | null;
   requestedPackage: string | null;
   groups: AdminGroupOption[];
@@ -44,7 +43,6 @@ function SubmitLabel() {
 
 export function AssignGroupControl({
   leadId,
-  secret,
   currentGroupId,
   requestedPackage,
   groups,
@@ -88,7 +86,6 @@ export function AssignGroupControl({
         className="flex flex-col gap-2 sm:flex-row sm:items-center"
       >
         <input type="hidden" name="leadId" value={leadId} />
-        <input type="hidden" name="secret" value={secret} />
         <select
           name="groupId"
           defaultValue={currentGroupId ?? ""}

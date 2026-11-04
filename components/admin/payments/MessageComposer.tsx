@@ -17,19 +17,16 @@ import {
 } from "@/lib/messages/render";
 
 type MessageComposerProps = {
-  secret: string;
   templates: AdminMessageTemplate[];
   body: string;
   onChangeBody: (body: string) => void;
 };
 
 function TemplateList({
-  secret,
   templates,
   activeId,
   onSelect,
 }: {
-  secret: string;
   templates: AdminMessageTemplate[];
   activeId: string | null;
   onSelect: (template: AdminMessageTemplate) => void;
@@ -66,7 +63,7 @@ function TemplateList({
               disabled={isPending}
               onClick={() =>
                 startTransition(async () => {
-                  await deleteMessageTemplate({ secret, id: template.id });
+                  await deleteMessageTemplate({ id: template.id });
                 })
               }
               aria-label={`Usuń szablon ${template.name}`}
@@ -82,11 +79,9 @@ function TemplateList({
 }
 
 function SaveTemplateForm({
-  secret,
   body,
   onSaved,
 }: {
-  secret: string;
   body: string;
   onSaved: () => void;
 }) {
@@ -109,7 +104,7 @@ function SaveTemplateForm({
         disabled={isPending}
         onClick={() =>
           startTransition(async () => {
-            const result = await saveMessageTemplate({ secret, name, body });
+            const result = await saveMessageTemplate({ name, body });
             setMessage(result.message ?? null);
 
             if (result.status === "success") {
@@ -128,7 +123,6 @@ function SaveTemplateForm({
 }
 
 export function MessageComposer({
-  secret,
   templates,
   body,
   onChangeBody,
@@ -222,7 +216,6 @@ export function MessageComposer({
             )}
           >
             <TemplateList
-              secret={secret}
               templates={templates}
               activeId={activeTemplateId}
               onSelect={handleSelect}
@@ -230,7 +223,6 @@ export function MessageComposer({
 
             {isSaveFormOpen ? (
               <SaveTemplateForm
-                secret={secret}
                 body={body}
                 onSaved={() => setIsSaveFormOpen(false)}
               />

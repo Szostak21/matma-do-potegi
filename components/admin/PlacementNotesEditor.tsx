@@ -15,7 +15,6 @@ const initialState: UpdatePlacementNotesState = { status: "idle" };
 
 type PlacementNotesEditorProps = {
   leadId: string;
-  secret: string;
   defaultValue: string | null;
 };
 
@@ -36,7 +35,6 @@ function SubmitLabel() {
 
 export function PlacementNotesEditor({
   leadId,
-  secret,
   defaultValue,
 }: PlacementNotesEditorProps) {
   const [state, formAction] = useActionState(
@@ -47,7 +45,6 @@ export function PlacementNotesEditor({
   return (
     <form action={formAction} className="space-y-2">
       <input type="hidden" name="leadId" value={leadId} />
-      <input type="hidden" name="secret" value={secret} />
       <Textarea
         name="placementTestNotes"
         rows={2}

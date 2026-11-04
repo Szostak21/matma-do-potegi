@@ -9,16 +9,15 @@ import { ADMIN_TABS } from "@/lib/admin-tabs";
 import { cn } from "@/lib/cn";
 
 type AdminTabsNavProps = {
-  secret: string;
   activeTab: AdminTabId;
   counts: Partial<Record<AdminTabId, number>>;
 };
 
-function tabHref(secret: string, tabId: AdminTabId): string {
-  return `/admin?secret=${encodeURIComponent(secret)}&tab=${tabId}`;
+function tabHref(tabId: AdminTabId): string {
+  return `/admin?tab=${tabId}`;
 }
 
-export function AdminTabsNav({ secret, activeTab, counts }: AdminTabsNavProps) {
+export function AdminTabsNav({ activeTab, counts }: AdminTabsNavProps) {
   const router = useRouter();
   const [showResigned, setShowResigned] = useState(activeTab === "resigned");
 
@@ -40,7 +39,7 @@ export function AdminTabsNav({ secret, activeTab, counts }: AdminTabsNavProps) {
             if (next === "resigned") {
               setShowResigned(true);
             }
-            router.push(tabHref(secret, next));
+            router.push(tabHref(next));
           }}
           className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-base text-ink"
         >
@@ -71,7 +70,7 @@ export function AdminTabsNav({ secret, activeTab, counts }: AdminTabsNavProps) {
         aria-label="Sekcje panelu"
       >
         {visibleTabs.map((tab) => {
-          const href = tabHref(secret, tab.id);
+          const href = tabHref(tab.id);
           const count = counts[tab.id];
           const isActive = activeTab === tab.id;
 
@@ -107,7 +106,7 @@ export function AdminTabsNav({ secret, activeTab, counts }: AdminTabsNavProps) {
           type="button"
           onClick={() => {
             setShowResigned(true);
-            router.push(tabHref(secret, "resigned"));
+            router.push(tabHref("resigned"));
           }}
           className="hidden text-xs text-ink/50 underline-offset-2 hover:underline md:inline"
         >

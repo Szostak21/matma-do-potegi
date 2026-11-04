@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { LeadStatus } from "@prisma/client";
 
-import { assertAdminSecret } from "@/lib/auth";
+import { assertAdminSession } from "@/lib/admin-session";
 import { prisma } from "@/lib/prisma";
 
 export type AssignGroupState = {
@@ -23,8 +23,6 @@ export async function assignLeadToGroup(
 ): Promise<AssignGroupState> {
   const leadId = formData.get("leadId");
   const groupId = formData.get("groupId");
-  const secret = formData.get("secret")?.toString();
-
   if (!leadId || typeof leadId !== "string") {
     return { status: "error", message: "Brak identyfikatora leada." };
   }
@@ -34,7 +32,7 @@ export async function assignLeadToGroup(
   }
 
   try {
-    assertAdminSecret(secret);
+    await assertAdminSession();
   } catch {
     return { status: "error", message: "Brak uprawnień." };
   }

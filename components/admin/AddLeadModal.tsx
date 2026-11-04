@@ -14,10 +14,6 @@ import { PACKAGE_OPTIONS } from "@/lib/content";
 
 const initialState: CreateManualLeadState = { status: "idle" };
 
-type AddLeadModalProps = {
-  secret: string;
-};
-
 function SubmitLabel() {
   const { pending } = useFormStatus();
 
@@ -33,7 +29,7 @@ function SubmitLabel() {
   return <>Dodaj ucznia</>;
 }
 
-export function AddLeadModal({ secret }: AddLeadModalProps) {
+export function AddLeadModal() {
   const [open, setOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
   const [state, formAction] = useActionState(createManualLead, initialState);
@@ -88,8 +84,6 @@ export function AddLeadModal({ secret }: AddLeadModalProps) {
             </div>
 
             <form key={formKey} action={formAction} className="space-y-4">
-              <input type="hidden" name="secret" value={secret} />
-
               <div className="space-y-2">
                 <Label htmlFor="manual-parentName">Imię i nazwisko *</Label>
                 <Input
