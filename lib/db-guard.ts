@@ -1,23 +1,84 @@
 import type { PrismaClient } from "@prisma/client";
 
-/** Project-ref produkcyjnego Supabase — `.env` wskazuje na tę bazę. */
-export const PRODUCTION_DB_MARKERS = ["kqhtwmzrpbsxvlycnfgd"] as const;
-
 const DESTRUCTIVE_SQL =
   /\b(truncate|drop\s+table|drop\s+schema|delete\s+from)\b/i;
 
-export function isProductionDatabase(): boolean {
-  const blob = [
-    process.env.DATABASE_URL,
-    process.env.DIRECT_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-  ].join(" ");
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 
-  return PRODUCTION_DB_MARKERS.some((marker) => blob.includes(marker));
+export type DatabaseEnv = {
+  DATABASE_URL?: string;
+  DIRECT_URL?: string;
+  NEXT_PUBLIC_SUPABASE_URL?: string;
+  PROTECTED_DB_MARKERS?: string;
+};
+
+function currentDatabaseEnv(): DatabaseEnv {
+  return {
+    DATABASE_URL: process.env.DATABASE_URL,
+    DIRECT_URL: process.env.DIRECT_URL,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    PROTECTED_DB_MARKERS: process.env.PROTECTED_DB_MARKERS,
+  };
 }
 
-export function assertSafePrismaCli(args: string[]): void {
-  if (!isProductionDatabase()) {
+/** Comma-separated fragments from `PROTECTED_DB_MARKERS` (for example a project ref). */
+export function protectedDbMarkers(
+  env: DatabaseEnv = currentDatabaseEnv(),
+): string[] {
+  return (env.PROTECTED_DB_MARKERS ?? "")
+    .split(",")
+    .map((marker) => marker.trim())
+    .filter(Boolean);
+}
+
+function connectionStrings(env: DatabaseEnv): string[] {
+  return [
+    env.DATABASE_URL,
+    env.DIRECT_URL,
+    env.NEXT_PUBLIC_SUPABASE_URL,
+  ].filter((value): value is string => Boolean(value && value.trim()));
+}
+
+/** True when the URL host is this machine. Unparseable strings are treated as remote. */
+export function isLocalDatabaseUrl(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return true;
+  }
+
+  try {
+    const normalized = trimmed.replace(/^postgres(ql)?:\/\//i, "http://");
+    const host = new URL(normalized).hostname.replace(/^\[|\]$/g, "");
+    return LOCAL_HOSTS.has(host);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * A database is production when a configured marker matches, or — if no markers
+ * are set — when any connection string points off localhost. Missing config is
+ * not production. The default is stricter than a marker allow-list.
+ */
+export function isProductionDatabase(
+  env: DatabaseEnv = currentDatabaseEnv(),
+): boolean {
+  const urls = connectionStrings(env);
+  const blob = urls.join(" ");
+  const markers = protectedDbMarkers(env);
+
+  if (markers.length > 0) {
+    return markers.some((marker) => blob.includes(marker));
+  }
+
+  return urls.some((url) => !isLocalDatabaseUrl(url));
+}
+
+export function assertSafePrismaCli(
+  args: string[],
+  env: DatabaseEnv = currentDatabaseEnv(),
+): void {
+  if (!isProductionDatabase(env)) {
     return;
   }
 

@@ -15,14 +15,15 @@ export const DEFAULT_FROM =
 
 const DEFAULT_REPLY_TO = FOOTER.email;
 
-const DEFAULT_ADMIN_RECIPIENTS = [
-  "kontakt@matmadopotegi.pl",
-] as const;
-
-export const ADMIN_NOTIFICATION_RECIPIENTS =
-  process.env.ADMIN_NOTIFICATION_EMAILS?.split(",")
+/** Comma-separated `ADMIN_NOTIFICATION_EMAILS`, or the studio contact address. */
+export function adminNotificationRecipients(): string[] {
+  const configured = (process.env.ADMIN_NOTIFICATION_EMAILS ?? "")
+    .split(",")
     .map((email) => email.trim())
-    .filter(Boolean) ?? [...DEFAULT_ADMIN_RECIPIENTS];
+    .filter(Boolean);
+
+  return configured.length > 0 ? configured : [FOOTER.email];
+}
 
 function getResend(): Resend | null {
   const apiKey = process.env.RESEND_API_KEY;
@@ -162,8 +163,14 @@ export async function sendAdminLeadNotification(
     rows.push({ label: copy.sourceLabel, value: trafficSource });
   }
 
+  const recipients = adminNotificationRecipients();
+  if (recipients.length === 0) {
+    console.error("ADMIN_NOTIFICATION_EMAILS is not configured.");
+    return { ok: false };
+  }
+
   return sendEmail({
-    to: ADMIN_NOTIFICATION_RECIPIENTS,
+    to: recipients,
     subject: copy.subject(params.parentName),
     replyTo: params.email,
     react: createElement(AdminNotificationEmail, {
@@ -186,9 +193,14 @@ export async function sendAdminDepositNotification(
   params: AdminDepositNotificationParams,
 ): Promise<{ ok: boolean }> {
   const copy = EMAILS.adminDeposit;
+  const recipients = adminNotificationRecipients();
+  if (recipients.length === 0) {
+    console.error("ADMIN_NOTIFICATION_EMAILS is not configured.");
+    return { ok: false };
+  }
 
   return sendEmail({
-    to: ADMIN_NOTIFICATION_RECIPIENTS,
+    to: recipients,
     subject: copy.subject(params.parentName),
     react: createElement(AdminNotificationEmail, {
       preview: copy.preview,
@@ -217,9 +229,14 @@ export async function sendAdminTuitionNotification(
   params: AdminTuitionNotificationParams,
 ): Promise<{ ok: boolean }> {
   const copy = EMAILS.adminTuition;
+  const recipients = adminNotificationRecipients();
+  if (recipients.length === 0) {
+    console.error("ADMIN_NOTIFICATION_EMAILS is not configured.");
+    return { ok: false };
+  }
 
   return sendEmail({
-    to: ADMIN_NOTIFICATION_RECIPIENTS,
+    to: recipients,
     subject: copy.subject(params.displayName),
     react: createElement(AdminNotificationEmail, {
       preview: copy.preview,
