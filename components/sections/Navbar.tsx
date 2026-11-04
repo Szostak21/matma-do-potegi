@@ -3,7 +3,7 @@
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import type { MouseEvent } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "@/components/ui/Button";
@@ -17,14 +17,14 @@ const MD_MIN_WIDTH = "(min-width: 768px)";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [portalReady, setPortalReady] = useState(false);
+  const portalReady = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const closeMobileMenu = useCallback(() => {
     setMobileOpen(false);
-  }, []);
-
-  useEffect(() => {
-    setPortalReady(true);
   }, []);
 
   // Escape / resize→desktop zamykają menu.

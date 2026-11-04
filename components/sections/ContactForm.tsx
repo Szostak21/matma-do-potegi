@@ -276,6 +276,8 @@ export function ContactForm() {
 
   // First-touch UTM + referral — z URL / storage do hidden fields.
   // Błąd storage / parse nigdy nie blokuje formularza.
+  // Odczyt localStorage jest zewnętrznym źródłem; setState po nim jest celowy.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     try {
       captureFirstTouchUtmFromSearch(window.location.search);
@@ -287,6 +289,7 @@ export function ContactForm() {
       setReferredById("");
     }
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     let cancelled = false;

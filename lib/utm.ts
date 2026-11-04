@@ -293,8 +293,3 @@ export function formatTrafficSourceLabel(fields: LeadUtmFields): string | null {
   const detail = extraDetail(fields, channel);
   return detail ? `${channel} · ${detail}` : channel;
 }
-
-/** @deprecated Użyj formatTrafficSourceLabel. */
-export function formatUtmForAdmin(fields: LeadUtmFields): string | null {
-  return formatTrafficSourceLabel(fields);
-}
