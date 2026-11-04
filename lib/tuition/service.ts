@@ -12,14 +12,19 @@ import {
 } from "@prisma/client";
 
 import { leadDisplayName, type AdminBillingRow } from "@/lib/admin-tabs";
-import {
-  DEPOSIT_AMOUNT_GROSZE,
-  packageMonthlyPriceGrosze,
-} from "@/lib/constants";
 import { toMonthInputValue } from "@/lib/dates";
 import { buildShortPaymentUrl } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
 import { generatePaymentToken, generateShortCode } from "@/lib/tokens";
+import {
+  computeAmountDue,
+  computeSuggestedAmounts,
+  resolveBillingMonth,
+  type SuggestedAmounts,
+  type SuggestionContext,
+} from "@/lib/tuition/amounts";
+
+export { resolveBillingMonth };
 
 /**
  * Serwis czesnego — cała logika kwot, okresów i linków płatniczych.
@@ -34,37 +39,12 @@ const BILLABLE_LEAD_STATUSES: LeadStatus[] = [
   LeadStatus.PAID_DEPOSIT,
 ];
 
-/** Po 20. dniu miesiąca rozliczamy już kolejny miesiąc. */
-const NEXT_MONTH_SWITCH_DAY = 20;
-
 export type BillingRow = AdminBillingRow;
 
 export type PeriodPatch = {
   baseAmountGrosze?: number;
   discountGrosze?: number;
 };
-
-export type SuggestedAmounts = {
-  baseAmountGrosze: number;
-  discountGrosze: number;
-};
-
-/**
- * Domyślny miesiąc panelu: do 20. bieżący (jeszcze zbierasz wpłaty),
- * od 21. następny (wysyłasz linki z wyprzedzeniem).
- */
-export function resolveBillingMonth(now: Date = new Date()): Date {
-  const monthOffset = now.getDate() > NEXT_MONTH_SWITCH_DAY ? 1 : 0;
-
-  return new Date(Date.UTC(now.getFullYear(), now.getMonth() + monthOffset, 1));
-}
-
-export function computeAmountDue(
-  baseAmountGrosze: number,
-  discountGrosze: number,
-): number {
-  return Math.max(0, baseAmountGrosze - discountGrosze);
-}
 
 function sameUtcMonth(a: Date, b: Date): boolean {
   return (
@@ -75,51 +55,6 @@ function sameUtcMonth(a: Date, b: Date): boolean {
 
 function buildTransferTitle(leadId: string, month: Date): string {
   return `MDP ${toMonthInputValue(month)} ${leadId.slice(0, 8)}`;
-}
-
-export type SuggestionContext = {
-  /** Czy to pierwszy rozliczany miesiąc tego klienta. */
-  isFirstBillableMonth: boolean;
-  hasPaidDeposit: boolean;
-  /** Ostatnia kwota bazowa tego klienta — źródło stawki dla zajęć indywidualnych. */
-  previousBaseAmountGrosze: number | null;
-};
-
-/**
- * Propozycja kwoty i zniżki dla klienta w danym miesiącu. Zniżka jest sumą stałej
- * zniżki z profilu oraz — tylko w pierwszym miesiącu — zaliczki i bonusów z poleceń.
- */
-export function computeSuggestedAmounts(
-  lead: Pick<
-    Lead,
-    | "requestedPackage"
-    | "skipDeposit"
-    | "firstMonthPaid"
-    | "firstMonthDiscountGrosze"
-    | "standingDiscountGrosze"
-  >,
-  context: SuggestionContext,
-): SuggestedAmounts {
-  const baseFromPricing = packageMonthlyPriceGrosze(lead.requestedPackage);
-  const baseAmountGrosze =
-    baseFromPricing > 0
-      ? baseFromPricing
-      : (context.previousBaseAmountGrosze ?? 0);
-
-  let discountGrosze = lead.standingDiscountGrosze;
-
-  if (context.isFirstBillableMonth) {
-    discountGrosze += lead.firstMonthDiscountGrosze;
-
-    const depositCounts =
-      !lead.skipDeposit && (context.hasPaidDeposit || lead.firstMonthPaid);
-
-    if (depositCounts) {
-      discountGrosze += DEPOSIT_AMOUNT_GROSZE;
-    }
-  }
-
-  return { baseAmountGrosze, discountGrosze };
 }
 
 function toBillingRow(
