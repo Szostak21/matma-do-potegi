@@ -51,9 +51,11 @@ Server Actions handle the admin panel. Route handlers handle the Stripe webhook,
 
 **Stable payment links.** Customers receive `/p/<shortCode>`, not a Stripe URL. `CheckoutProvider` creates the gateway session only when the link is opened, so a later move from Stripe to Tpay does not invalidate messages that were already sent.
 
-**Webhook that can be delivered twice.** `checkout.session.completed` is verified with the Stripe signature. Marking a payment paid is idempotent: a retry does not change a lead twice or apply the referral discount twice.
+**A payment is completed exactly once.** The Stripe webhook and the customer's return from checkout usually arrive within the same second, and both try to close the payment. The switch to `PAID` is a conditional `UPDATE ... WHERE status <> 'PAID'`: one caller gets the row, the other gets zero rows and skips the emails and the referral reward. Tuition is added to the billing period with an atomic increment, so concurrent payments cannot overwrite each other.
 
-**Money is an integer.** Amounts are grosze (`410.00 zł` is `41000`). Tuition rows are unique on `(leadId, periodMonth)`, payments on `(leadId, billingPeriod, type)`, so the same month cannot be billed twice.
+**The last seat goes to one family.** A sign-up takes a per-package `pg_advisory_xact_lock` before counting free places, so parallel requests for a nearly full group are checked one after another instead of all seeing the same free seat.
+
+Both cases have an integration test that fires 8 parallel calls at a real PostgreSQL. CI runs it against a Postgres service container.
 
 **Analytics follows the consent banner.** GA4, Meta Pixel, Clarity and the server-side Conversions API run only after marketing consent. Browser and server events share an `event_id`, so Meta counts one conversion.
 
@@ -95,6 +97,12 @@ npm run lint
 ```
 
 GitHub Actions runs the same checks on every push and pull request. The unit tests cover money parsing, tuition suggestions, referral and UTM capture, SMS templates, and the admin session cookie.
+
+The concurrency tests need a local database (`docker compose up -d`, then `npm run db:deploy`):
+
+```bash
+INTEGRATION_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres?schema=matma" npm run test:integration
+```
 
 ## Roadmap
 

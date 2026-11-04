@@ -48,7 +48,7 @@ The SMS contains our URL. The Stripe session exists only after the click, and it
 
 `getCheckoutProvider()` returns the Stripe implementation. A second provider implements the same `CheckoutProvider` type. Already-sent links keep working because they never stored a Stripe URL.
 
-The webhook checks `Stripe-Signature` against `STRIPE_WEBHOOK_SECRET` and ignores any other event. `markPaymentPaid` returns early when the payment is already `PAID`, and it still retries the referral reward so a crash after the payment commit does not lose the discount.
+The webhook checks `Stripe-Signature` against `STRIPE_WEBHOOK_SECRET` and ignores any other event. `markPaymentPaid` is called by the webhook and by the return page, often at the same time. It claims the payment with a conditional update (`status <> PAID`), so only the caller that changed the row sends emails and the Meta event. The referral reward is applied outside that transaction with the same compare-and-set pattern, and is retried on later calls, so a crash after the payment commit does not lose the discount.
 
 ## Admin access
 
