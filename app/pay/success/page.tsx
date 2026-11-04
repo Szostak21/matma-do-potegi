@@ -25,7 +25,9 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function PaySuccessPage({ searchParams }: PaySuccessPageProps) {
+export default async function PaySuccessPage({
+  searchParams,
+}: PaySuccessPageProps) {
   const { token } = await searchParams;
 
   if (!token) {
@@ -77,7 +79,9 @@ export default async function PaySuccessPage({ searchParams }: PaySuccessPagePro
           <PaymentSummary
             paymentType={payment.type}
             reserverName={
-              isDeposit ? payment.lead.parentName : leadDisplayName(payment.lead)
+              isDeposit
+                ? payment.lead.parentName
+                : leadDisplayName(payment.lead)
             }
             requestedPackage={payment.lead.requestedPackage}
             amount={payment.amount}

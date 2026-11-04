@@ -6,7 +6,11 @@ import { Suspense, useEffect, useRef, useSyncExternalStore } from "react";
 
 import { ContactLinkTracker } from "@/components/ContactLinkTracker";
 import { trackPageView } from "@/lib/analytics-events";
-import { CLARITY_ID, getGaMeasurementId, META_PIXEL_ID } from "@/lib/analytics-config";
+import {
+  CLARITY_ID,
+  getGaMeasurementId,
+  META_PIXEL_ID,
+} from "@/lib/analytics-config";
 import {
   COOKIE_CONSENT_CHANGE_EVENT,
   getCookieConsent,

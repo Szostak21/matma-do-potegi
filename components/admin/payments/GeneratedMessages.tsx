@@ -62,7 +62,9 @@ function MessageCard({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  function runAction(action: () => Promise<{ status: string; message?: string }>) {
+  function runAction(
+    action: () => Promise<{ status: string; message?: string }>,
+  ) {
     startTransition(async () => {
       const result = await action();
       setError(result.status === "error" ? (result.message ?? null) : null);
@@ -180,7 +182,10 @@ export function GeneratedMessages({
   }
 
   const allBodies = messages
-    .map((message) => `${message.displayName} (${message.phoneNumber})\n${message.body}`)
+    .map(
+      (message) =>
+        `${message.displayName} (${message.phoneNumber})\n${message.body}`,
+    )
     .join("\n\n");
 
   return (

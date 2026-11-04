@@ -10,9 +10,7 @@ export function scrollToSectionId(
   }
 
   const top =
-    element.getBoundingClientRect().top +
-    window.scrollY -
-    NAVBAR_HEIGHT_PX;
+    element.getBoundingClientRect().top + window.scrollY - NAVBAR_HEIGHT_PX;
 
   window.scrollTo({ top, behavior });
   return true;

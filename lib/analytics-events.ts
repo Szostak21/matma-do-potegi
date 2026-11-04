@@ -19,7 +19,11 @@ declare global {
 
 type EventParams = Record<
   string,
-  string | number | boolean | undefined | ReadonlyArray<Record<string, string | number>>
+  | string
+  | number
+  | boolean
+  | undefined
+  | ReadonlyArray<Record<string, string | number>>
 >;
 
 type TrackResult = {

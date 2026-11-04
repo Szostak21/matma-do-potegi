@@ -3,10 +3,7 @@
 import { ChevronDown, Plus, Save, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 
-import {
-  deleteMessageTemplate,
-  saveMessageTemplate,
-} from "@/actions/tuition";
+import { deleteMessageTemplate, saveMessageTemplate } from "@/actions/tuition";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -125,9 +122,7 @@ function SaveTemplateForm({
         <Save className="size-3.5" aria-hidden />
         Zapisz jako nowy
       </Button>
-      {message ? (
-        <p className="text-[11px] text-ink/55">{message}</p>
-      ) : null}
+      {message ? <p className="text-[11px] text-ink/55">{message}</p> : null}
     </div>
   );
 }

@@ -12,10 +12,7 @@ const packageValues = Object.values(PackageType) as [
 ];
 
 export const leadFormSchema = z.object({
-  parentName: z
-    .string()
-    .trim()
-    .min(2, "Podaj imię i nazwisko"),
+  parentName: z.string().trim().min(2, "Podaj imię i nazwisko"),
   phone: z
     .string()
     .trim()
@@ -25,10 +22,7 @@ export const leadFormSchema = z.object({
     .string()
     .min(1, "Wybierz poziom zajęć")
     .pipe(z.enum(packageValues, { message: "Wybierz poziom zajęć" })),
-  schoolClass: z
-    .string()
-    .trim()
-    .min(1, "Podaj klasę (np. 4)"),
+  schoolClass: z.string().trim().min(1, "Podaj klasę (np. 4)"),
   notes: z
     .string()
     .trim()
@@ -103,8 +97,7 @@ export function formDataToObject(formData: FormData): Record<string, string> {
     package: String(formData.get("package") ?? ""),
     schoolClass: String(formData.get("schoolClass") ?? ""),
     notes: String(formData.get("notes") ?? ""),
-    acceptTerms:
-      formData.get("acceptTerms") === "on" ? "on" : "",
+    acceptTerms: formData.get("acceptTerms") === "on" ? "on" : "",
     utmSource: String(formData.get("utmSource") ?? ""),
     utmMedium: String(formData.get("utmMedium") ?? ""),
     utmCampaign: String(formData.get("utmCampaign") ?? ""),

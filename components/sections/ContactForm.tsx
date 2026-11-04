@@ -26,11 +26,7 @@ import {
 import { ReferralActiveNotice } from "@/components/ui/ReferralActiveNotice";
 import { TermsAcceptance } from "@/components/ui/TermsAcceptance";
 import { Textarea } from "@/components/ui/Textarea";
-import {
-  CONTACT,
-  PACKAGE_AVAILABILITY,
-  PACKAGE_OPTIONS,
-} from "@/lib/content";
+import { CONTACT, PACKAGE_AVAILABILITY, PACKAGE_OPTIONS } from "@/lib/content";
 import { PACKAGES } from "@/lib/constants";
 import type { PackageAvailability } from "@/lib/packages";
 import {
@@ -38,10 +34,7 @@ import {
   trackFormValidationError,
   trackLeadSubmit,
 } from "@/lib/analytics-events";
-import {
-  captureFirstTouchRefFromSearch,
-  readStoredRef,
-} from "@/lib/referral";
+import { captureFirstTouchRefFromSearch, readStoredRef } from "@/lib/referral";
 import { scrollUpToFirstInvalidFieldLabel } from "@/lib/scroll";
 import {
   captureFirstTouchUtmFromSearch,
@@ -158,10 +151,9 @@ export function ContactForm() {
     string[]
   > | null>(null);
   /** Ostatnie wartości z nieudanej walidacji klienta — hardening po ewentualnym form.reset(). */
-  const [draftValues, setDraftValues] = useState<Record<
-    string,
-    string
-  > | null>(null);
+  const [draftValues, setDraftValues] = useState<Record<string, string> | null>(
+    null,
+  );
   /** Remount pól po zapisie draftu, żeby uncontrolled defaultValue weszło w życie. */
   const [draftEpoch, setDraftEpoch] = useState(0);
   const [trackedErrors, setTrackedErrors] = useState(state.errors);
@@ -170,8 +162,7 @@ export function ContactForm() {
   const [utm, setUtm] = useState<UtmParams>({});
   const [referredById, setReferredById] = useState("");
   const fieldValues = draftValues ?? state.values;
-  const packageFieldKey =
-    fieldValues?.package ?? "package-default";
+  const packageFieldKey = fieldValues?.package ?? "package-default";
   const formStartTracked = useRef(false);
   const leadTrackedRef = useRef(false);
   /** Blokada od pierwszego kliknięcia — zanim useFormStatus.pending zdąży się ustawić. */
@@ -330,11 +321,7 @@ export function ContactForm() {
   }, []);
 
   useEffect(() => {
-    if (
-      state.status !== "success" ||
-      !state.leadId ||
-      leadTrackedRef.current
-    ) {
+    if (state.status !== "success" || !state.leadId || leadTrackedRef.current) {
       return;
     }
 
@@ -347,9 +334,7 @@ export function ContactForm() {
       try {
         await trackLeadSubmit({
           packageType:
-            state.requestedPackage ??
-            state.values?.package ??
-            selectedPackage,
+            state.requestedPackage ?? state.values?.package ?? selectedPackage,
           eventId: state.eventId,
         });
       } finally {
@@ -435,8 +420,16 @@ export function ContactForm() {
               onFocus={handleFormInteraction}
               onChange={handleFormInteraction}
             >
-              <input type="hidden" name="utmSource" value={utm.utm_source ?? ""} />
-              <input type="hidden" name="utmMedium" value={utm.utm_medium ?? ""} />
+              <input
+                type="hidden"
+                name="utmSource"
+                value={utm.utm_source ?? ""}
+              />
+              <input
+                type="hidden"
+                name="utmMedium"
+                value={utm.utm_medium ?? ""}
+              />
               <input
                 type="hidden"
                 name="utmCampaign"
@@ -455,131 +448,131 @@ export function ContactForm() {
               ) : null}
               <div key={draftEpoch} className="space-y-6">
                 <div className="grid gap-6 sm:grid-cols-2">
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="parentName">
-                    Imię i nazwisko osoby zgłaszającej *
-                  </Label>
-                  <Input
-                    id="parentName"
-                    name="parentName"
-                    type="text"
-                    autoComplete="name"
-                    placeholder="Jan Kowalski"
-                    defaultValue={fieldValues?.parentName}
-                    aria-invalid={Boolean(parentNameError)}
-                    onFocus={() => clearFieldError("parentName")}
-                  />
-                  <FieldError message={parentNameError} />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Numer telefonu *</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    autoComplete="tel"
-                    placeholder="+48 000 000 000"
-                    defaultValue={fieldValues?.phone}
-                    aria-invalid={Boolean(phoneError)}
-                    onFocus={() => clearFieldError("phone")}
-                  />
-                  <FieldError message={phoneError} />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Adres e-mail *</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="jan@example.com"
-                    defaultValue={fieldValues?.email}
-                    aria-invalid={Boolean(emailError)}
-                    onFocus={() => clearFieldError("email")}
-                  />
-                  <FieldError message={emailError} />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="package">Wybierz poziom zajęć *</Label>
-                  <Select
-                    key={packageFieldKey}
-                    id="package"
-                    name="package"
-                    defaultValue={fieldValues?.package ?? ""}
-                    aria-invalid={Boolean(packageError)}
-                    onFocus={() => clearFieldError("package")}
-                    onChange={(event) => {
-                      clearFieldError("package");
-                      setSelectedPackage(event.target.value);
-                    }}
-                  >
-                    {PACKAGE_OPTIONS.map((option) => {
-                      const entry = availability.find(
-                        (item) => item.packageType === option.value,
-                      );
-                      const isFull = entry ? entry.available <= 0 : false;
-                      const packageName =
-                        option.value &&
-                        PACKAGES[option.value as PackageType]?.name;
-
-                      return (
-                        <option
-                          key={option.value || "empty"}
-                          value={option.value}
-                          disabled={Boolean(option.value && isFull)}
-                        >
-                          {option.value && packageName
-                            ? isFull
-                              ? `${packageName} - brak miejsc`
-                              : packageName
-                            : option.label}
-                        </option>
-                      );
-                    })}
-                  </Select>
-                  {loadingAvailability ? (
-                    <p className="text-sm text-ink/50">
-                      {PACKAGE_AVAILABILITY.loading}
-                    </p>
-                  ) : (
-                    <PackageAvailabilityHint
-                      packageType={selectedPackage}
-                      availability={availability}
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="parentName">
+                      Imię i nazwisko osoby zgłaszającej *
+                    </Label>
+                    <Input
+                      id="parentName"
+                      name="parentName"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Jan Kowalski"
+                      defaultValue={fieldValues?.parentName}
+                      aria-invalid={Boolean(parentNameError)}
+                      onFocus={() => clearFieldError("parentName")}
                     />
-                  )}
-                  <FieldError message={packageError} />
-                </div>
+                    <FieldError message={parentNameError} />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="schoolClass">Klasa (od września) *</Label>
-                  <Input
-                    id="schoolClass"
-                    name="schoolClass"
-                    type="text"
-                    placeholder="np. 4"
-                    defaultValue={fieldValues?.schoolClass}
-                    aria-invalid={Boolean(schoolClassError)}
-                    onFocus={() => clearFieldError("schoolClass")}
-                  />
-                  <FieldError message={schoolClassError} />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Numer telefonu *</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      autoComplete="tel"
+                      placeholder="+48 000 000 000"
+                      defaultValue={fieldValues?.phone}
+                      aria-invalid={Boolean(phoneError)}
+                      onFocus={() => clearFieldError("phone")}
+                    />
+                    <FieldError message={phoneError} />
+                  </div>
 
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="notes">Uwagi</Label>
-                  <Textarea
-                    id="notes"
-                    name="notes"
-                    rows={3}
-                    placeholder="Np. preferowany termin, pytania o zajęcia..."
-                    defaultValue={fieldValues?.notes}
-                    aria-invalid={Boolean(notesError)}
-                    onFocus={() => clearFieldError("notes")}
-                  />
-                  <FieldError message={notesError} />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Adres e-mail *</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="jan@example.com"
+                      defaultValue={fieldValues?.email}
+                      aria-invalid={Boolean(emailError)}
+                      onFocus={() => clearFieldError("email")}
+                    />
+                    <FieldError message={emailError} />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="package">Wybierz poziom zajęć *</Label>
+                    <Select
+                      key={packageFieldKey}
+                      id="package"
+                      name="package"
+                      defaultValue={fieldValues?.package ?? ""}
+                      aria-invalid={Boolean(packageError)}
+                      onFocus={() => clearFieldError("package")}
+                      onChange={(event) => {
+                        clearFieldError("package");
+                        setSelectedPackage(event.target.value);
+                      }}
+                    >
+                      {PACKAGE_OPTIONS.map((option) => {
+                        const entry = availability.find(
+                          (item) => item.packageType === option.value,
+                        );
+                        const isFull = entry ? entry.available <= 0 : false;
+                        const packageName =
+                          option.value &&
+                          PACKAGES[option.value as PackageType]?.name;
+
+                        return (
+                          <option
+                            key={option.value || "empty"}
+                            value={option.value}
+                            disabled={Boolean(option.value && isFull)}
+                          >
+                            {option.value && packageName
+                              ? isFull
+                                ? `${packageName} - brak miejsc`
+                                : packageName
+                              : option.label}
+                          </option>
+                        );
+                      })}
+                    </Select>
+                    {loadingAvailability ? (
+                      <p className="text-sm text-ink/50">
+                        {PACKAGE_AVAILABILITY.loading}
+                      </p>
+                    ) : (
+                      <PackageAvailabilityHint
+                        packageType={selectedPackage}
+                        availability={availability}
+                      />
+                    )}
+                    <FieldError message={packageError} />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="schoolClass">Klasa (od września) *</Label>
+                    <Input
+                      id="schoolClass"
+                      name="schoolClass"
+                      type="text"
+                      placeholder="np. 4"
+                      defaultValue={fieldValues?.schoolClass}
+                      aria-invalid={Boolean(schoolClassError)}
+                      onFocus={() => clearFieldError("schoolClass")}
+                    />
+                    <FieldError message={schoolClassError} />
+                  </div>
+
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="notes">Uwagi</Label>
+                    <Textarea
+                      id="notes"
+                      name="notes"
+                      rows={3}
+                      placeholder="Np. preferowany termin, pytania o zajęcia..."
+                      defaultValue={fieldValues?.notes}
+                      aria-invalid={Boolean(notesError)}
+                      onFocus={() => clearFieldError("notes")}
+                    />
+                    <FieldError message={notesError} />
+                  </div>
                 </div>
 
                 <TermsAcceptance

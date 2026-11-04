@@ -68,10 +68,7 @@ export function attachWipeGuard(client: PrismaClient): PrismaClient {
           );
         }
 
-        if (
-          operation === "executeRaw" ||
-          operation === "executeRawUnsafe"
-        ) {
+        if (operation === "executeRaw" || operation === "executeRawUnsafe") {
           const sql = sqlFromRawArgs(args);
           if (DESTRUCTIVE_SQL.test(sql)) {
             throw new Error(

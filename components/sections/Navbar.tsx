@@ -47,7 +47,8 @@ export function Navbar() {
       htmlScrollBehavior: html.style.scrollBehavior,
     };
 
-    const scrollbarGap = window.innerWidth - document.documentElement.clientWidth;
+    const scrollbarGap =
+      window.innerWidth - document.documentElement.clientWidth;
 
     body.style.overflow = "hidden";
     body.style.position = "fixed";

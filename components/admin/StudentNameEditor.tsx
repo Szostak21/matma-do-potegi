@@ -77,7 +77,11 @@ export function StudentNameEditor({
             />
           </label>
           <div className="flex flex-wrap items-center gap-2">
-            <Button type="submit" variant="secondary" className="px-4 py-2 text-xs">
+            <Button
+              type="submit"
+              variant="secondary"
+              className="px-4 py-2 text-xs"
+            >
               <SubmitLabel />
             </Button>
             <button

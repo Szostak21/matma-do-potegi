@@ -4,11 +4,7 @@ import { Accordion } from "@/components/ui/Accordion";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import {
-  CONTACT_PHONE_TEL,
-  FAQ_ITEMS,
-  FOOTER,
-} from "@/lib/content";
+import { CONTACT_PHONE_TEL, FAQ_ITEMS, FOOTER } from "@/lib/content";
 
 export function Faq() {
   return (

@@ -111,9 +111,7 @@ export function groupDepositLeadsByLevel(
           ? DEPOSIT_LEVEL_HEADINGS[key as PackageType]
           : "Inne",
       leads: groupLeads,
-      rank: packageLevelRank(
-        key === "UNKNOWN" ? null : (key as PackageType),
-      ),
+      rank: packageLevelRank(key === "UNKNOWN" ? null : (key as PackageType)),
     }))
     .sort((a, b) => a.rank - b.rank)
     .map(({ key, label, leads: groupLeads }) => ({
@@ -224,8 +222,7 @@ export function filterLeadsForTab(
     case "active":
       return leads.filter(
         (lead) =>
-          lead.requestedPackage !== "INDYWIDUALNE" &&
-          lead.status === "ACTIVE",
+          lead.requestedPackage !== "INDYWIDUALNE" && lead.status === "ACTIVE",
       );
     case "individual":
       return leads.filter(

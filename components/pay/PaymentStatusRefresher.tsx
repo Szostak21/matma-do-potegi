@@ -12,7 +12,9 @@ type PaymentStatusRefresherProps = {
  * Stripe czasem wraca na success zanim sesja jest już "paid" po retrieve.
  * Bez odświeżenia PurchaseTracker w ogóle się nie montuje.
  */
-export function PaymentStatusRefresher({ isPaid }: PaymentStatusRefresherProps) {
+export function PaymentStatusRefresher({
+  isPaid,
+}: PaymentStatusRefresherProps) {
   const router = useRouter();
 
   useEffect(() => {

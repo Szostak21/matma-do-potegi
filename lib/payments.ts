@@ -4,11 +4,7 @@ import type {
   TuitionPeriodStatus,
 } from "@prisma/client";
 
-export type PaymentDisplayState =
-  | "paid"
-  | "pending"
-  | "expired"
-  | "cancelled";
+export type PaymentDisplayState = "paid" | "pending" | "expired" | "cancelled";
 
 type PaymentLike = Pick<Payment, "status" | "expiresAt">;
 
@@ -80,8 +76,7 @@ export function findActiveDepositPayment<
   },
 >(payments: T[]): T | undefined {
   return payments.find(
-    (payment) =>
-      payment.status === "PENDING" && !isPaymentExpired(payment),
+    (payment) => payment.status === "PENDING" && !isPaymentExpired(payment),
   );
 }
 

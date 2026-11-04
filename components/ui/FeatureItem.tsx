@@ -8,7 +8,11 @@ type FeatureItemProps = {
   description: string;
 };
 
-export function FeatureItem({ icon: Icon, title, description }: FeatureItemProps) {
+export function FeatureItem({
+  icon: Icon,
+  title,
+  description,
+}: FeatureItemProps) {
   return (
     <Card className="h-full">
       <div className="flex size-12 items-center justify-center rounded-2xl bg-olive-100 text-olive-700">

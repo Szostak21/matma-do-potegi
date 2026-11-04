@@ -2,7 +2,8 @@
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID?.trim() ?? "";
 
 /** ID Meta Pixel z Meta Events Manager. Opcjonalne. */
-export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() ?? "";
+export const META_PIXEL_ID =
+  process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() ?? "";
 
 /** ID projektu Microsoft Clarity. Opcjonalne. */
 export const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID?.trim() ?? "";

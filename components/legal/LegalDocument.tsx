@@ -84,7 +84,10 @@ export function LegalDocument({ doc }: LegalDocumentProps) {
             <h2 className="font-serif text-xl text-ink">{section.title}</h2>
             <div className="mt-4 space-y-4">
               {section.blocks.map((block, index) => (
-                <LegalBlockView key={`${section.title}-${index}`} block={block} />
+                <LegalBlockView
+                  key={`${section.title}-${index}`}
+                  block={block}
+                />
               ))}
             </div>
           </Card>

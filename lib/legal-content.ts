@@ -206,7 +206,8 @@ export const LEGAL = {
         ],
       },
       {
-        title: "7. Odwołanie lub spóźnienie z winy Prowadzącego i zdarzenia losowe",
+        title:
+          "7. Odwołanie lub spóźnienie z winy Prowadzącego i zdarzenia losowe",
         blocks: [
           {
             kind: "list",
@@ -415,7 +416,9 @@ export const LEGAL = {
             kind: "list",
             ordered: false,
             items: [
-              { text: "dostępu do swoich danych osobowych oraz otrzymania ich kopii," },
+              {
+                text: "dostępu do swoich danych osobowych oraz otrzymania ich kopii,",
+              },
               { text: "sprostowania (poprawiania) danych," },
               {
                 text: "usunięcia danych (prawo do bycia zapomnianym), jeśli nie ma prawnych podstaw do ich dalszego przetwarzania,",

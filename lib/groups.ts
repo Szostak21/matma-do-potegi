@@ -1,4 +1,9 @@
-import { LeadStatus, PackageType, PaymentStatus, PaymentType } from "@prisma/client";
+import {
+  LeadStatus,
+  PackageType,
+  PaymentStatus,
+  PaymentType,
+} from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import type { AvailableGroup } from "@/lib/types/groups";

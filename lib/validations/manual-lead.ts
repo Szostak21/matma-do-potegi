@@ -9,10 +9,7 @@ const packageValues = Object.values(PackageType) as [
 ];
 
 export const manualLeadSchema = z.object({
-  parentName: z
-    .string()
-    .trim()
-    .min(2, "Podaj imię i nazwisko"),
+  parentName: z.string().trim().min(2, "Podaj imię i nazwisko"),
   phone: z
     .string()
     .trim()

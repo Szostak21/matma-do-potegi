@@ -2,19 +2,11 @@
 
 import { randomUUID } from "node:crypto";
 
-import {
-  LeadStatus,
-  PaymentStatus,
-  PaymentType,
-  Prisma,
-} from "@prisma/client";
+import { LeadStatus, PaymentStatus, PaymentType, Prisma } from "@prisma/client";
 import { cookies } from "next/headers";
 import { after } from "next/server";
 
-import {
-  COOKIE_CONSENT_KEY,
-  parseCookieConsent,
-} from "@/lib/cookie-consent";
+import { COOKIE_CONSENT_KEY, parseCookieConsent } from "@/lib/cookie-consent";
 import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
 import { PACKAGE_POOL_FULL_MESSAGE } from "@/lib/content";
 import { addMinutes, ONLINE_PAYMENT_EXPIRY_MINUTES } from "@/lib/dates";

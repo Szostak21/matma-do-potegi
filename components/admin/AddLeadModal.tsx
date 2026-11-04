@@ -4,10 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import {
-  createManualLead,
-  type CreateManualLeadState,
-} from "@/actions/admin";
+import { createManualLead, type CreateManualLeadState } from "@/actions/admin";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
@@ -128,7 +125,12 @@ export function AddLeadModal({ secret }: AddLeadModalProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="manual-package">Poziom zajęć *</Label>
-                <Select id="manual-package" name="package" required defaultValue="">
+                <Select
+                  id="manual-package"
+                  name="package"
+                  required
+                  defaultValue=""
+                >
                   {PACKAGE_OPTIONS.map((option) => (
                     <option key={option.value || "empty"} value={option.value}>
                       {option.label}
@@ -161,11 +163,7 @@ export function AddLeadModal({ secret }: AddLeadModalProps) {
               </div>
 
               <label className="flex items-start gap-2 text-sm text-ink/80">
-                <input
-                  type="checkbox"
-                  name="skipDeposit"
-                  className="mt-1"
-                />
+                <input type="checkbox" name="skipDeposit" className="mt-1" />
                 <span>
                   Bez zaliczki (np. indywidualne) — status od razu{" "}
                   <em>Aktywny</em>
@@ -182,7 +180,9 @@ export function AddLeadModal({ secret }: AddLeadModalProps) {
                 <div className="space-y-3">
                   <p className="text-sm text-olive-700">{state.message}</p>
                   {state.payUrl ? (
-                    <p className="break-all text-xs text-ink/70">{state.payUrl}</p>
+                    <p className="break-all text-xs text-ink/70">
+                      {state.payUrl}
+                    </p>
                   ) : null}
                   <Button
                     type="button"

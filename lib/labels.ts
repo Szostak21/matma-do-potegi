@@ -1,4 +1,8 @@
-import type { LeadStatus, PackageType, TuitionPeriodStatus } from "@prisma/client";
+import type {
+  LeadStatus,
+  PackageType,
+  TuitionPeriodStatus,
+} from "@prisma/client";
 
 import { PACKAGES } from "@/lib/constants";
 

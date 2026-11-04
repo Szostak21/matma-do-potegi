@@ -52,7 +52,12 @@ function CopyLinkButton({ url }: { url: string }) {
   }
 
   return (
-    <Button type="button" variant="secondary" className="w-full" onClick={handleCopy}>
+    <Button
+      type="button"
+      variant="secondary"
+      className="w-full"
+      onClick={handleCopy}
+    >
       {copied ? "Skopiowano" : "Kopiuj link płatności"}
     </Button>
   );
@@ -102,7 +107,10 @@ export function LeadCard({
         <div>
           <dt className="text-xs text-ink/45">Telefon</dt>
           <dd>
-            <a href={`tel:${lead.phoneNumber}`} className="underline-offset-2 hover:underline">
+            <a
+              href={`tel:${lead.phoneNumber}`}
+              className="underline-offset-2 hover:underline"
+            >
               {lead.phoneNumber}
             </a>
           </dd>
@@ -207,7 +215,11 @@ export function LeadCard({
             <input type="hidden" name="secret" value={secret} />
             <input type="hidden" name="leadId" value={lead.id} />
             <input type="hidden" name="skipDeposit" value="false" />
-            <Button type="submit" variant="secondary" className="w-full text-xs">
+            <Button
+              type="submit"
+              variant="secondary"
+              className="w-full text-xs"
+            >
               Wymagaj zaliczki
             </Button>
             {skipState.message ? (

@@ -153,9 +153,7 @@ export function PaymentView({
       <div className="mt-6">
         <PayButton
           token={token}
-          label={
-            isDeposit ? DEPOSIT_PAYMENT.payButtonLabel : "Zapłać teraz"
-          }
+          label={isDeposit ? DEPOSIT_PAYMENT.payButtonLabel : "Zapłać teraz"}
           analytics={isDeposit ? { valueGrosze: amount } : undefined}
         />
       </div>

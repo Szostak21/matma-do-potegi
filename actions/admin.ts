@@ -10,10 +10,7 @@ import { addHours, PHONE_PAYMENT_EXPIRY_HOURS } from "@/lib/dates";
 import { sendPaymentLinkEmail } from "@/lib/emails";
 import { DEPOSIT_AMOUNT_GROSZE } from "@/lib/constants";
 import { packageLabel } from "@/lib/labels";
-import {
-  assertPackageHasCapacity,
-  PackagePoolFullError,
-} from "@/lib/packages";
+import { assertPackageHasCapacity, PackagePoolFullError } from "@/lib/packages";
 import { prisma } from "@/lib/prisma";
 import {
   manualLeadFormDataToObject,
@@ -419,6 +416,7 @@ export async function softDeleteLead(): Promise<{
 }> {
   return {
     status: "error",
-    message: "Soft-delete wyłączony. Zmień status leada (np. RESIGNED / CANCELLED).",
+    message:
+      "Soft-delete wyłączony. Zmień status leada (np. RESIGNED / CANCELLED).",
   };
 }

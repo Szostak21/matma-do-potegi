@@ -14,10 +14,7 @@ import { addHours, PHONE_PAYMENT_EXPIRY_HOURS } from "@/lib/dates";
 import { sendPaymentLinkEmail } from "@/lib/emails";
 import { packageLabel } from "@/lib/labels";
 import { sendMetaInitiateCheckoutEvent } from "@/lib/meta-capi";
-import {
-  assertPackageHasCapacity,
-  PackagePoolFullError,
-} from "@/lib/packages";
+import { assertPackageHasCapacity, PackagePoolFullError } from "@/lib/packages";
 import { isPaymentExpired, isTuitionPeriodSettled } from "@/lib/payments";
 import { prisma } from "@/lib/prisma";
 import { generatePaymentToken } from "@/lib/tokens";
@@ -365,7 +362,8 @@ async function renewDepositPaymentLinkForLead(
       return {
         status: "error",
         message:
-          checkout.message ?? "Nie udało się wygenerować nowej sesji płatności.",
+          checkout.message ??
+          "Nie udało się wygenerować nowej sesji płatności.",
       };
     }
 
@@ -547,7 +545,10 @@ export async function startCheckout(
       };
     }
 
-    if (payment.tuitionPeriod && isTuitionPeriodSettled(payment.tuitionPeriod)) {
+    if (
+      payment.tuitionPeriod &&
+      isTuitionPeriodSettled(payment.tuitionPeriod)
+    ) {
       return {
         status: "error",
         message: "Ta płatność została już rozliczona.",

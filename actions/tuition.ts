@@ -100,10 +100,7 @@ export async function updateBillingRow(
     authorize(input.secret);
 
     const month = requireMonth(input.month);
-    const baseAmountGrosze = requireAmount(
-      input.baseAmountGrosze,
-      "Kwota",
-    );
+    const baseAmountGrosze = requireAmount(input.baseAmountGrosze, "Kwota");
     const discountGrosze = requireAmount(input.discountGrosze, "Zniżka");
 
     if (baseAmountGrosze < 0) {

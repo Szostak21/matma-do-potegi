@@ -3,7 +3,13 @@
 import type { PackageType } from "@prisma/client";
 import { Loader2, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 
 import {
   bulkSetBaseAmount,
@@ -16,10 +22,7 @@ import { BillingColumns } from "@/components/admin/payments/BillingColumns";
 import { MessageComposer } from "@/components/admin/payments/MessageComposer";
 import { MoneyField } from "@/components/admin/payments/MoneyField";
 import { Button } from "@/components/ui/Button";
-import type {
-  AdminBillingRow,
-  AdminMessageTemplate,
-} from "@/lib/admin-tabs";
+import type { AdminBillingRow, AdminMessageTemplate } from "@/lib/admin-tabs";
 import { formatBillingMonth, parseMonthInputValue } from "@/lib/dates";
 import { formatPln } from "@/lib/money";
 
@@ -121,12 +124,17 @@ export function PaymentsPanel({
   }, [rows, selectedRows]);
 
   const withRowPending = useCallback(
-    (leadId: string, action: () => Promise<{ status: string; message?: string }>) => {
+    (
+      leadId: string,
+      action: () => Promise<{ status: string; message?: string }>,
+    ) => {
       setPendingLeadIds((current) => new Set(current).add(leadId));
 
       void action()
         .then((result) => {
-          setFeedback(result.status === "error" ? (result.message ?? null) : null);
+          setFeedback(
+            result.status === "error" ? (result.message ?? null) : null,
+          );
           router.refresh();
         })
         .finally(() => {

@@ -2,10 +2,7 @@
 
 import { useEffect } from "react";
 
-import {
-  trackPurchase,
-  waitForTrackingReady,
-} from "@/lib/analytics-events";
+import { trackPurchase, waitForTrackingReady } from "@/lib/analytics-events";
 import { hasAnalyticsConsent } from "@/lib/cookie-consent";
 
 const PURCHASE_TRACKED_PREFIX = "matma_purchase_tracked_";

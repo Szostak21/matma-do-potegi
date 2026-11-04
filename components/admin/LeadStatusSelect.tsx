@@ -3,10 +3,7 @@
 import { useActionState, useRef } from "react";
 import { LeadStatus } from "@prisma/client";
 
-import {
-  updateLeadStatus,
-  type UpdateLeadStatusState,
-} from "@/actions/admin";
+import { updateLeadStatus, type UpdateLeadStatusState } from "@/actions/admin";
 import { LEAD_STATUS_LABELS } from "@/lib/labels";
 
 const initialState: UpdateLeadStatusState = { status: "idle" };

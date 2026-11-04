@@ -39,7 +39,9 @@ const PAID_MEDIA = new Set([
 
 const ORGANIC_MEDIA = new Set(["organic", "seo"]);
 
-function sanitizeUtmValue(value: string | null | undefined): string | undefined {
+function sanitizeUtmValue(
+  value: string | null | undefined,
+): string | undefined {
   if (!value) {
     return undefined;
   }
@@ -219,7 +221,9 @@ function channelLabel(source: string, medium: string): string | null {
     return "Google";
   }
   if (isMeta && isPaidMedium(medium)) {
-    return source === "instagram" || source === "ig" ? "Instagram Ads" : "Meta Ads";
+    return source === "instagram" || source === "ig"
+      ? "Instagram Ads"
+      : "Meta Ads";
   }
   if (source === "instagram" || source === "ig") {
     return "Instagram";
@@ -253,8 +257,9 @@ function extraDetail(fields: LeadUtmFields, channel: string): string | null {
 
   const unique = candidates.filter(
     (value, index) =>
-      candidates.findIndex((item) => item.toLowerCase() === value.toLowerCase()) ===
-      index,
+      candidates.findIndex(
+        (item) => item.toLowerCase() === value.toLowerCase(),
+      ) === index,
   );
 
   for (const value of unique) {

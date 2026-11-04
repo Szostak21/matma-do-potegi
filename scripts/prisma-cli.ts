@@ -48,4 +48,3 @@ const result = spawnSync("npx", ["prisma", ...prismaArgs], {
 });
 
 process.exit(result.status === null ? 1 : result.status);
-

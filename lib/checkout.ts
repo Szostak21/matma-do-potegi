@@ -1,9 +1,4 @@
-import type {
-  Group,
-  Lead,
-  Payment,
-  TuitionPeriod,
-} from "@prisma/client";
+import type { Group, Lead, Payment, TuitionPeriod } from "@prisma/client";
 
 import { formatBillingMonth } from "@/lib/dates";
 import { packageLabel } from "@/lib/labels";
@@ -44,9 +39,10 @@ function buildDepositLineItem(lead: Lead & { group: Group | null }): {
   };
 }
 
-function buildTuitionLineItem(
-  payment: PaymentWithContext,
-): { title: string; description: string } {
+function buildTuitionLineItem(payment: PaymentWithContext): {
+  title: string;
+  description: string;
+} {
   const packageName = packageLabel(payment.lead.requestedPackage);
   const month = payment.tuitionPeriod?.periodMonth ?? payment.billingPeriod;
   const monthLabel = month ? formatBillingMonth(month) : null;
@@ -117,8 +113,14 @@ export async function createCheckoutSession(
       return { status: "error", message: "Link płatności wygasł." };
     }
 
-    if (payment.tuitionPeriod && isTuitionPeriodSettled(payment.tuitionPeriod)) {
-      return { status: "error", message: "Ta płatność została już rozliczona." };
+    if (
+      payment.tuitionPeriod &&
+      isTuitionPeriodSettled(payment.tuitionPeriod)
+    ) {
+      return {
+        status: "error",
+        message: "Ta płatność została już rozliczona.",
+      };
     }
 
     const amountGrosze = resolveAmountGrosze(payment);

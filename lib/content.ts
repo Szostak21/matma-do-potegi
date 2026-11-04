@@ -28,7 +28,7 @@ export const HERO = {
 export const ABOUT = {
   title: "Inwestycja w pewne rezultaty",
   description:
-    "Systematyczna praca w komfortowej przestrzeni w centrum miasta. Stawiamy na doskonały kontakt z młodzieżą, indywidualną analizę potrzeb każdego ucznia oraz angażujący sposób tłumaczenia."
+    "Systematyczna praca w komfortowej przestrzeni w centrum miasta. Stawiamy na doskonały kontakt z młodzieżą, indywidualną analizę potrzeb każdego ucznia oraz angażujący sposób tłumaczenia.",
 } as const;
 
 export const FEATURES = [
@@ -346,7 +346,8 @@ export const EMAILS = {
     renewalPreview: "Poprzedni link wygasł - oto nowy, ważny 24 godziny.",
     renewalIntro:
       "Poprzedni link do płatności wygasł. Przesyłamy nowy link do opłacenia zaliczki - jest ważny przez 24 godziny od wysłania tej wiadomości.",
-    linkFallback: "Jeśli przycisk nie działa, skopiuj i wklej ten link w przeglądarce:",
+    linkFallback:
+      "Jeśli przycisk nie działa, skopiuj i wklej ten link w przeglądarce:",
   },
   depositConfirmation: {
     subject: "Zaliczka potwierdzona — Matma do potęgi",
@@ -354,8 +355,7 @@ export const EMAILS = {
     greeting: (parentName: string) => `Dzień dobry, ${parentName}!`,
     thanks:
       "Dziękujemy za opłacenie zaliczki. Twoja wpłata została zaksięgowana.",
-    confirmed:
-      "Potwierdzamy rezerwację miejsca na wybranym poziomie.",
+    confirmed: "Potwierdzamy rezerwację miejsca na wybranym poziomie.",
     confirmedNextSteps:
       "We wrześniu wyślemy na podany numer telefonu dostępne terminy na test poziomujący oraz zajęcia organizacyjne.",
     confirmedClosing: "Cieszymy się, że dołączacie do nas!",

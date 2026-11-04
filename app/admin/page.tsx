@@ -181,11 +181,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         </div>
 
         <div className="mb-6">
-          <AdminTabsNav
-            secret={secret ?? ""}
-            activeTab={tab}
-            counts={counts}
-          />
+          <AdminTabsNav secret={secret ?? ""} activeTab={tab} counts={counts} />
         </div>
 
         {tab === "groups" ? (

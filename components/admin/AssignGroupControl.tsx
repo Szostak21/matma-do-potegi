@@ -5,10 +5,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 
-import {
-  assignLeadToGroup,
-  type AssignGroupState,
-} from "@/actions/groups";
+import { assignLeadToGroup, type AssignGroupState } from "@/actions/groups";
 import { Button } from "@/components/ui/Button";
 
 const initialState: AssignGroupState = { status: "idle" };
@@ -69,13 +66,17 @@ export function AssignGroupControl({
 
   if (!requestedPackage) {
     return (
-      <p className="text-xs text-ink/50">Brak pakietu - nie można przypisać grupy.</p>
+      <p className="text-xs text-ink/50">
+        Brak pakietu - nie można przypisać grupy.
+      </p>
     );
   }
 
   if (eligibleGroups.length === 0) {
     return (
-      <p className="text-xs text-ink/50">Brak dostępnych grup dla tego pakietu.</p>
+      <p className="text-xs text-ink/50">
+        Brak dostępnych grup dla tego pakietu.
+      </p>
     );
   }
 

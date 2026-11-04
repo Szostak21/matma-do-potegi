@@ -1,8 +1,4 @@
-import {
-  LeadStatus,
-  PackageType,
-  type Prisma,
-} from "@prisma/client";
+import { LeadStatus, PackageType, type Prisma } from "@prisma/client";
 
 import { PACKAGE_CAPACITY } from "@/lib/constants";
 import { getDisplayedAvailableSpots } from "@/lib/content";

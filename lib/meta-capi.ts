@@ -5,10 +5,7 @@ import { createHash } from "node:crypto";
 import { cookies, headers } from "next/headers";
 
 import { META_PIXEL_ID } from "@/lib/analytics-config";
-import {
-  COOKIE_CONSENT_KEY,
-  parseCookieConsent,
-} from "@/lib/cookie-consent";
+import { COOKIE_CONSENT_KEY, parseCookieConsent } from "@/lib/cookie-consent";
 
 /**
  * Meta Conversions API (CAPI) — zdarzenia serwerowe.

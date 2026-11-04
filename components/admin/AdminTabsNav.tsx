@@ -18,11 +18,7 @@ function tabHref(secret: string, tabId: AdminTabId): string {
   return `/admin?secret=${encodeURIComponent(secret)}&tab=${tabId}`;
 }
 
-export function AdminTabsNav({
-  secret,
-  activeTab,
-  counts,
-}: AdminTabsNavProps) {
+export function AdminTabsNav({ secret, activeTab, counts }: AdminTabsNavProps) {
   const router = useRouter();
   const [showResigned, setShowResigned] = useState(activeTab === "resigned");
 

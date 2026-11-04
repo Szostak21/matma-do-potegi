@@ -29,10 +29,7 @@ export const MESSAGE_VARIABLE_NAMES = [
 ] as const satisfies ReadonlyArray<keyof MessageVariables>;
 
 /** Opisy do podpowiedzi w panelu — jedno źródło prawdy dla UI i walidacji. */
-export const MESSAGE_VARIABLE_HINTS: Record<
-  keyof MessageVariables,
-  string
-> = {
+export const MESSAGE_VARIABLE_HINTS: Record<keyof MessageVariables, string> = {
   imie: "Imię ucznia (gdy brak — rodzica)",
   rodzic: "Imię i nazwisko rodzica",
   kwota: "Kwota do zapłaty, np. 410,00 zł",
@@ -128,9 +125,7 @@ export function countSmsSegments(body: string): {
 } {
   const characters = [...body].length;
   const isUnicode = /[^\u0000-\u007F]/.test(body);
-  const segmentLength = isUnicode
-    ? UCS2_SEGMENT_LENGTH
-    : GSM7_SEGMENT_LENGTH;
+  const segmentLength = isUnicode ? UCS2_SEGMENT_LENGTH : GSM7_SEGMENT_LENGTH;
 
   return {
     characters,

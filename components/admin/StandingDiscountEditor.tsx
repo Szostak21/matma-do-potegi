@@ -55,7 +55,9 @@ export function StandingDiscountEditor({
             Czesne miesięcznie
           </p>
           <p className="mt-0.5 text-sm font-medium tabular-nums text-ink">
-            {monthlyPriceGrosze > 0 ? formatPln(monthlyDue) : "ustalane ręcznie"}
+            {monthlyPriceGrosze > 0
+              ? formatPln(monthlyDue)
+              : "ustalane ręcznie"}
           </p>
           {monthlyPriceGrosze > 0 && discountGrosze !== 0 ? (
             <p className="text-[11px] tabular-nums text-ink/45">
